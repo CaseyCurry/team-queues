@@ -1,0 +1,25 @@
+[{
+  "name": "AuthorizationFaxed",
+  "versions": [{
+    "version": 1,
+    "context-parser": "data sent to the lifecycle;include a way to lookup valid values;should this be defined in lifecycle for finer-grained control"
+  }]
+}, {
+  "name": "MdReviewRequested",
+  "versions": [{
+    "version": 1,
+    "context-parser": null
+  }]
+}, {
+  "name": "MdReviewApproved",
+  "versions": [{
+    "version": 1,
+    "context-parser": null
+  }]
+}, {
+  "name": "MdReviewDeclined",
+  "versions": [{
+    "version": 1,
+    "context-parser": null
+  }]
+}]

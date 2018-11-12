@@ -1,0 +1,97 @@
+{
+  "id": "cd0b92bc-3e6a-4b31-9b15-707c67418990",
+  "lifecycleOf": "coffee",
+  "version": 1,
+  "triggersForItemCreation": [{
+    "events": [{
+      "name": "CustomerArrived"
+    }],
+    "actions": [{
+      "destinations": [{
+        "queueName": "Cashier Queue",
+        "taskType": "TakeOrder",
+        "doCompleteCurrentTask": true
+      }]
+    }]
+  }],
+  "queues": [{
+      "name": "Cashier Queue",
+      "actionsExecutedWhenItemCreated": [],
+      "actionsExecutedWhenItemAssigned": [],
+      "actionsExecutedWhenItemCompleted": [],
+      "handlersExecutedWhenEventOccurs": [{
+        "events": [{
+          "name": "OrderPlaced"
+        }],
+        "actions": [{
+          "destinations": [{
+            "conditions": [{
+                "attribute": "coffee.isFree",
+                "operator": "equals",
+                "value": true
+              },
+              {
+                "conjunction": "and"
+              },
+              {
+                "attribute": "coffee.orderedAtPeakTime",
+                "operator": "equals",
+                "value": true
+              }
+            ],
+            "actionsExecutedWhenConditionsMet": [{
+              "destinations": [{
+                  "queueName": "Cashier Queue",
+                  "taskType": "InformCustomerOfWaitTime",
+                  "doCompleteCurrentTask": true
+                },
+                {
+                  "queueName": "Barista Queue",
+                  "taskType": "MakeCoffee",
+                  "taskModifier": "@event.occurredOn + @minute(3)",
+                  "doCompleteCurrentTask": true
+                }
+              ]
+            }],
+            "actionsExecutedWhenConditionsUnmet": [{
+              "destinations": [{
+                "queueName": "Barista Queue",
+                "taskType": "MakeCoffee",
+                "doCompleteCurrentTask": true
+              }]
+            }]
+          }]
+        }]
+      }]
+    },
+    {
+      "name": "Barista Queue",
+      "actionsExecutedWhenItemCreated": [{
+        "destinations": [{
+          "conditions": [{
+            "attribute": "coffee.isCold",
+            "operator": "equals",
+            "value": true
+          }],
+          "actionsExecutedWhenConditionsMet": [{
+            "destinations": [{
+              "queueName": "Barista Queue",
+              "taskType": "MakeColdCoffee",
+              "doCompleteCurrentTask": true
+            }]
+          }],
+          "actionsExecutedWhenConditionsUnmet": [{
+            "destinations": [{
+              "queueName": "Barista Queue",
+              "taskType": "MakeHotCoffee",
+              "doCompleteCurrentTask": true
+            }]
+          }]
+        }]
+      }],
+      "actionsExecutedWhenItemAssigned": [],
+      "actionsExecutedWhenItemCompleted": [],
+      "handlersExecutedWhenEventOccurs": []
+    }
+  ]
+}

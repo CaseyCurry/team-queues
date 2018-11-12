@@ -1,0 +1,24 @@
+{
+  "_id": "72216834-2f77-42cc-8fde-961c12b9579d",
+  "foreignId": "a1da2075-6e5b-4226-9522-e0572de8b2e0",
+  "id": "72216834-2f77-42cc-8fde-961c12b9579d",
+  "isComplete": true,
+  "lifecycleId": "a865283c-76a4-4276-99d3-5a83ffc5fbac",
+  "tasks": [{
+    "id": "c045bac3-e806-4947-92a5-0cc8e3c53cee",
+    "itemId": "72216834-2f77-42cc-8fde-961c12b9579d",
+    "queueId": "b0320850-5c81-4da5-8783-671bf71d21cc",
+    "createdOn": ISODate("2018-11-11T20:54:53.660Z"),
+    "status": "Unassigned",
+    "dueOn": ISODate("2018-11-11T20:54:53.660Z"),
+    "assignee": null
+  }, {
+    "id": "d785bf8d-c3a2-4cee-93de-20a75c2fce1e",
+    "itemId": "72216834-2f77-42cc-8fde-961c12b9579d",
+    "queueId": null,
+    "createdOn": ISODate("2018-11-11T20:54:53.661Z"),
+    "status": "Unassigned",
+    "dueOn": ISODate("2018-11-11T20:54:53.661Z"),
+    "assignee": null
+  }]
+}

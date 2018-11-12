@@ -1,0 +1,78 @@
+{
+  "id": "a865283c-76a4-4276-99d3-5a83ffc5fbac",
+  "lifecycleOf": "coffee",
+  "version": 2,
+  "isActive": true,
+  "triggersForItemCreation": [{
+    "eventNames": ["cashier.coffee-ordered"],
+    "destinations": [{
+      "group": {
+        "scope": "All",
+        "conditions": [{
+          "fact": "@event",
+          "path": ".coffee.isFree",
+          "operator": "equal",
+          "value": true
+        }]
+      },
+      "onTrue": [{
+        "queueId": "b0320850-5c81-4da5-8783-671bf71d21cc",
+        "doesCompletePreviousTask": false
+      }, {
+        "queueId": "cea702f9-2f21-4f77-b9bd-2ecd9debf1c3",
+        "doesCompletePreviousTask": false
+      }],
+      "onFalse": [{
+        "queueId": "b0320850-5c81-4da5-8783-671bf71d21cc",
+        "doesCompletePreviousTask": false
+      }]
+    }]
+  }],
+  "queues": [{
+    "id": "cea702f9-2f21-4f77-b9bd-2ecd9debf1c3",
+    "name": "Cashier Queue",
+    "taskType": "Inform Customer Of Wait",
+    "destinationsWhenTaskCreated": [],
+    "destinationsWhenTaskCompleted": [],
+    "destinationsWhenEventOccurred": []
+  }, {
+    "id": "b0320850-5c81-4da5-8783-671bf71d21cc",
+    "name": "Barista Queue",
+    "taskType": "Make Coffee",
+    "destinationsWhenTaskCreated": [{
+      "group": {
+        "scope": "Any",
+        "conditions": [{
+          "fact": "@event",
+          "path": ".coffee.isHot",
+          "operator": "equal",
+          "value": true
+        }]
+      },
+      "onTrue": [{
+        "queueId": "6152083c-884a-4072-a102-98db264779ff",
+        "doesCompletePreviousTask": true
+      }],
+      "onFalse": [{
+        "queueId": "b4bacabf-1b90-422e-ba33-e8f795d535c0",
+        "doesCompletePreviousTask": true
+      }]
+    }],
+    "destinationsWhenTaskCompleted": [],
+    "destinationsWhenEventOccurred": []
+  }, {
+    "id": "6152083c-884a-4072-a102-98db264779ff",
+    "name": "Barista Queue",
+    "taskType": "Make Hot Coffee",
+    "destinationsWhenTaskCreated": [],
+    "destinationsWhenTaskCompleted": [],
+    "destinationsWhenEventOccurred": []
+  }, {
+    "id": "b4bacabf-1b90-422e-ba33-e8f795d535c0",
+    "name": "Barista Queue",
+    "taskType": "Make Cold Coffee",
+    "destinationsWhenTaskCreated": [],
+    "destinationsWhenTaskCompleted": [],
+    "destinationsWhenEventOccurred": []
+  }]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "cashier.coffee-ordered",
+  "versions": [{
+    "number": 1,
+    "maps": [{
+      "source": "message.id",
+      "target": "foreignId"
+    }, {
+      "source": "message.coffee.isHot",
+      "target": "coffee.isHot"
+    }, {
+      "source": "message.coffee.isFree",
+      "target": "coffee.isFree"
+    }]
+  }]
+}

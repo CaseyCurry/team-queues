@@ -1,0 +1,79 @@
+[{
+  "id": "guid",
+  "lifecycle-of": "authorization",
+  "version": 1,
+  "triggers-for-item-creation": [{
+    "events": ["NewAuthorizationFaxed"],
+    "destinations": [{
+      "queue": "HSC Queue",
+      "type": "new-auth",
+      "task-modifier": null
+    }]
+  }],
+  "queues": [{
+    "name": "HSC Queue",
+    "on-task-created": [{
+      "destinations": [{
+        "conditions": [{
+          "attribute": "authorization.contract",
+          "operator": "equals",
+          "value": "humana"
+        }, {
+          "conjunction": "and"
+        }, {
+          "attribute": "authorization.docs",
+          "operator": "does have",
+          "value": "some-doc.pdf"
+        }],
+        "on-conditions-met": [{
+          "queue": "PSC Queue",
+          "type": "some-type",
+          "task-modifier": null,
+          "do-complete-current-task": true
+        }],
+        "on-conditions-unmet": {
+          "conditions": [{
+            "attribute": "authorization.@tasks",
+            "operator": "does not have",
+            "value": "ATS Queue/missing-clinicals"
+          }],
+          "on-conditions-met": [{
+            "queue": "ATS Queue",
+            "type": "missing-clinicals",
+            "task-modifier": null,
+            "do-complete-current-task": true
+          }],
+          "on-conditions-unmet": [{
+            "queue": null,
+            "type": null,
+            "task-modifier": null,
+            "do-complete-current-task": true
+          }]
+        }
+      }]
+    }],
+    "on-task-assigned": [],
+    "on-task-completed": [],
+    "on-event": []
+  }, {
+    "name": "MD Review Queue",
+    "on-task-created": [],
+    "on-task-assigned": [],
+    "on-task-completed": [],
+    "on-event": [{
+      "events": ["MdReviewApproved", "MdReviewDeclined"],
+      "destinations": [{
+        "queue": "Care Coordinator Queue",
+        "type": "reviewed",
+        "task-modifier": "@event.occurredOn + @hour(1)",
+        "do-complete-current-task": true
+      }]
+    }]
+  }]
+}, {
+  "id": "guid",
+  "lifecycle-of": "patient",
+  "version": 1,
+  "triggers-for-item-creation": [],
+  "queues": []
+}]

@@ -1,0 +1,36 @@
+{
+  "name": "team-queues-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./index.js",
+  "scripts": {
+    "coverage": "nyc npm run test",
+    "test": "mocha --opts mocha.opts",
+    "lint": "eslint . --ext .js --ext .jsx --ignore-path .gitignore",
+    "host": "DEBUG=true babel-node ./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.1.5",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "chai": "^4.2.0",
+    "eslint": "^5.7.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "bson-ext": "^2.0.1",
+    "deep-freeze": "0.0.1",
+    "express": "^4.16.4",
+    "helmet": "^3.14.0",
+    "json-rules-engine": "^2.3.0",
+    "kafka-node": "^3.0.1",
+    "mongodb": "^3.1.8",
+    "uuid": "^3.3.2",
+    "uuid-validate": "0.0.3"
+  }
+}
