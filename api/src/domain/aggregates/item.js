@@ -39,7 +39,6 @@ const Item = class extends BaseAggregate {
       currentTask &&
       !currentTask.isComplete) {
       await this.completeTask(currentTask);
-      await this.domainEvents.raise(new TaskCompletedEvent(currentTask));
     }
   }
 

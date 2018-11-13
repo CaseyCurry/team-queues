@@ -55,50 +55,6 @@ describe("item suite", () => {
     });
   });
 
-  describe("when all tasks are complete", () => {
-    it("should report the item is complete", () => {
-      const tasks = [
-        new Task({
-          status: TaskStatus.Completed
-        })
-      ];
-      const item = new Item({ id, foreignId, tasks, lifecycleId });
-      expect(item.isComplete)
-        .to.equal(true);
-    });
-  });
-
-  describe("when any task is incomplete", () => {
-    let item;
-    const tasks = [
-      new Task({
-        status: TaskStatus.Completed
-      }),
-      new Task({
-        status: TaskStatus.Unassigned
-      })
-    ];
-
-    beforeEach(() => {
-      item = new Item({ id, foreignId, tasks, lifecycleId });
-    });
-
-    it("should report the item is incomplete", () => {
-      expect(item.isComplete)
-        .to.equal(false);
-    });
-
-    it("should not return the complete tasks", () => {
-      expect(item.incompleteTasks.length)
-        .to.equal(1);
-    });
-
-    it("should return the incomplete tasks", () => {
-      expect(item.incompleteTasks[0].status)
-        .to.equal(TaskStatus.Unassigned);
-    });
-  });
-
   describe("when a task is created", () => {
     describe("when there is no current task", () => {
       let item;
