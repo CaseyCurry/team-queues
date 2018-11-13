@@ -1,5 +1,4 @@
 import { DestinationFactory } from "../factories/destination-factory";
-import { Trigger } from "../value-objects/trigger";
 
 const Queue = class {
   constructor({
@@ -18,7 +17,7 @@ const Queue = class {
     this.destinationsWhenTaskCompleted = destinationsWhenTaskCompleted ?
       destinationsWhenTaskCompleted.map((destination) => DestinationFactory.create(destination)) : [];
     this.destinationsWhenEventOccurred = destinationsWhenEventOccurred ?
-      destinationsWhenEventOccurred.map((trigger) => new Trigger(trigger)) : [];
+      destinationsWhenEventOccurred.map((destination) => DestinationFactory.create(destination)) : [];
   }
 };
 

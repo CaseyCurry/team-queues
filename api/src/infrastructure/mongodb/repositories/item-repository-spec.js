@@ -69,7 +69,6 @@ describe("item repository suite", () => {
               expect(filter)
                 .to.deep.equal({
                   lifecycleId: lifecycleId,
-                  isComplete: false,
                   foreignId: item.foreignId
                 });
               return new Promise((resolve) => {

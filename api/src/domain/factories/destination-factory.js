@@ -1,13 +1,22 @@
 import { ConditionalDestination } from "../value-objects/conditional-destination";
 import { UnconditionalDestination } from "../value-objects/unconditional-destination";
+import { TriggeredDestination } from "../value-objects/triggered-destination";
+import { TriggeredCompletion } from "../value-objects/triggered-completion";
 
+// TODO: create a destination that only completes a task and doesn't create a new one.
+// TODO: is Destination the best name for this considering the above?
 const DestinationFactory = {
-  create: ({ queueId, modification, doesCompletePreviousTask, group, onTrue, onFalse }) => {
+  create: ({ queueId, modification, doesCompletePreviousTask, group, onTrue, onFalse, eventNames, destinations, doesCompleteItem }) => {
     if (queueId) {
       return new UnconditionalDestination({ queueId, modification, doesCompletePreviousTask });
-    } else {
+    }
+    if (group) {
       return new ConditionalDestination({ group, onTrue, onFalse });
     }
+    if (doesCompleteItem) {
+      return new TriggeredCompletion({ eventNames, doesCompletePreviousTask, doesCompleteItem });
+    }
+    return new TriggeredDestination({ eventNames, destinations });
   }
 };
 

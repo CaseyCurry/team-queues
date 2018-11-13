@@ -10,7 +10,7 @@ import { ConditionGroup } from "../value-objects/condition-group";
 import { ConditionalDestination } from "../value-objects/conditional-destination";
 import { UnconditionalDestination } from "../value-objects/unconditional-destination";
 import { ConditionFact } from "../value-objects/condition-fact";
-import { Trigger } from "../value-objects/trigger";
+import { TriggeredDestination } from "../value-objects/triggered-destination";
 import { DestinationProcessor } from "../services/destination-processor";
 
 describe("lifecycle suite", () => {
@@ -55,7 +55,7 @@ describe("lifecycle suite", () => {
 
     it("should create a lifecycle with the queues", () => {
       expect(lifecycle.queues)
-        .to.equal(queues);
+        .to.deep.equal(queues);
     });
 
     it("should create a lifecycle with domain events", () => {
@@ -268,7 +268,7 @@ describe("lifecycle suite", () => {
           name: "Cashier Queue",
           taskType: "Take Order",
           destinationsWhenEventOccurred: [
-            new Trigger({
+            new TriggeredDestination({
               eventNames: ["customer-ordered"],
               destinations: [
                 new UnconditionalDestination({
@@ -361,7 +361,7 @@ describe("lifecycle suite", () => {
               name: "Cashier Queue",
               taskType: "Take Order",
               destinationsWhenEventOccurred: [
-                new Trigger({
+                new TriggeredDestination({
                   eventNames: ["customer-ordered"],
                   destinations: [
                     new UnconditionalDestination({
@@ -624,7 +624,7 @@ describe("lifecycle suite", () => {
           name: "Cashier Queue",
           taskType: "Take Order",
           destinationsWhenEventOccurred: [
-            new Trigger({
+            new TriggeredDestination({
               eventNames: ["customer-ordered"],
               destinations: [conditionalDestination]
             })

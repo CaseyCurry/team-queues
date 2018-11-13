@@ -14,10 +14,18 @@ const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, d
 
       for (const lifecycle of lifecycles) {
         /* I can't imagine multiple lifecycles would listen to the same event, so lifecycles.length
-                 should generally be 1 at the most. Otherwise querying items in a loop would be a
-                 performance concern. */
-        // TODO: consider enforcing the above statement through code and lose this loop
+           should generally be 1 at the most. Otherwise querying the db in a loop would be a
+           performance concern. */
+        /* TODO: Consider enforcing the above statement through code and lose this loop.
+           Do not do this is there is a chance multiple lifecycles will need to handle a common
+           event. If we enforce this invariant here we don't want to force domain's to publish
+           two seperate events that logically represent one domain event just to get around our
+           rules. */
         const item = await itemRepository.getByForeignId(lifecycle.id, context.foreignId);
+        if (item && item.isComplete) {
+          console.debug(`skipping completed item ${item.id} in lifecycle of ${lifecycle.lifecycleOf} because the ${event.name} event occurred`);
+          continue;
+        }
         if (item) {
           console.debug(`handling item ${item.id} in lifecycle of ${lifecycle.lifecycleOf} because the ${event.name} event occurred`);
           const updatedItem = await lifecycle

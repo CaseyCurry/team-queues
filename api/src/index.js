@@ -1,15 +1,10 @@
 import express from "express";
 import helmet from "helmet";
 import kafka from "kafka-node";
+import "./console-overrides";
 import { DomainEvents } from "./infrastructure/kafka/domain-events";
 import { Controllers } from "./application-services/registries/controllers";
 import { EventHandlers } from "./application-services/registries/event-handlers";
-
-global.console.debug = function() {
-  if (process.env.DEBUG) {
-    console.log.apply(null, arguments);
-  }
-};
 
 DomainEvents(kafka)
   .then((domainEvents) => {

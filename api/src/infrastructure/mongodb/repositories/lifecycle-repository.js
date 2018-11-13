@@ -16,7 +16,10 @@ const extendLifecycle = (lifecycle) => {
       return trigger.eventNames;
     })
     .reduce((x, y) => x.concat(y), []);
-  const referencedEvents = eventsInTriggers.concat(eventsInQueues);
+  // get distinct events
+  const referencedEvents = eventsInTriggers
+    .concat(eventsInQueues)
+    .filter((x, y, z) => z.indexOf(x) === y);
   return Object.assign({}, lifecycle, { _id: lifecycle.id, referencedEvents, isDeleted: false });
 };
 
@@ -64,45 +67,6 @@ const LifecycleRepository = (store) => {
           isDeleted: false
         })
         .toArray();
-      // const lifecycles = await collection
-      //   .aggregate([{
-      //     $lookup: {
-      //       from: "items",
-      //       localField: "_id",
-      //       foreignField: "lifecycleId",
-      //       as: "items"
-      //     }
-      //   }, {
-      //     $addFields: {
-      //       incompleteItemCount: {
-      //         $size: {
-      //           $filter: {
-      //             input: "$items",
-      //             as: "item",
-      //             cond: { $eq: ["$$item.isComplete", false] }
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }, {
-      //     $match: {
-      //       $and: [{
-      //         $expr: {
-      //           $in: [eventName, "$referencedEvents"]
-      //         }
-      //       }, {
-      //         isDeleted: false
-      //       }],
-      //       $or: [{
-      //         $expr: {
-      //           $gt: ["$incompleteItemCount", 0]
-      //         }
-      //       }, {
-      //         isDeleted: false
-      //       }]
-      //     }
-      //   }])
-      //   .toArray();
       collection.close();
       return lifecycles.map((lifecycle) => new Lifecycle(lifecycle));
     }

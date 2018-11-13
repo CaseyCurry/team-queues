@@ -3,7 +3,8 @@ import { BaseAggregate } from "./base-aggregate";
 import { Item } from "./item";
 import { ItemCreatedEvent } from "../events/item-created-event";
 import { Queue } from "../entities/queue";
-import { Trigger } from "../value-objects/trigger";
+import { DestinationFactory } from "../factories/destination-factory";
+import { TriggeredCompletion } from "../value-objects/triggered-completion";
 
 const Lifecycle = class extends BaseAggregate {
   constructor({ id, lifecycleOf, version, isActive, triggersForItemCreation, queues }) {
@@ -13,7 +14,7 @@ const Lifecycle = class extends BaseAggregate {
     this.version = version;
     this.isActive = isActive;
     this.triggersForItemCreation = triggersForItemCreation ?
-      triggersForItemCreation.map((trigger) => new Trigger(trigger)) : [];
+      triggersForItemCreation.map((trigger) => DestinationFactory.create(trigger)) : [];
     this.queues = queues ?
       queues.map((queue) => new Queue(queue)) : [];
   }
@@ -78,7 +79,7 @@ const Lifecycle = class extends BaseAggregate {
     eventNames,
     destinations
   }) {
-    const trigger = new Trigger({ eventNames, destinations });
+    const trigger = DestinationFactory.create({ eventNames, destinations });
     this.triggersForItemCreation.push(trigger);
   }
 };
@@ -103,9 +104,18 @@ const processEventWhenItemExists = async function(destinationProcessor, occurred
       .find((queue) => queue.id === incompleteTask.queueId)
       .destinationsWhenEventOccurred
       .find((trigger) => trigger.listensFor(occurredEvent.name));
+    // TODO: refactor these nested if statements
     if (trigger) {
-      for (const destination of trigger.destinations) {
-        await destinationProcessor.process(destination, item, eventContext, incompleteTask);
+      if (trigger instanceof TriggeredCompletion) {
+        if (trigger.doesCompleteItem) {
+          await item.completeItem();
+        } else if (trigger.doesCompletePreviousTask) {
+          await item.completeTask(incompleteTask);
+        }
+      } else {
+        for (const destination of trigger.destinations) {
+          await destinationProcessor.process(destination, item, eventContext, incompleteTask);
+        }
       }
     }
   }
@@ -123,7 +133,7 @@ const listenToTaskEvents = function(item, eventContext, destinationProcessor) {
         eventContext,
         destinationProcessor);
     }
-    if (queue.destinationsWhenTaskCompleted) {
+    if (queue.destinationsWhenTaskCompleted.length) {
       listenToTaskEvent(
         queue.id,
         item,

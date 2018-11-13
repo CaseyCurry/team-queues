@@ -104,13 +104,13 @@ describe("item suite", () => {
       let item;
       let destination;
 
-      beforeEach(() => {
+      beforeEach(async () => {
         item = new Item({ id: 123 });
         destination = new UnconditionalDestination({
           queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
           doesCompletePreviousTask: true
         });
-        item.createTask(destination);
+        await item.createTask(destination);
       });
 
       it("should add a task", () => {
@@ -158,7 +158,7 @@ describe("item suite", () => {
       let item;
       let destination;
 
-      beforeEach(() => {
+      beforeEach(async () => {
         item = new Item({ id: 123 });
         destination = new UnconditionalDestination({
           queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
@@ -167,7 +167,7 @@ describe("item suite", () => {
         const currentTask = new Task({
           status: TaskStatus.Completed
         });
-        item.createTask(destination, currentTask);
+        await item.createTask(destination, currentTask);
       });
 
       it("should raise a single event", () => {
@@ -182,7 +182,7 @@ describe("item suite", () => {
       let currentTask;
 
       describe("when the destination completes the current task", () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           item = new Item({ id: 123 });
           destination = new UnconditionalDestination({
             queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
@@ -191,7 +191,7 @@ describe("item suite", () => {
           currentTask = new Task({
             status: TaskStatus.Unassigned
           });
-          item.createTask(destination, currentTask);
+          await item.createTask(destination, currentTask);
         });
 
         it("should complete the current task", () => {
@@ -208,7 +208,7 @@ describe("item suite", () => {
       describe("when the destination does not complete the current task", () => {
         let currentTask;
 
-        beforeEach(() => {
+        beforeEach(async () => {
           item = new Item({ id: 123 });
           destination = new UnconditionalDestination({
             queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
@@ -217,7 +217,7 @@ describe("item suite", () => {
           currentTask = new Task({
             status: TaskStatus.Unassigned
           });
-          item.createTask(destination, currentTask);
+          await item.createTask(destination, currentTask);
         });
 
         it("should not complete the current task", () => {
@@ -236,7 +236,7 @@ describe("item suite", () => {
       let item;
       let destination;
 
-      beforeEach(() => {
+      beforeEach(async () => {
         item = new Item({ id: 123 });
         destination = new UnconditionalDestination({
           queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
@@ -246,7 +246,7 @@ describe("item suite", () => {
         const currentTask = new Task({
           status: TaskStatus.Completed
         });
-        item.createTask(destination, currentTask);
+        await item.createTask(destination, currentTask);
       });
 
       it("should modify the task", () => {

@@ -65,6 +65,8 @@ const ConfiguredEvent = class {
     const version = getBestVersionMatch.call(this, occurredEvent);
     const context = {};
     version.maps.forEach((map) => {
+      // TODO: Make sure this is strict enough to tell that the event's data is mappable.
+      // TODO: Consider supporting compound foreignIds.
       const value = deepGetProperty(occurredEvent, map.source);
       deepSetProperty(context, value, map.target);
     });

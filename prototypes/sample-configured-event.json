@@ -1,4 +1,4 @@
-{
+[{
   "name": "cashier.coffee-ordered",
   "versions": [{
     "number": 1,
@@ -13,4 +13,13 @@
       "target": "coffee.isFree"
     }]
   }]
-}
+}, {
+  "name": "delivery.coffee-delivered",
+  "versions": [{
+    "number": 1,
+    "maps": [{
+      "source": "message.orderId",
+      "target": "foreignId"
+    }]
+  }]
+}]

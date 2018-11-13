@@ -1,7 +1,7 @@
 {
   "id": "a865283c-76a4-4276-99d3-5a83ffc5fbac",
   "lifecycleOf": "coffee",
-  "version": 2,
+  "version": 1,
   "isActive": true,
   "triggersForItemCreation": [{
     "eventNames": ["cashier.coffee-ordered"],
@@ -66,13 +66,21 @@
     "taskType": "Make Hot Coffee",
     "destinationsWhenTaskCreated": [],
     "destinationsWhenTaskCompleted": [],
-    "destinationsWhenEventOccurred": []
+    "destinationsWhenEventOccurred": [{
+      "eventNames": ["delivery.coffee-delivered"],
+      "doesCompletePreviousTask": true,
+      "doesCompleteItem": true
+    }]
   }, {
     "id": "b4bacabf-1b90-422e-ba33-e8f795d535c0",
     "name": "Barista Queue",
     "taskType": "Make Cold Coffee",
     "destinationsWhenTaskCreated": [],
     "destinationsWhenTaskCompleted": [],
-    "destinationsWhenEventOccurred": []
+    "destinationsWhenEventOccurred": [{
+      "eventNames": ["delivery.coffee-delivered"],
+      "doesCompletePreviousTask": true,
+      "doesCompleteItem": true
+    }]
   }]
 }

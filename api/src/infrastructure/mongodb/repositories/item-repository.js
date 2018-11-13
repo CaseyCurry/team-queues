@@ -22,7 +22,6 @@ const ItemRepository = (store) => {
       const item = await collection
         .findOne({
           lifecycleId: lifecycleId,
-          isComplete: false,
           foreignId: foreignId
         });
       collection.close();

@@ -1,7 +1,7 @@
 import deepFreeze from "deep-freeze";
 import { DestinationFactory } from "../factories/destination-factory";
 
-const Trigger = class {
+const TriggeredDestination = class {
   constructor({ eventNames, destinations }) {
     if (!eventNames || !Array.isArray(eventNames) || !eventNames.every((name) => typeof name === "string")) {
       throw new Error("The eventNames must be an array");
@@ -19,4 +19,4 @@ const Trigger = class {
   }
 };
 
-export { Trigger };
+export { TriggeredDestination };
