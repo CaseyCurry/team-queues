@@ -1,9 +1,9 @@
 const TaskController = (app, taskData) => {
   return {
     register: () => {
-      app.get("/api/queries/tasks", async (request, response) => {
+      app.get("/api/queries/queues/:queueId/tasks", async (request, response) => {
         try {
-          const tasks = await taskData.getAll();
+          const tasks = await taskData.getByQueueId(request.params.queueId);
           response.status(200)
             .send(tasks);
         } catch (error) {

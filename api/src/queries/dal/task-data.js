@@ -16,9 +16,9 @@ const TaskData = (store) => {
       collection.close();
       return task;
     },
-    getAll: async () => {
+    getByQueueId: async (queueId) => {
       const collection = await store.getCollection();
-      const queues = await collection.find({})
+      const queues = await collection.find({ queueId })
         .toArray();
       collection.close();
       return queues;

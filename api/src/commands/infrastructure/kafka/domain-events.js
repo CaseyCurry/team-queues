@@ -23,6 +23,7 @@ const DomainEvents = (kafka) => {
           }
           const payload = events
             .map((event) => event.name)
+            .filter((x, y, z) => z.indexOf(x) === y)
             .map((eventName) => {
               const messages = events
                 .filter((event) => event.name === eventName)
@@ -75,11 +76,11 @@ const DomainEvents = (kafka) => {
                 fromOffset: "latest"
               }, eventName);
               subscriptions[eventName].consumer = consumer;
-              consumer.on("message", async (message) => {
+              consumer.on("message", (message) => {
                 console.debug(`event ${message.topic} occurred`);
                 for (const handler of subscriptions[message.topic].handlers) {
                   const event = JSON.parse(message.value);
-                  await handler(event)
+                  handler(event)
                     .catch((error) => {
                       console.error(error);
                     });

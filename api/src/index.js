@@ -1,5 +1,6 @@
 import express from "express";
 import helmet from "helmet";
+import cors from "cors";
 import kafka from "kafka-node";
 import "./console-overrides";
 import { DomainEvents } from "./commands/infrastructure/kafka/domain-events";
@@ -50,6 +51,7 @@ const configureApi = (registerRoutes) => {
   const app = express();
   app.use(helmet());
   app.use(express.json());
+  app.use(cors());
 
   // add a route for health checking the api
   app.get("/", (request, response) => {

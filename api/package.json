@@ -7,8 +7,8 @@
     "coverage": "nyc npm run test",
     "test": "mocha --opts mocha.opts",
     "lint": "eslint . --ext .js --ext .jsx --ignore-path .gitignore",
-    "host": "DEBUG=true babel-node ./src/index.js",
-    "log": "npm run host 2>&1 | tee app.log"
+    "start": "DEBUG=true babel-node ./src/index.js",
+    "log": "npm run start 2>&1 | tee app.log"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +25,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "bson-ext": "^2.0.1",
+    "cors": "^2.8.5",
     "deep-freeze": "0.0.1",
     "express": "^4.16.4",
     "helmet": "^3.14.0",

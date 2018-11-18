@@ -26,6 +26,18 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory, co
             .send(process.env.DEV ? error : "An error occurred");
         }
       });
+
+      app.get("/api/commands/configured-events", async (request, response) => {
+        try {
+          const events = await configuredEventRepository.getAll();
+          response.status(200)
+            .send(events);
+        } catch (error) {
+          console.error(error);
+          response.status(500)
+            .send(process.env.DEV ? error : "An error occurred");
+        }
+      });
     }
   };
 };

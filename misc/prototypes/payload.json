@@ -1,0 +1,21 @@
+[{
+  "topic": "team-queues.task-created",
+  "messages": [
+    "{\"id\":\"3b1d810c-231e-4c66-89eb-030cfd467946\",\"occurredOn\":\"2018-11-17T03:13:58.478Z\",\"name\":\"team-queues.task-created\",\"version\":1,\"message\":{\"task\":{\"id\":\"3b1843b6-80a5-47d6-8cc8-730f9c91d133\",\"item\":{\"id\":\"ba5963ed-79f3-4f3f-b509-611e4084ef31\",\"foreignId\":\"c7624f9f-4803-4f58-b91f-1e271842cf2d\",\"lifecycleId\":\"a865283c-76a4-4276-99d3-5a83ffc5fbac\"},\"queueId\":\"b0320850-5c81-4da5-8783-671bf71d21cc\",\"createdOn\":\"2018-11-17T03:13:58.474Z\",\"status\":\"Unassigned\",\"dueOn\":\"2018-11-17T03:13:58.474Z\"}}}",
+    "{\"id\":\"19d7d1f8-be78-4875-97ea-00e30d38df27\",\"occurredOn\":\"2018-11-17T03:13:58.488Z\",\"name\":\"team-queues.task-created\",\"version\":1,\"message\":{\"task\":{\"id\":\"88c8ff5c-be21-4de5-b973-5d3f2f1fade6\",\"item\":{\"id\":\"ba5963ed-79f3-4f3f-b509-611e4084ef31\",\"foreignId\":\"c7624f9f-4803-4f58-b91f-1e271842cf2d\",\"lifecycleId\":\"a865283c-76a4-4276-99d3-5a83ffc5fbac\"},\"queueId\":\"6152083c-884a-4072-a102-98db264779ff\",\"createdOn\":\"2018-11-17T03:13:58.488Z\",\"status\":\"Unassigned\",\"dueOn\":\"2018-11-17T03:13:58.488Z\"}}}"
+  ],
+  "partition": 0
+}, {
+  "topic": "team-queues.task-created",
+  "messages": [
+    "{\"id\":\"3b1d810c-231e-4c66-89eb-030cfd467946\",\"occurredOn\":\"2018-11-17T03:13:58.478Z\",\"name\":\"team-queues.task-created\",\"version\":1,\"message\":{\"task\":{\"id\":\"3b1843b6-80a5-47d6-8cc8-730f9c91d133\",\"item\":{\"id\":\"ba5963ed-79f3-4f3f-b509-611e4084ef31\",\"foreignId\":\"c7624f9f-4803-4f58-b91f-1e271842cf2d\",\"lifecycleId\":\"a865283c-76a4-4276-99d3-5a83ffc5fbac\"},\"queueId\":\"b0320850-5c81-4da5-8783-671bf71d21cc\",\"createdOn\":\"2018-11-17T03:13:58.474Z\",\"status\":\"Unassigned\",\"dueOn\":\"2018-11-17T03:13:58.474Z\"}}}",
+    "{\"id\":\"19d7d1f8-be78-4875-97ea-00e30d38df27\",\"occurredOn\":\"2018-11-17T03:13:58.488Z\",\"name\":\"team-queues.task-created\",\"version\":1,\"message\":{\"task\":{\"id\":\"88c8ff5c-be21-4de5-b973-5d3f2f1fade6\",\"item\":{\"id\":\"ba5963ed-79f3-4f3f-b509-611e4084ef31\",\"foreignId\":\"c7624f9f-4803-4f58-b91f-1e271842cf2d\",\"lifecycleId\":\"a865283c-76a4-4276-99d3-5a83ffc5fbac\"},\"queueId\":\"6152083c-884a-4072-a102-98db264779ff\",\"createdOn\":\"2018-11-17T03:13:58.488Z\",\"status\":\"Unassigned\",\"dueOn\":\"2018-11-17T03:13:58.488Z\"}}}"
+  ],
+  "partition": 0
+}, {
+  "topic": "team-queues.task-completed",
+  "messages": [
+    "{\"id\":\"5653b2a3-2a3b-4d33-8b06-3f221a3a7a5d\",\"occurredOn\":\"2018-11-17T03:13:58.490Z\",\"name\":\"team-queues.task-completed\",\"version\":1,\"message\":{\"task\":{\"id\":\"3b1843b6-80a5-47d6-8cc8-730f9c91d133\"}}}"
+  ],
+  "partition": 0
+}]
