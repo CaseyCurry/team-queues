@@ -7,8 +7,9 @@ class List extends React.Component {
   }
 
   render() {
+    // TODO: add search
     return (
-      <div className={this.props.className}>
+      <div className={this.props.className + " list"}>
         <ul>
           {
             this

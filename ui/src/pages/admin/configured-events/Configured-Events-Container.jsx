@@ -20,11 +20,9 @@ class ConfiguredEventsContainer extends React.Component {
       error={this.props.error}
       selectedEvent={this.props.selectedEvent}
       isAddingEvent={this.props.isAddingEvent}
-      selectedEventVersion={this.props.selectedEventVersion}
       onEventSelected={this.props.onEventSelected}
       onEventNameChanged={this.props.onEventNameChanged}
-      onEventSaved={this.props.onEventSaved}
-      onEventVersionSelected={this.props.onEventVersionSelected}/>;
+      onEventSaved={this.props.onEventSaved}/>;
   }
 }
 
@@ -34,12 +32,10 @@ ConfiguredEventsContainer.propTypes = {
   error: PropTypes.object,
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
-  selectedEventVersion: PropTypes.object,
   onGetEvents: PropTypes.func.isRequired,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,
-  onEventSaved: PropTypes.func.isRequired,
-  onEventVersionSelected: PropTypes.func.isRequired
+  onEventSaved: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -59,9 +55,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     onEventSaved: (event) => {
       dispatch(actions.saveEvent(event));
-    },
-    onEventVersionSelected: (version) => {
-      dispatch(actions.selectEventVersion(version));
     }
   };
 };

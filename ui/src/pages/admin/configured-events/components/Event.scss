@@ -1,0 +1,46 @@
+.event {
+  text-align: center;
+
+  .actions {
+    button {
+      margin-left: $base-control-margin;
+      margin-right: $base-control-margin;
+    }
+  }
+
+  .versions {
+    margin-top: $base-area-margin;
+
+    button {
+      width: 75px;
+    }
+  }
+
+  .maps {
+    margin-top: $base-area-margin;
+
+    ul {
+      padding: 0;
+
+      li {
+        input {
+          width: 40%;
+          margin-left: $base-control-margin;
+          margin-right: $base-control-margin;
+          margin-bottom: $base-control-margin;
+        }
+
+        h6 {
+          width: 50%;
+          display: inline-block;
+        }
+
+        img {
+          height: 32px;
+          width: 32px;
+          filter: invert(.3);
+        }
+      }
+    }
+  }
+}

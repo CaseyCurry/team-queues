@@ -3,8 +3,7 @@ const initialState = {
   events: [],
   error: null,
   selectedEvent: null,
-  isAddingEvent: false,
-  selectedEventVersion: null
+  isAddingEvent: false
 };
 
 export default (state = initialState, action) => {
@@ -36,11 +35,17 @@ export default (state = initialState, action) => {
         ],
         isNew: true
       };
-      const selectedEvent = action.payload && action.payload.length ? action.payload[0] : eventToAdd;
+      const sortedEvents = action.payload.sort(
+        (x, y) => x.name.toLowerCase() < y.name.toLowerCase()
+          ? -1
+          : 1
+      );
+      const selectedEvent = action.payload.length
+        ? sortedEvents[0]
+        : eventToAdd;
       return Object.assign({}, initialState, {
-        events: [eventToAdd].concat(action.payload),
-        selectedEvent,
-        selectedEventVersion: selectedEvent.versions[selectedEvent.versions.length - 1]
+        events: [eventToAdd].concat(sortedEvents),
+        selectedEvent
       });
     }
     case "SELECT_EVENT":
@@ -53,18 +58,13 @@ export default (state = initialState, action) => {
 
       return Object.assign({}, state, {
         selectedEvent,
-        isAddingEvent: selectedEvent.isNew,
-        selectedEventVersion: selectedEvent.versions[selectedEvent.versions.length - 1]
+        isAddingEvent: selectedEvent.isNew
       });
     }
     case "CHANGE_EVENT_NAME":
     {
       const selectedEvent = Object.assign({}, state.selectedEvent, { name: action.payload.name });
       return Object.assign({}, state, { selectedEvent });
-    }
-    case "SELECT_EVENT_VERSION":
-    {
-      return Object.assign({}, state, { selectedEventVersion: action.payload.version });
     }
     case "SAVE_EVENT":
     {

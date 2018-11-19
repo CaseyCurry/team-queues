@@ -1,0 +1,49 @@
+.segmented-control {
+  height: 48px;
+
+  @mixin selector() {
+    padding: 0;
+    border: solid 1px $base-border-color;
+    width: 48px !important;
+
+    img {
+      filter: invert(.4);
+    }
+
+    :first-child {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  button {
+    border: none;
+    height: 100%;
+    cursor: pointer;
+    vertical-align: middle;
+
+    &:first-of-type {
+      @include selector();
+    }
+
+    &:last-of-type {
+      @include selector();
+    }
+
+    &.selected {
+      // TODO: fix
+      background-color: blue;
+      color: white;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      // https://medium.com/@union_io/swapping-fill-color-on-image-tag-svgs-using-css-filters-fa4818bf7ec6
+      filter: invert(.1);
+
+      img {
+        filter: invert(.7);
+      }
+    }
+  }
+}

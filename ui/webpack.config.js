@@ -1,8 +1,7 @@
 /* eslint-env node */
-"use strict";
-
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 const html = {
@@ -58,6 +57,10 @@ module.exports = [{
       filename: html.filename,
       template: html.template
     }),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin(),
+    new CopyWebpackPlugin([{
+      from: "./src/resources",
+      to: "resources"
+    }])
   ]
 }];

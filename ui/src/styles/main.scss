@@ -17,4 +17,8 @@
 
   @import "workspace";
   @import "tabs";
+  @import "segmented-control";
+
+  // pages
+  @import "../pages/admin/configured-events/components/Event";
 }

@@ -12,12 +12,14 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory, co
           return;
         }
         try {
-          if (await configuredEventRepository.getByName(configuredEvent.name)) {
+          const existingEvent = await configuredEventRepository.getByName(configuredEvent.name);
+          // TODO: check etag
+          await configuredEventRepository.createOrUpdate(configuredEvent);
+          if (existingEvent) {
             response.status(200)
               .end();
             return;
           }
-          await configuredEventRepository.createOrUpdate(configuredEvent);
           response.status(201)
             .send(configuredEvent.name);
         } catch (error) {

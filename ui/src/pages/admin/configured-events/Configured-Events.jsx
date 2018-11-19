@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import List from "./components/List";
-import ConfiguredEvent from "./components/Configured-Event";
+import Event from "./components/Event";
 
 class ConfiguredEvents extends React.Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class ConfiguredEvents extends React.Component {
       // TODO: create loader
       return <div>Loading...</div>;
     } else {
-      return <div className="row">
+      return <div className="row configured-events">
         <List
           className="vertical-tabs col-4"
           events={this.props.events}
@@ -23,12 +23,10 @@ class ConfiguredEvents extends React.Component {
           isAddingEvent={this.props.isAddingEvent}
           onEventSelected={this.props.onEventSelected}
           onEventNameChanged={this.props.onEventNameChanged}/> {
-          this.props.selectedEvent && <ConfiguredEvent
+          this.props.selectedEvent && <Event
             className="workspace-right col-8"
             event={this.props.selectedEvent}
-            selectedEventVersion={this.props.selectedEventVersion}
-            onEventSaved={this.props.onEventSaved}
-            onEventVersionSelected={this.props.onEventVersionSelected}/>
+            onEventSaved={this.props.onEventSaved}/>
         }
       </div>;
     }
@@ -41,11 +39,9 @@ ConfiguredEvents.propTypes = {
   error: PropTypes.object,
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
-  selectedEventVersion: PropTypes.object,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,
-  onEventSaved: PropTypes.func.isRequired,
-  onEventVersionSelected: PropTypes.func.isRequired
+  onEventSaved: PropTypes.func.isRequired
 };
 
 export default ConfiguredEvents;
