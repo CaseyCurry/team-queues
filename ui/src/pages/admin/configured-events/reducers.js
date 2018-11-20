@@ -25,16 +25,6 @@ export default (state = initialState, action) => {
     }
     case "GET_EVENTS_FULFILLED":
     {
-      const eventToAdd = {
-        name: "+ event",
-        versions: [
-          {
-            number: 1,
-            maps: []
-          }
-        ],
-        isNew: true
-      };
       const sortedEvents = action.payload.sort(
         (x, y) => x.name.toLowerCase() < y.name.toLowerCase()
           ? -1
@@ -42,9 +32,9 @@ export default (state = initialState, action) => {
       );
       const selectedEvent = action.payload.length
         ? sortedEvents[0]
-        : eventToAdd;
+        : null;
       return Object.assign({}, initialState, {
-        events: [eventToAdd].concat(sortedEvents),
+        events: sortedEvents,
         selectedEvent
       });
     }

@@ -3,7 +3,6 @@
 
   @mixin selector() {
     padding: 0;
-    border: solid 1px $base-border-color;
     width: 48px !important;
 
     img {
@@ -17,33 +16,32 @@
   }
 
   button {
-    border: none;
     height: 100%;
-    cursor: pointer;
     vertical-align: middle;
 
     &:first-of-type {
       @include selector();
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
     }
 
     &:last-of-type {
       @include selector();
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
     }
 
     &.selected {
-      // TODO: fix
-      background-color: blue;
-      color: white;
+      @include call-to-action();
     }
 
-    &:disabled {
-      cursor: not-allowed;
-      // https://medium.com/@union_io/swapping-fill-color-on-image-tag-svgs-using-css-filters-fa4818bf7ec6
-      filter: invert(.1);
-
-      img {
-        filter: invert(.7);
-      }
+    &:hover:not(:disabled):not(.selected) {
+      background-color: $primary-gray;
+      transition: 0;
     }
   }
 }

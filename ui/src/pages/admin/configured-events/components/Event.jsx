@@ -55,6 +55,10 @@ class Event extends React.Component {
     );
   }
 
+  cancel() {
+    this.setState(this.getInitialState());
+  }
+
   selectPreviousVersion() {
     const previousVersion = this
       .state
@@ -102,7 +106,7 @@ class Event extends React.Component {
     );
   }
 
-  doDisplayPreviousVersionSelector(versionsToRender) {
+  doDisplayPreviousVersionSelector() {
     const oldestVersionNumber = this
       .state
       .event
@@ -113,10 +117,10 @@ class Event extends React.Component {
           ? x
           : min
       );
-    return this.state.event.versions.length > versionsToRender.length && this.state.selectedEventVersionNumber > oldestVersionNumber;
+    return this.state.event.versions.length > 1 && this.state.selectedEventVersionNumber > oldestVersionNumber;
   }
 
-  doDisplayNextVersionSelector(versionsToRender) {
+  doDisplayNextVersionSelector() {
     const latestVersionNumber = this
       .state
       .event
@@ -127,33 +131,7 @@ class Event extends React.Component {
           ? x
           : max
       );
-    return this.state.event.versions.length > versionsToRender.length && this.state.selectedEventVersionNumber < latestVersionNumber;
-  }
-
-  getVersionsToRender() {
-    const versionCountToRender = 1;
-    const sortedVersions = this
-      .state
-      .event
-      .versions
-      .map((version) => version.number)
-      .sort((x, y) => x - y);
-    const filteredVersions = sortedVersions.filter(
-      (number) => number <= this.state.selectedEventVersionNumber
-    );
-    const versionsToRender = filteredVersions.length > versionCountToRender
-      ? filteredVersions.slice(
-        filteredVersions.length - versionCountToRender,
-        filteredVersions.length
-      )
-      : filteredVersions;
-    const spacesToFill = sortedVersions.length >= versionCountToRender
-      ? versionCountToRender - versionsToRender.length
-      : 0;
-    for (let i = 0; i < spacesToFill; i++) {
-      versionsToRender.push(sortedVersions[versionsToRender.length]);
-    }
-    return versionsToRender;
+    return this.state.event.versions.length > 1 && this.state.selectedEventVersionNumber < latestVersionNumber;
   }
 
   renderMaps() {
@@ -167,12 +145,12 @@ class Event extends React.Component {
     const list = [];
     for (let mapIndex = 0; mapIndex < maps.length; mapIndex++) {
       const map = maps[mapIndex];
-      const item = <li key={mapIndex}>
+      const item = <li key={mapIndex} className="map">
         <input
           value={map.source}
           autoFocus={"source" + mapIndex === this.state.mapInputSelected}
           onChange={(e) => this.changeMap("source", mapIndex, e.target.value)}/>
-        <img src="/resources/icons/arrow-map-right-hollow.svg" alt="maps to" />
+        <img src="/resources/icons/arrow-map-right-hollow.svg" alt="maps to"/>
         <input
           value={map.target}
           autoFocus={"target" + mapIndex === this.state.mapInputSelected}
@@ -184,53 +162,44 @@ class Event extends React.Component {
   }
 
   render() {
-    const versionsToRender = this.getVersionsToRender();
-    const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector(
-      versionsToRender
-    );
-    const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector(
-      versionsToRender
-    );
+    // TODO: move copy to versions
+    // TODO: delete or inactivate event; ignore these in api
+    const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
+    const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();
     return <div className={this.props.className + " event"}>
-      <div className="actions">
-        <button onClick={() => this.copyVersion()}>copy</button>
-        <button onClick={() => this.props.onEventSaved(this.state.event)}>save</button>
-      </div>
-      <div className="versions">
-        <h6>versions</h6>
-        <div className="segmented-control">
-          <button
-            disabled={!doDisplayPreviousVersionSelector}
-            onClick={() => this.selectPreviousVersion()}>
-            <img src="/resources/icons/arrow-backward.svg" alt="previous"/>
-          </button>
-          {
-            versionsToRender.map((number) => {
-              return <button
-                key={number}
-                className={number === this.state.selectedEventVersionNumber
-                  ? "selected"
-                  : undefined}
-                onClick={() => this.selectVersion(number)}>
-                <span>V{number}</span>
-              </button>;
-            })
-          }
-          <button
-            disabled={!doDisplayNextVersionSelector}
-            onClick={() => this.selectNextVersion()}>
-            <img src="/resources/icons/arrow-forward.svg" alt="next"/>
-          </button>
+      <div className="area">
+        <div className="versions">
+          <h6>versions</h6>
+          <div className="segmented-control">
+            <button
+              disabled={!doDisplayPreviousVersionSelector}
+              onClick={() => this.selectPreviousVersion()}>
+              <img src="/resources/icons/arrow-backward.svg" alt="previous"/>
+            </button>
+            <button key={this.state.selectedEventVersionNumber} className="selected">
+              <span>V{this.state.selectedEventVersionNumber}</span>
+            </button>
+            <button
+              disabled={!doDisplayNextVersionSelector}
+              onClick={() => this.selectNextVersion()}>
+              <img src="/resources/icons/arrow-forward.svg" alt="next"/>
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="maps">
-        <ul>
-          <li>
-            <h6>event property</h6>
-            <h6>context property</h6>
-          </li>
-          {this.renderMaps()}
-        </ul>
+        <div className="maps">
+          <ul>
+            <li>
+              <h6>event property</h6>
+              <h6>context property</h6>
+            </li>
+            {this.renderMaps()}
+          </ul>
+        </div>
+        <div className="actions">
+          <button onClick={() => this.props.onEventSaved(this.state.event)}>save</button>
+          <button onClick={() => this.copyVersion()}>copy</button>
+          <button onClick={() => this.cancel()}>cancel</button>
+        </div>
       </div>
     </div>;
   }

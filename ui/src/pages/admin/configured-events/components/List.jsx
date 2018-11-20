@@ -1,20 +1,49 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Event from "./Event";
+
+const countToDisplay = 30;
 
 class List extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      searchString: null
+    };
+  }
+
+  search(searchString) {
+    this.setState(Object.assign({}, this.state, {searchString}));
   }
 
   render() {
-    // TODO: add search
+    const eventToAdd = {
+      name: "+ event",
+      versions: [
+        {
+          number: 1,
+          maps: []
+        }
+      ],
+      isNew: true
+    };
+    const filteredEvents = this.state.searchString
+      ? this
+        .props
+        .events
+        .filter(
+          (event) => event.name.toLowerCase().includes(this.state.searchString.toLowerCase())
+        )
+      : this.props.events;
     return (
       <div className={this.props.className + " list"}>
+        <div className="search">
+          <input placeholder="search" onChange={(e) => this.search(e.target.value)}/>
+        </div>
         <ul>
           {
-            this
-              .props
-              .events
+            [eventToAdd]
+              .concat(filteredEvents.slice(0, countToDisplay))
               .map((event) => {
                 let itemValue;
                 const eventBeingAdded = event.isNew && this.props.isAddingEvent;
@@ -34,7 +63,13 @@ class List extends React.Component {
                     : undefined}
                   title={event.name}
                   onClick={() => this.props.onEventSelected(event)}>
-                  {itemValue}
+                  <span>{itemValue}</span>
+                  {
+                    this.props.selectedEvent === event && <Event
+                      className="workspace-right d-block d-md-none col-12"
+                      event={this.props.selectedEvent}
+                      onEventSaved={this.props.onEventSaved}/>
+                  }
                 </li>;
               })
           }
@@ -50,7 +85,8 @@ List.propTypes = {
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
   onEventSelected: PropTypes.func.isRequired,
-  onEventNameChanged: PropTypes.func.isRequired
+  onEventNameChanged: PropTypes.func.isRequired,
+  onEventSaved: PropTypes.func.isRequired
 };
 
 export default List;

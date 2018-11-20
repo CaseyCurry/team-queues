@@ -17,14 +17,15 @@ class ConfiguredEvents extends React.Component {
     } else {
       return <div className="row configured-events">
         <List
-          className="vertical-tabs col-4"
+          className="vertical-tabs col-sm-12 col-md-4 col-lg-3"
           events={this.props.events}
           selectedEvent={this.props.selectedEvent}
           isAddingEvent={this.props.isAddingEvent}
           onEventSelected={this.props.onEventSelected}
-          onEventNameChanged={this.props.onEventNameChanged}/> {
+          onEventNameChanged={this.props.onEventNameChanged}
+          onEventSaved={this.props.onEventSaved}/> {
           this.props.selectedEvent && <Event
-            className="workspace-right col-8"
+            className="workspace-right d-none d-md-block col-md-8 col-lg-9"
             event={this.props.selectedEvent}
             onEventSaved={this.props.onEventSaved}/>
         }

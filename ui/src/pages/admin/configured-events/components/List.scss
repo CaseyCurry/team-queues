@@ -1,0 +1,19 @@
+.list {
+  li {
+    &:first-of-type {
+      color: $call-to-action-color;
+    }
+  }
+
+  .search {
+    padding: $base-control-margin * 2;
+    border-top: $base-border-width solid $base-border-color;
+    border-right: $base-border-width solid $base-border-color;
+    border-left: $base-border-width solid $base-border-color;
+    background-color: mix(white, $primary-gray, 80%);
+
+    input {
+      width: 100%;
+    }
+  }
+}

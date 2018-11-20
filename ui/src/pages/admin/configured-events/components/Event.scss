@@ -1,38 +1,35 @@
 .event {
   text-align: center;
 
-  .actions {
-    button {
-      margin-left: $base-control-margin;
-      margin-right: $base-control-margin;
-    }
-  }
-
   .versions {
-    margin-top: $base-area-margin;
-
     button {
       width: 75px;
     }
   }
 
   .maps {
-    margin-top: $base-area-margin;
+    margin-top: $base-section-margin;
 
     ul {
       padding: 0;
+      margin: 0;
 
       li {
+        h6 {
+          width: 50%;
+          display: inline-block;
+          padding-left: $base-control-margin;
+          padding-right: $base-control-margin;
+        }
+
         input {
           width: 40%;
           margin-left: $base-control-margin;
           margin-right: $base-control-margin;
-          margin-bottom: $base-control-margin;
         }
 
-        h6 {
-          width: 50%;
-          display: inline-block;
+        &.map:not(:last-child) {
+          margin-bottom: $base-control-margin;
         }
 
         img {
@@ -41,6 +38,15 @@
           filter: invert(.3);
         }
       }
+    }
+  }
+
+  .actions {
+    margin-top: $base-section-margin;
+
+    button {
+      margin-left: $base-control-margin;
+      margin-right: $base-control-margin;
     }
   }
 }

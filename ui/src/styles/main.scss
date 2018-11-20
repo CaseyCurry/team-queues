@@ -1,24 +1,45 @@
 @import "variables";
-// @import "../components/styles/index";
-// @import "../pages/home/styles/index";
-// @import "../pages/transactions/styles/transactions-content";
-// @import "../pages/authentication/styles/authentication";
+
+@mixin call-to-action() {
+  background-color: $call-to-action-color;
+  color: $base-light-font-color;
+  font-weight: bold;
+}
 
 #app {
+  > div {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+
+    > div {
+      min-height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
   font-family: $base-font-family;
   font-size: $base-font-size;
   color: $base-font-color;
   background-color: $base-background-color;
   height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: auto;
 
   ul {
     list-style-type: none;
+    margin: 0;
   }
 
+  // controls
   @import "workspace";
+  @import "buttons";
   @import "tabs";
   @import "segmented-control";
 
   // pages
   @import "../pages/admin/configured-events/components/Event";
+  @import "../pages/admin/configured-events/components/List";
 }

@@ -1,15 +1,14 @@
-$item-padding: $base-control-margin * 3;
+$item-padding: $base-control-margin * 2;
 
 .vertical-tabs {
   padding: 0;
-  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 
   ul {
     border: $base-border-width solid $base-border-color;
     height: 100%;
-    background-color: #f1f1f1;
+    background-color: mix(white, $primary-gray, 80%);
     padding: 0;
 
     li {
@@ -27,6 +26,8 @@ $item-padding: $base-control-margin * 3;
       &.selected {
         background-color: $base-background-color;
         border-right: $base-background-color;
+        border-left: solid $base-border-width*5 $call-to-action-color;
+        margin-left: -$base-border-width;
         margin-right: -$base-border-width;
         padding-right: $item-padding + $base-border-width;
       }
