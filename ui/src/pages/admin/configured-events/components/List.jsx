@@ -7,18 +7,57 @@ const countToDisplay = 30;
 class List extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      searchString: null,
-      onlyIncludeActiveEvents: true
-    };
+    const onlyIncludeActiveEvents = true;
+    const filteredEvents = this.filter(this.props.searchString, onlyIncludeActiveEvents);
+    this.state = Object.assign({}, filteredEvents);
   }
 
   search(searchString) {
-    this.setState(Object.assign({}, this.state, {searchString}));
+    const filteredEvents = this.filter(searchString, this.state.onlyIncludeActiveEvents);
+    this.setState(Object.assign({}, this.state, filteredEvents));
+  }
+
+  filter(searchString, onlyIncludeActiveEvents) {
+    let filteredEvents = this.props.events && searchString
+      ? this
+        .props
+        .events
+        .filter((event) => event.name.toLowerCase().includes(searchString.toLowerCase()))
+      : this.props.events;
+    if (onlyIncludeActiveEvents) {
+      filteredEvents = filteredEvents
+        .filter((event) => event.isActive);
+    }
+    const selectedEvent = filteredEvents.length ? filteredEvents[0] : null;
+    if (!this.state || selectedEvent !== this.state.selectedEvent) {
+      this.props.onEventSelected(selectedEvent);
+    }
+    return {
+      filteredEvents,
+      selectedEvent,
+      searchString,
+      onlyIncludeActiveEvents
+    };
   }
 
   toggleInclusionOfActiveEvents() {
-    this.setState(Object.assign({}, this.state, {onlyIncludeActiveEvents: !this.state.onlyIncludeActiveEvents}));
+    const filteredEvents = this.filter(this.state.searchString, !this.state.onlyIncludeActiveEvents);
+    this.setState(Object.assign({}, this.state, filteredEvents));
+  }
+
+  selectEvent(selectedEvent) {
+    if (selectedEvent.isNew) {
+      selectedEvent = Object.assign({}, selectedEvent, { name: "" });
+    }
+
+    this.props.onEventSelected(selectedEvent);
+    this.setState(Object.assign({}, this.state, {selectedEvent}));
+  }
+
+  changeEventName(name) {
+    const selectedEvent = Object.assign({}, this.state.selectedEvent, {name});
+    this.setState(Object.assign({}, this.state, {selectedEvent}));
+    this.props.onEventNameChanged(name);
   }
 
   render() {
@@ -28,26 +67,19 @@ class List extends React.Component {
       versions: [
         {
           number: 1,
-          maps: []
+          maps: [{
+            source: "",
+            target: "foreignId"
+          }]
         }
       ],
       isNew: true
     };
-    let filteredEvents = this.state.searchString
-      ? this
-        .props
-        .events
-        .filter((event) => event.name.toLowerCase().includes(this.state.searchString.toLowerCase()))
-      : this.props.events;
-    if (this.state.onlyIncludeActiveEvents) {
-      filteredEvents = filteredEvents
-        .filter((event) => event.isActive);
-    }
     return (
       <div className={this.props.className + " list"}>
         <div className="filter">
           <div className="search">
-            <input placeholder="search" onChange={(e) => this.search(e.target.value)}/>
+            <input placeholder="search" value={this.state.searchString ? this.state.searchString : ""} onChange={(e) => this.search(e.target.value)}/>
           </div>
           <div className="inactives">
             <label className="checkbox">only include active events
@@ -62,11 +94,11 @@ class List extends React.Component {
         <ul>
           {
             [eventToAdd]
-              .concat(filteredEvents.slice(0, countToDisplay))
+              .concat(this.state.filteredEvents.slice(0, countToDisplay))
               .map((event) => {
                 let itemValue;
                 const eventBeingAdded = event.isNew && this.props.isAddingEvent;
-                let className = this.props.selectedEvent && this.props.selectedEvent.name === event.name || eventBeingAdded
+                let className = this.state.selectedEvent && this.state.selectedEvent.name === event.name || eventBeingAdded
                   ? "selected"
                   : "unselected";
                 if (!event.isActive) {
@@ -75,8 +107,8 @@ class List extends React.Component {
                 if (eventBeingAdded) {
                   itemValue = <input
                     autoFocus="autoFocus"
-                    value={this.props.selectedEvent.name}
-                    onChange={(e) => this.props.onEventNameChanged(e.target.value)}
+                    value={this.state.selectedEvent.name}
+                    onChange={(e) => this.changeEventName(e.target.value)}
                     onClick={(e) => e.stopPropagation()}/>;
                 } else {
                   itemValue = event.name;
@@ -85,12 +117,12 @@ class List extends React.Component {
                   key={event.name}
                   className={className}
                   title={event.name}
-                  onClick={() => this.props.onEventSelected(event)}>
+                  onClick={() => this.selectEvent(event)}>
                   <span>{itemValue}</span>
                   {
-                    (this.props.selectedEvent === event || this.props.selectedEvent && this.props.selectedEvent.isNew && event.isNew) && <Event
+                    (this.state.selectedEvent === event || this.state.selectedEvent && this.state.selectedEvent.isNew && event.isNew) && <Event
                       className="workspace d-block d-md-none col-12"
-                      event={this.props.selectedEvent}
+                      event={this.state.selectedEvent}
                       onEventSaved={this.props.onEventSaved}/>
                   }
                 </li>;
@@ -105,8 +137,8 @@ class List extends React.Component {
 List.propTypes = {
   className: PropTypes.string.isRequired,
   events: PropTypes.array.isRequired,
-  selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
+  searchString: PropTypes.string,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,
   onEventSaved: PropTypes.func.isRequired

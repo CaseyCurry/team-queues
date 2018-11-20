@@ -21,7 +21,9 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory, co
             return;
           }
           response.status(201)
-            .send(configuredEvent.name);
+            .send({
+              name: configuredEvent.name
+            });
         } catch (error) {
           console.error(error);
           response.status(500)

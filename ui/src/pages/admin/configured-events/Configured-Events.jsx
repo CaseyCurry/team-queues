@@ -18,8 +18,8 @@ class ConfiguredEvents extends React.Component {
         <List
           className="vertical-tabs col-sm-12 col-md-4 col-lg-3"
           events={this.props.events}
-          selectedEvent={this.props.selectedEvent}
           isAddingEvent={this.props.isAddingEvent}
+          searchString={this.props.searchString}
           onEventSelected={this.props.onEventSelected}
           onEventNameChanged={this.props.onEventNameChanged}
           onEventSaved={this.props.onEventSaved}/> {
@@ -39,6 +39,7 @@ ConfiguredEvents.propTypes = {
   error: PropTypes.object,
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
+  searchString: PropTypes.string,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,
   onEventSaved: PropTypes.func.isRequired

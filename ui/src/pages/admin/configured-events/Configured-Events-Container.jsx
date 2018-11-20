@@ -8,11 +8,13 @@ class ConfiguredEventsContainer extends React.Component {
   constructor(props) {
     super(props);
   }
+
   componentDidMount() {
     this
       .props
       .onGetEvents();
   }
+
   render() {
     return <ConfiguredEvents
       isLoading={this.props.isLoading}
@@ -20,6 +22,7 @@ class ConfiguredEventsContainer extends React.Component {
       error={this.props.error}
       selectedEvent={this.props.selectedEvent}
       isAddingEvent={this.props.isAddingEvent}
+      searchString={this.props.searchString}
       onEventSelected={this.props.onEventSelected}
       onEventNameChanged={this.props.onEventNameChanged}
       onEventSaved={this.props.onEventSaved}/>;
@@ -32,6 +35,7 @@ ConfiguredEventsContainer.propTypes = {
   error: PropTypes.object,
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
+  searchString: PropTypes.string,
   onGetEvents: PropTypes.func.isRequired,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,

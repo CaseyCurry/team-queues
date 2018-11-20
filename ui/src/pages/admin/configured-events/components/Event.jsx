@@ -165,7 +165,6 @@ class Event extends React.Component {
   }
 
   render() {
-    // TODO: delete or inactivate event; ignore these in api
     // TODO: cool save effect at end of this article... https://uxplanet.org/7-basic-rules-for-button-design-63dcdf5676b4
     const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
     const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();

@@ -1,31 +1,29 @@
-const initialState = {
+const initialState = Object.freeze({
   isLoading: false,
   events: [],
   error: null,
   selectedEvent: null,
-  isAddingEvent: false
-};
+  isAddingEvent: false,
+  searchString: null
+});
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case "GET_EVENTS_PENDING":
     {
-      return {
-        isLoading: true,
-        events: []
-      };
+      return Object.assign({}, initialState, {isLoading: true});
     }
     case "GET_EVENTS_REJECTED":
     {
-      return {
+      return Object.assign({}, state, {
         isLoading: false,
-        events: [],
         error: action.payload
-      };
+      });
     }
     case "GET_EVENTS_FULFILLED":
     {
-      const sortedEvents = action.payload.sort(
+      const searchString = action.payload.searchString;
+      const sortedEvents = action.payload.events.sort(
         (x, y) => x.name.toLowerCase() < y.name.toLowerCase()
           ? -1
           : 1
@@ -36,15 +34,16 @@ export default (state = initialState, action) => {
         : null;
       return Object.assign({}, initialState, {
         events: sortedEvents,
-        selectedEvent
+        selectedEvent,
+        searchString
       });
     }
     case "SELECT_EVENT":
     {
       let selectedEvent = action.payload.event;
 
-      if (selectedEvent.isNew) {
-        selectedEvent = Object.assign({}, selectedEvent, { name: "" });
+      if (!selectedEvent) {
+        return state;
       }
 
       return Object.assign({}, state, {
@@ -55,13 +54,17 @@ export default (state = initialState, action) => {
     case "CHANGE_EVENT_NAME":
     {
       const selectedEvent = Object.assign({}, state.selectedEvent, { name: action.payload.name });
-      return Object.assign({}, state, { selectedEvent });
+      return Object.assign({}, state, {selectedEvent});
     }
     case "SAVE_EVENT":
     {
-      // TODO: implement save
-      // TODO: update fails because 200 doesn't send back json
-      console.log(action.payload.event);
+      if (!action.payload.isSuccessful) {
+        return Object.assign({}, state, {
+          error: {
+            message: "An error occurred"
+          }
+        });
+      }
       return state;
     }
   }
