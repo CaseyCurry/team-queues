@@ -20,7 +20,6 @@ class Event extends React.Component {
   }
 
   componentDidUpdate(previousProps) {
-    // TODO: handle when changes are made and the new event name is changed
     if (this.props.event !== previousProps.event) {
       this.setState(this.getInitialState());
     }
@@ -49,7 +48,6 @@ class Event extends React.Component {
   }
 
   selectVersion(number) {
-    // TODO: if there are no maps, allow the user to manually set the version number
     this.setState(
       Object.assign({}, this.state, {selectedEventVersionNumber: number})
     );
@@ -169,7 +167,6 @@ class Event extends React.Component {
     return <div className={this.props.className + " event"}>
       <div className="area">
         <div className="versions">
-          <h6>versions</h6>
           <div className="segmented-control">
             <button
               disabled={!doDisplayPreviousVersionSelector}

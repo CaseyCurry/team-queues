@@ -40,8 +40,12 @@
     }
 
     &:hover:not(:disabled):not(.selected) {
-      background-color: $primary-gray;
+      @include call-to-action();
       transition: 0;
+
+      img {
+        filter: invert(1);
+      }
     }
   }
 }

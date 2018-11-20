@@ -1,9 +1,13 @@
 // colors
 $base-color: #dbe9d8;
 $secondary-color: #e05915;
-$base-background-color: white;
+
+$primary-background-color: white;
 $call-to-action-color: blue;
-$primary-gray: #d3d3d3;
+$primary-neutral-color: #d3d3d3;
+$secondary-neutral-color: #d6f5da;
+$tertiary-neutral-color: mix(black, $primary-neutral-color, 50%);
+$secondary-background-color: mix(white, $secondary-neutral-color, 80%);
 
 // fonts
 $base-font-size: 110%;
@@ -13,7 +17,7 @@ $base-light-font-color: white;
 
 // borders
 $base-border-width: 2px;
-$base-border-color: $primary-gray;
+$base-border-color: $primary-neutral-color;
 $base-border-radius: 7px;
 
 // margins and padding

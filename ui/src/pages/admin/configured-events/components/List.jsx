@@ -65,8 +65,8 @@ class List extends React.Component {
                   onClick={() => this.props.onEventSelected(event)}>
                   <span>{itemValue}</span>
                   {
-                    this.props.selectedEvent === event && <Event
-                      className="workspace-right d-block d-md-none col-12"
+                    (this.props.selectedEvent === event || this.props.selectedEvent && this.props.selectedEvent.isNew && event.isNew) && <Event
+                      className="workspace d-block d-md-none col-12"
                       event={this.props.selectedEvent}
                       onEventSaved={this.props.onEventSaved}/>
                   }
