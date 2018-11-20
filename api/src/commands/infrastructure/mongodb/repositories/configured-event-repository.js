@@ -46,6 +46,15 @@ const ConfiguredEventRepository = (store) => {
         .toArray();
       collection.close();
       return events.map((event) => new ConfiguredEvent(event));
+    },
+    getActive: async () => {
+      // TODO: unit test
+      const collection = await store.getCollection();
+      const events = await collection
+        .find({ isDeleted: false, isActive: true })
+        .toArray();
+      collection.close();
+      return events.map((event) => new ConfiguredEvent(event));
     }
   };
 };
