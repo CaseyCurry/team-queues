@@ -4,6 +4,16 @@
   .versions {
     button {
       width: 75px;
+
+      &.primary {
+        cursor: default;
+      }
+
+      &.secondary {
+        width: 40px;
+        padding: 0;
+        color: $tertiary-neutral-color;
+      }
     }
   }
 

@@ -5,10 +5,6 @@
     padding: 0;
     width: 48px !important;
 
-    img {
-      filter: invert(.4);
-    }
-
     :first-child {
       height: 100%;
       width: 100%;
@@ -35,12 +31,12 @@
       border-radius: 0;
     }
 
-    &.selected {
+    &.primary {
       @include call-to-action();
     }
 
-    &:hover:not(:disabled):not(.selected) {
-      @include call-to-action();
+    &:hover:not(:disabled):not(.primary) {
+      @include call-to-action(true);
       transition: 0;
 
       img {

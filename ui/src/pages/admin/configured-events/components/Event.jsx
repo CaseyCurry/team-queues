@@ -160,8 +160,8 @@ class Event extends React.Component {
   }
 
   render() {
-    // TODO: move copy to versions
     // TODO: delete or inactivate event; ignore these in api
+    // TODO: cool save effect at end of this article... https://uxplanet.org/7-basic-rules-for-button-design-63dcdf5676b4
     const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
     const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();
     return <div className={this.props.className + " event"}>
@@ -170,15 +170,18 @@ class Event extends React.Component {
           <div className="segmented-control">
             <button
               disabled={!doDisplayPreviousVersionSelector}
-              onClick={() => this.selectPreviousVersion()}>
+              onClick={() => this.selectPreviousVersion()}
+              title="previous version">
               <img src="/resources/icons/arrow-backward.svg" alt="previous"/>
             </button>
-            <button key={this.state.selectedEventVersionNumber} className="selected">
+            <button key={this.state.selectedEventVersionNumber} className="primary">
               <span>V{this.state.selectedEventVersionNumber}</span>
             </button>
+            <button className="secondary" onClick={() => this.copyVersion()} title="copy version">+</button>
             <button
               disabled={!doDisplayNextVersionSelector}
-              onClick={() => this.selectNextVersion()}>
+              onClick={() => this.selectNextVersion()}
+              title="next version">
               <img src="/resources/icons/arrow-forward.svg" alt="next"/>
             </button>
           </div>
@@ -194,7 +197,6 @@ class Event extends React.Component {
         </div>
         <div className="actions">
           <button onClick={() => this.props.onEventSaved(this.state.event)}>save</button>
-          <button onClick={() => this.copyVersion()}>copy</button>
           <button onClick={() => this.cancel()}>cancel</button>
         </div>
       </div>

@@ -3,7 +3,7 @@ button {
   box-shadow: rgba(0,0,0,.3) 2px 2px 2px 0, transparent 0 0 0 0, transparent 0 0 0 0;
   border: none;
   border-radius: $base-border-radius;
-  color: $base-font-color;
+  color: $primary-font-color;
   padding: $base-control-margin $base-control-margin * 2;
   text-align: center;
   text-decoration: none;
@@ -24,7 +24,7 @@ button {
   }
 
   &:hover:not(:disabled) {
-    @include call-to-action();
+    @include call-to-action(true);
     transition: 0.3s;
   }
 }
