@@ -8,7 +8,8 @@ class List extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchString: null
+      searchString: null,
+      onlyIncludeActiveEvents: true
     };
   }
 
@@ -16,9 +17,14 @@ class List extends React.Component {
     this.setState(Object.assign({}, this.state, {searchString}));
   }
 
+  toggleInclusionOfActiveEvents() {
+    this.setState(Object.assign({}, this.state, {onlyIncludeActiveEvents: !this.state.onlyIncludeActiveEvents}));
+  }
+
   render() {
     const eventToAdd = {
       name: "+ event",
+      isActive: true,
       versions: [
         {
           number: 1,
@@ -27,18 +33,31 @@ class List extends React.Component {
       ],
       isNew: true
     };
-    const filteredEvents = this.state.searchString
+    let filteredEvents = this.state.searchString
       ? this
         .props
         .events
-        .filter(
-          (event) => event.name.toLowerCase().includes(this.state.searchString.toLowerCase())
-        )
+        .filter((event) => event.name.toLowerCase().includes(this.state.searchString.toLowerCase()))
       : this.props.events;
+    if (this.state.onlyIncludeActiveEvents) {
+      filteredEvents = filteredEvents
+        .filter((event) => event.isActive);
+    }
     return (
       <div className={this.props.className + " list"}>
-        <div className="search">
-          <input placeholder="search" onChange={(e) => this.search(e.target.value)}/>
+        <div className="filter">
+          <div className="search">
+            <input placeholder="search" onChange={(e) => this.search(e.target.value)}/>
+          </div>
+          <div className="inactives">
+            <label className="checkbox">only include active events
+              <input
+                type="checkbox"
+                checked={this.state.onlyIncludeActiveEvents}
+                onChange={() => this.toggleInclusionOfActiveEvents()}/>
+              <span className="checkmark"></span>
+            </label>
+          </div>
         </div>
         <ul>
           {
@@ -47,6 +66,12 @@ class List extends React.Component {
               .map((event) => {
                 let itemValue;
                 const eventBeingAdded = event.isNew && this.props.isAddingEvent;
+                let className = this.props.selectedEvent && this.props.selectedEvent.name === event.name || eventBeingAdded
+                  ? "selected"
+                  : "unselected";
+                if (!event.isActive) {
+                  className = className + " inactive";
+                }
                 if (eventBeingAdded) {
                   itemValue = <input
                     autoFocus="autoFocus"
@@ -58,9 +83,7 @@ class List extends React.Component {
                 }
                 return <li
                   key={event.name}
-                  className={this.props.selectedEvent && this.props.selectedEvent.name === event.name || eventBeingAdded
-                    ? "selected"
-                    : undefined}
+                  className={className}
                   title={event.name}
                   onClick={() => this.props.onEventSelected(event)}>
                   <span>{itemValue}</span>

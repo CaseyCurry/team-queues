@@ -41,8 +41,9 @@ const deepSetProperty = (context, value, target) => {
 };
 
 const ConfiguredEvent = class {
-  constructor({ name, versions }) {
+  constructor({ name, isActive, versions }) {
     this.name = name;
+    this.isActive = isActive;
     this.versions = versions ?
       versions.map((version) => new ConfiguredEventVersion(version)) : [];
     /* Sort in descending order which will increase the performance of finding

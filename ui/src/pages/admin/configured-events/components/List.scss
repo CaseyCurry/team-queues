@@ -4,18 +4,38 @@
       &:first-of-type {
         color: $call-to-action-color;
       }
+
+      &.inactive {
+        > span {
+          text-decoration: line-through;
+        }
+      }
     }
   }
 
-  .search {
+  .filter {
     padding: $base-control-margin * 2;
     border-top: $base-border-width solid $base-border-color;
     border-right: $base-border-width solid $base-border-color;
     border-left: $base-border-width solid $base-border-color;
     background-color: $secondary-background-color;
 
-    input {
+    div {
       width: 100%;
+
+      &.search {
+        margin-bottom: $base-control-margin * 2;
+
+        input {
+          width: 100%;
+        }
+      }
+
+      &.inactives {
+        label {
+          margin: 0;
+        }
+      }
     }
   }
 }

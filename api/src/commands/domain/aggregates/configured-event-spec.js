@@ -4,10 +4,35 @@ import { ConfiguredEventVersionMap } from "../value-objects/configured-event-ver
 
 describe("configured event suite", () => {
   const name = "coffee-ordered";
+  const isActive = true;
   let configuredEvent;
 
   beforeEach(() => {
-    configuredEvent = new ConfiguredEvent({ name });
+    configuredEvent = new ConfiguredEvent({ name, isActive });
+  });
+
+  describe("when configured event is created", () => {
+    let event;
+    const versions = [];
+
+    beforeEach(() => {
+      event = new ConfiguredEvent({ name, isActive, versions });
+    });
+
+    it("should create an event with the name", () => {
+      expect(event.name)
+        .to.equal(name);
+    });
+
+    it("should create an event with the active flag", () => {
+      expect(event.isActive)
+        .to.equal(isActive);
+    });
+
+    it("should create an event with the versions", () => {
+      expect(event.versions)
+        .to.deep.equal(versions);
+    });
   });
 
   describe("when getting the context from the event", () => {

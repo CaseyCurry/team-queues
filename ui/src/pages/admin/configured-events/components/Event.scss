@@ -1,7 +1,14 @@
 .event {
   text-align: center;
 
+  .event-level-data {
+    margin-bottom: $base-section-margin;
+    text-align: left;
+  }
+
   .versions {
+    margin-bottom: $base-section-margin;
+
     button {
       width: 75px;
 
@@ -18,8 +25,6 @@
   }
 
   .maps {
-    margin-top: $base-section-margin;
-
     ul {
       padding: 0;
       margin: 0;

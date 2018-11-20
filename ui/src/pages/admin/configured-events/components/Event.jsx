@@ -57,6 +57,11 @@ class Event extends React.Component {
     this.setState(this.getInitialState());
   }
 
+  toggleActiveState() {
+    const event = Object.assign({}, this.state.event, {isActive: !this.state.event.isActive});
+    this.setState(Object.assign({}, this.state, {event}));
+  }
+
   selectPreviousVersion() {
     const previousVersion = this
       .state
@@ -165,6 +170,12 @@ class Event extends React.Component {
     const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
     const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();
     return <div className={this.props.className + " event"}>
+      <div className="event-level-data">
+        <label className="checkbox">active
+          <input type="checkbox" checked={!!this.state.event.isActive} onChange={() => this.toggleActiveState()}/>
+          <span className="checkmark"></span>
+        </label>
+      </div>
       <div className="area">
         <div className="versions">
           <div className="segmented-control">
@@ -195,10 +206,10 @@ class Event extends React.Component {
             {this.renderMaps()}
           </ul>
         </div>
-        <div className="actions">
-          <button onClick={() => this.props.onEventSaved(this.state.event)}>save</button>
-          <button onClick={() => this.cancel()}>cancel</button>
-        </div>
+      </div>
+      <div className="actions">
+        <button onClick={() => this.props.onEventSaved(this.state.event)}>save</button>
+        <button onClick={() => this.cancel()}>cancel</button>
       </div>
     </div>;
   }

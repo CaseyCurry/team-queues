@@ -30,8 +30,9 @@ export default (state = initialState, action) => {
           ? -1
           : 1
       );
-      const selectedEvent = action.payload.length
-        ? sortedEvents[0]
+      const activeEvents = sortedEvents.filter((event) => event.isActive);
+      const selectedEvent = activeEvents.length
+        ? activeEvents[0]
         : null;
       return Object.assign({}, initialState, {
         events: sortedEvents,
@@ -58,6 +59,8 @@ export default (state = initialState, action) => {
     }
     case "SAVE_EVENT":
     {
+      // TODO: implement save
+      // TODO: update fails because 200 doesn't send back json
       console.log(action.payload.event);
       return state;
     }

@@ -1,7 +1,7 @@
 import { ConfiguredEvent } from "../aggregates/configured-event";
 
 const ConfiguredEventFactory = {
-  create: ({ name, versions }) => {
+  create: ({ name, isActive,  versions }) => {
     const errorMessages = [];
     if (!name || typeof name !== "string") {
       errorMessages.push("The name must have a value and must be a string");
@@ -12,7 +12,7 @@ const ConfiguredEventFactory = {
     if (errorMessages.length) {
       throw new Error(errorMessages);
     }
-    const configuredEvent = new ConfiguredEvent({ name });
+    const configuredEvent = new ConfiguredEvent({ name, isActive });
     versions.forEach((version) => {
       configuredEvent.configureVersion(version);
     });
