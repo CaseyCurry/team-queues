@@ -1,7 +1,9 @@
 .list {
-  li {
-    &:first-of-type {
-      color: $call-to-action-color;
+  > ul {
+    > li {
+      &:first-of-type {
+        color: $call-to-action-color;
+      }
     }
   }
 
