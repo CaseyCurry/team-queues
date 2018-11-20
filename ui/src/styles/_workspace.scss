@@ -1,17 +1,11 @@
-@mixin workspace() {
-  padding: $base-area-margin;
+.workspace {
+  padding: 5%;
 
   .area {
-    background-color: mix(white, $primary-gray, 90%);
+    background-color: $secondary-background-color;
     border: solid $base-border-width / 2 $base-border-color;
     border-radius: $base-border-radius;
     padding: $base-area-margin / 2;
     box-shadow: rgba(0,0,0,.25) 1px 1px 3px 0, transparent 0 0 0 0, transparent 0 0 0 0;
   }
-}
-
-.workspace-right {
-  @include workspace();
-
-  border-left: none;
 }

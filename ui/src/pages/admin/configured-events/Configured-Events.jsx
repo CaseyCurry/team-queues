@@ -12,8 +12,7 @@ class ConfiguredEvents extends React.Component {
     if (this.props.error) {
       return <div>Error: {this.props.error.message}</div>;
     } else if (this.props.isLoading) {
-      // TODO: create loader
-      return <div>Loading...</div>;
+      return <div className="loader">Loading...</div>;
     } else {
       return <div className="row configured-events">
         <List
@@ -25,7 +24,7 @@ class ConfiguredEvents extends React.Component {
           onEventNameChanged={this.props.onEventNameChanged}
           onEventSaved={this.props.onEventSaved}/> {
           this.props.selectedEvent && <Event
-            className="workspace-right d-none d-md-block col-md-8 col-lg-9"
+            className="workspace d-none d-md-block col-md-8 col-lg-9"
             event={this.props.selectedEvent}
             onEventSaved={this.props.onEventSaved}/>
         }

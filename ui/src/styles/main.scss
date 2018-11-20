@@ -22,7 +22,7 @@
   font-family: $base-font-family;
   font-size: $base-font-size;
   color: $base-font-color;
-  background-color: $base-background-color;
+  background-color: $primary-background-color;
   height: 100%;
   padding: 0;
   margin: 0;
@@ -33,11 +33,16 @@
     margin: 0;
   }
 
+  input {
+    border: solid 1px $base-border-color;
+  }
+
   // controls
   @import "workspace";
   @import "buttons";
   @import "tabs";
   @import "segmented-control";
+  @import "loader";
 
   // pages
   @import "../pages/admin/configured-events/components/Event";

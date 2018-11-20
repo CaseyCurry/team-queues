@@ -1,5 +1,5 @@
 button {
-  background-color: $primary-gray;
+  background-color: $primary-neutral-color;
   box-shadow: rgba(0,0,0,.3) 2px 2px 2px 0, transparent 0 0 0 0, transparent 0 0 0 0;
   border: none;
   border-radius: $base-border-radius;
@@ -15,7 +15,7 @@ button {
 
   &:disabled {
     cursor: not-allowed;
-    background-color: mix(white, $primary-gray, 70%);
+    background-color: mix(white, $primary-neutral-color, 70%);
 
     img {
       // https://medium.com/@union_io/swapping-fill-color-on-image-tag-svgs-using-css-filters-fa4818bf7ec6

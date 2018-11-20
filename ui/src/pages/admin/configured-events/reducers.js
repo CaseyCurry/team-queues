@@ -25,18 +25,19 @@ export default (state = initialState, action) => {
     }
     case "GET_EVENTS_FULFILLED":
     {
-      const sortedEvents = action.payload.sort(
-        (x, y) => x.name.toLowerCase() < y.name.toLowerCase()
-          ? -1
-          : 1
-      );
-      const selectedEvent = action.payload.length
-        ? sortedEvents[0]
-        : null;
-      return Object.assign({}, initialState, {
-        events: sortedEvents,
-        selectedEvent
-      });
+      // const sortedEvents = action.payload.sort(
+      //   (x, y) => x.name.toLowerCase() < y.name.toLowerCase()
+      //     ? -1
+      //     : 1
+      // );
+      // const selectedEvent = action.payload.length
+      //   ? sortedEvents[0]
+      //   : null;
+      // return Object.assign({}, initialState, {
+      //   events: sortedEvents,
+      //   selectedEvent
+      // });
+      return state;
     }
     case "SELECT_EVENT":
     {

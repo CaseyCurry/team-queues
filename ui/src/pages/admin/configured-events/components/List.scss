@@ -12,7 +12,7 @@
     border-top: $base-border-width solid $base-border-color;
     border-right: $base-border-width solid $base-border-color;
     border-left: $base-border-width solid $base-border-color;
-    background-color: mix(white, $primary-gray, 80%);
+    background-color: $secondary-background-color;
 
     input {
       width: 100%;
