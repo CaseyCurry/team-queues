@@ -2,7 +2,13 @@
   >ul {
     >li {
       &:first-of-type {
-        color: $call-to-action-color;
+        @if (lightness($primary-background-color) < 50) {
+          color: mix(white, $call-to-action-color, 30%);
+        }
+
+        @else {
+          color: mix(black, $call-to-action-color, 30%);
+        }
 
         >span {
           font-weight: bold;
