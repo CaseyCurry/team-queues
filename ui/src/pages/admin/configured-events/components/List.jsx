@@ -77,7 +77,7 @@ class List extends React.Component {
 
   render() {
     const eventToAdd = {
-      name: "+ event",
+      name: "+ EVENT",
       isActive: true,
       versions: [
         {
@@ -130,6 +130,7 @@ class List extends React.Component {
                   itemValue =
                     <input
                       autoFocus="autoFocus"
+                      placeholder="name"
                       value={this.state.selectedEvent.name}
                       onChange={(e) => this.changeEventName(e.target.value)}
                       onClick={(e) => e.stopPropagation()} />;

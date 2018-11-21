@@ -3,6 +3,11 @@
     >li {
       &:first-of-type {
         color: $call-to-action-color;
+
+        >span {
+          font-weight: bold;
+          letter-spacing: 2px;
+        }
       }
 
       &.inactive {
@@ -10,21 +15,30 @@
           text-decoration: line-through;
         }
       }
+
+      >span {
+        width: 100%;
+
+        >input {
+          width: 100%;
+        }
+      }
     }
   }
 
   .filter {
-    padding: $base-control-margin * 2;
-    border-top: $base-border-width solid $base-border-color;
-    border-right: $base-border-width solid $base-border-color;
-    border-left: $base-border-width solid $base-border-color;
-    background-color: $secondary-background-color;
+    padding: $control-margin * 2;
+    border-top: $border-width solid $low-contrast-border-color;
+    border-right: $border-width solid $low-contrast-border-color;
+    border-left: $border-width solid $low-contrast-border-color;
+    background-color: $primary-background-color;
+    color: $primary-font-color;
 
     div {
       width: 100%;
 
       &.search {
-        margin-bottom: $base-control-margin * 2;
+        margin-bottom: $control-margin * 2;
 
         input {
           width: 100%;

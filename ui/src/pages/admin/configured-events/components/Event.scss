@@ -2,12 +2,12 @@
   text-align: center;
 
   .event-level-data {
-    margin-bottom: $base-section-margin;
+    margin-bottom: $section-margin;
     text-align: left;
   }
 
   .versions {
-    margin-bottom: $base-section-margin;
+    margin-bottom: $section-margin;
 
     button {
       width: 75px;
@@ -19,7 +19,6 @@
       &.secondary {
         width: 40px;
         padding: 0;
-        color: $tertiary-neutral-color;
       }
     }
   }
@@ -33,18 +32,18 @@
         h6 {
           width: 50%;
           display: inline-block;
-          padding-left: $base-control-margin;
-          padding-right: $base-control-margin;
+          padding-left: $control-margin;
+          padding-right: $control-margin;
         }
 
         input {
           width: 40%;
-          margin-left: $base-control-margin;
-          margin-right: $base-control-margin;
+          margin-left: $control-margin;
+          margin-right: $control-margin;
         }
 
         &.map:not(:last-child) {
-          margin-bottom: $base-control-margin;
+          margin-bottom: $control-margin;
         }
 
         img {
@@ -57,11 +56,11 @@
   }
 
   .actions {
-    margin-top: $base-section-margin;
+    margin-top: $section-margin;
 
     button {
-      margin-left: $base-control-margin;
-      margin-right: $base-control-margin;
+      margin-left: $control-margin;
+      margin-right: $control-margin;
     }
   }
 }

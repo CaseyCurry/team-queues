@@ -1,0 +1,11 @@
+@mixin call-to-action($lighten-background: false) {
+  @if $lighten-background==true {
+    background-color: mix(white, $call-to-action-color, 20%);
+  }
+
+  @else {
+    background-color: $call-to-action-color;
+  }
+
+  color: $primary-font-color;
+}

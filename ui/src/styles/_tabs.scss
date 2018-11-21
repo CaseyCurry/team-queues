@@ -1,4 +1,4 @@
-$item-padding: $base-control-margin * 2;
+$item-padding: $control-margin * 2;
 
 .vertical-tabs {
   padding: 0;
@@ -6,9 +6,10 @@ $item-padding: $base-control-margin * 2;
   text-overflow: ellipsis;
 
   >ul {
-    border: $base-border-width solid $base-border-color;
+    border: solid $border-width $low-contrast-border-color;
     height: 100%;
-    background-color: $secondary-background-color;
+    background-color: $primary-background-color;
+    color: $primary-font-color;
     padding: 0;
 
     >li {
@@ -16,12 +17,13 @@ $item-padding: $base-control-margin * 2;
       overflow: hidden;
       text-overflow: ellipsis;
       cursor: pointer;
-      border-bottom: $base-border-width solid $base-border-color;
+      border-bottom: solid $border-width $low-contrast-border-color;
       transition: 0.3s;
 
       >span {
         height: 32px;
         display: inline-block;
+        letter-spacing: 1px;
       }
 
       &:hover:not(.selected) {
@@ -29,10 +31,9 @@ $item-padding: $base-control-margin * 2;
       }
 
       &.selected {
-        background-color: $primary-background-color;
-        border-left: solid $base-border-width*5 $call-to-action-color;
-        margin-left: -$base-border-width;
-        margin-right: -$base-border-width;
+        border-left: solid $border-width*5 $call-to-action-color;
+        margin-left: -$border-width;
+        margin-right: -$border-width;
       }
     }
   }

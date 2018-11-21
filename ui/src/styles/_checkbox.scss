@@ -2,7 +2,7 @@ $checkbox-width: 25px;
 
 .checkbox {
   position: relative;
-  padding-left: $checkbox-width + $base-control-margin;
+  padding-left: $checkbox-width + $control-margin;
   cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -17,7 +17,7 @@ $checkbox-width: 25px;
     width: 0;
 
     &:checked~.checkmark {
-      background-color: $primary-neutral-color;
+      background-color: $tertiary-background-color;
     }
 
     &:checked~.checkmark:after {
@@ -30,7 +30,7 @@ $checkbox-width: 25px;
     transition: 0.3s;
 
     &:after {
-      border-color: $secondary-font-color;
+      border-color: $primary-font-color;
     }
   }
 
@@ -40,7 +40,8 @@ $checkbox-width: 25px;
     left: 0;
     height: $checkbox-width - 3px;
     width: $checkbox-width;
-    background-color: mix(white, $primary-neutral-color, 50%);
+    background-color: mix(white, gray, 70%);
+    border: solid $border-width/2 $high-contrast-border-color;
 
     &:after {
       content: "";
@@ -50,7 +51,7 @@ $checkbox-width: 25px;
       top: 5px;
       width: 5px;
       height: 10px;
-      border: solid $tertiary-neutral-color;
+      border: solid $high-contrast-border-color;
       border-width: 0 2px 2px 0;
       -webkit-transform: rotate(45deg);
       -ms-transform: rotate(45deg);

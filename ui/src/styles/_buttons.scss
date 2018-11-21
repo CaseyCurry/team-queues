@@ -1,13 +1,18 @@
 button {
-  background-color: $primary-neutral-color;
-  box-shadow: rgba(0, 0, 0, .3) 2px 2px 2px 0, transparent 0 0 0 0, transparent 0 0 0 0;
-  border: none;
-  border-radius: $base-border-radius;
+  background-color: $tertiary-background-color;
   color: $primary-font-color;
-  padding: $base-control-margin $base-control-margin * 2;
+  letter-spacing: 1px;
+  box-shadow: rgba(0, 0, 0, .5) 2px 2px 5px 0, transparent 0 0 0 0, transparent 0 0 0 0;
+  border: solid $border-width/2 $high-contrast-border-color;
+  border-radius: $border-radius;
+  padding: $control-margin $control-margin * 2;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+
+  img {
+    filter: invert(1);
+  }
 
   &:focus {
     outline: 0;
@@ -15,7 +20,7 @@ button {
 
   &:disabled {
     cursor: not-allowed;
-    background-color: mix(white, $primary-neutral-color, 70%);
+    background-color: mix(white, gray, 70%);
 
     img {
       // https://medium.com/@union_io/swapping-fill-color-on-image-tag-svgs-using-css-filters-fa4818bf7ec6

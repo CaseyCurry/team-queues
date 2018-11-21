@@ -1,26 +1,23 @@
 // colors
-$base-color: #dbe9d8;
-$secondary-color: #e05915;
-
-$primary-background-color: white;
-$call-to-action-color: blue;
-$primary-neutral-color: #d3d3d3;
-$secondary-neutral-color: #d6f5da;
-$tertiary-neutral-color: black;
-$secondary-background-color: mix(white, $secondary-neutral-color, 80%);
+$primary-background-color: #103d50;
+$secondary-background-color: mix(white, $primary-background-color, 90%);
+$tertiary-background-color: mix(white, $primary-background-color, 30%);
+$call-to-action-color: #e05915;
 
 // fonts
-$base-font-size: 110%;
-$base-font-family: "Lato",sans-serif;
-$primary-font-color: $tertiary-neutral-color;
-$secondary-font-color: white;
+$primary-font-size: 110%;
+$primary-font-family: "Lato",
+sans-serif;
+$primary-font-color: white;
+$secondary-font-color: black;
 
 // borders
-$base-border-width: 2px;
-$base-border-color: $primary-neutral-color;
-$base-border-radius: 5px;
+$border-width: 2px;
+$border-radius: 2px;
+$high-contrast-border-color: $primary-font-color;
+$low-contrast-border-color: $tertiary-background-color;
 
 // margins and padding
-$base-control-margin: 10px;
-$base-section-margin: 35px;
-$base-area-margin: 50px;
+$control-margin: 10px;
+$section-margin: 35px;
+$area-margin: 50px;

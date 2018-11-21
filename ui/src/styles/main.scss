@@ -1,17 +1,5 @@
 @import "variables";
-
-@mixin call-to-action($lighten-background: false) {
-  @if $lighten-background==true {
-    background-color: mix(white, $call-to-action-color, 30%);
-  }
-
-  @else {
-    background-color: $call-to-action-color;
-  }
-
-  color: $secondary-font-color;
-  font-weight: bold;
-}
+@import "call-to-action";
 
 #app {
   >div {
@@ -26,8 +14,8 @@
     }
   }
 
-  font-family: $base-font-family;
-  font-size: $base-font-size;
+  font-family: $primary_font-family;
+  font-size: $primary-font-size;
   color: $primary-font-color;
   background-color: $primary-background-color;
   height: 100%;
@@ -41,7 +29,7 @@
   }
 
   input {
-    border: solid 1px $base-border-color;
+    border: solid 1px $low-contrast-border-color;
   }
 
   // controls
