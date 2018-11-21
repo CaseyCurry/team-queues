@@ -4,7 +4,6 @@
   .area {
     background-color: $secondary-background-color;
     color: $secondary-font-color;
-    border: solid $border-width $low-contrast-border-color;
     border-radius: $border-radius * 3;
     padding: $area-margin / 2;
   }
