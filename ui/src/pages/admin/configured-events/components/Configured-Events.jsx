@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Loader from "../../../../controls/Loader";
 import List from "./List";
 import Event from "./Event";
 
@@ -11,8 +12,10 @@ class ConfiguredEvents extends React.Component {
   render() {
     if (this.props.error) {
       return <div>Error: {this.props.error.message}</div>;
-    } else if (this.props.isLoading) {
-      return <div className="loader">Loading...</div>;
+    } else if (this.props.areEventsLoading) {
+      return <div className="page">
+        <Loader />
+      </div>;
     } else {
       return <div className="row configured-events">
         <List
@@ -20,6 +23,8 @@ class ConfiguredEvents extends React.Component {
           events={this.props.events}
           isAddingEvent={this.props.isAddingEvent}
           searchString={this.props.searchString}
+          isEventSaving={this.props.isEventSaving}
+          error={this.props.error}
           onEventSelected={this.props.onEventSelected}
           onEventNameChanged={this.props.onEventNameChanged}
           onEventSaved={this.props.onEventSaved} />
@@ -28,7 +33,9 @@ class ConfiguredEvents extends React.Component {
           <Event
             className="workspace d-none d-md-block col-md-8 col-lg-9"
             event={this.props.selectedEvent}
-            onEventSaved={this.props.onEventSaved} />
+            onEventSaved={this.props.onEventSaved}
+            isEventSaving={this.props.isEventSaving}
+            error={this.props.error} />
         }
       </div>;
     }
@@ -36,12 +43,13 @@ class ConfiguredEvents extends React.Component {
 }
 
 ConfiguredEvents.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
+  areEventsLoading: PropTypes.bool.isRequired,
   events: PropTypes.array.isRequired,
   error: PropTypes.object,
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
   searchString: PropTypes.string,
+  isEventSaving: PropTypes.bool.isRequired,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,
   onEventSaved: PropTypes.func.isRequired

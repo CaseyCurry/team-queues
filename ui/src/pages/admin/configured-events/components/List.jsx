@@ -148,7 +148,9 @@ class List extends React.Component {
                     <Event
                       className="workspace d-block d-md-none col-12"
                       event={this.state.selectedEvent}
-                      onEventSaved={this.props.onEventSaved} />
+                      onEventSaved={this.props.onEventSaved}
+                      isEventSaving={this.props.isEventSaving}
+                      error={this.props.error} />
                   }
                 </li>;
               })
@@ -164,6 +166,8 @@ List.propTypes = {
   events: PropTypes.array.isRequired,
   isAddingEvent: PropTypes.bool,
   searchString: PropTypes.string,
+  isEventSaving: PropTypes.bool.isRequired,
+  error: PropTypes.object,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,
   onEventSaved: PropTypes.func.isRequired

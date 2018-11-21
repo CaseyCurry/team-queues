@@ -3,6 +3,7 @@ export default (searchString) => {
     dispatch({
       type: "GET_EVENTS_PENDING"
     });
+    // TODO: abstract http calls; include correlation id with all requests
     fetch("http://localhost:8083/api/commands/configured-events")
       .then((response) => {
         response.json()

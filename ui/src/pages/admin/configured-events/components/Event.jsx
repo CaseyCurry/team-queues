@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Loader from "../../../../controls/Loader";
 
 class Event extends React.Component {
   constructor(props) {
@@ -142,6 +143,7 @@ class Event extends React.Component {
   }
 
   renderMaps() {
+    // TODO: implement a better UX when adding an event by using tabindex
     const maps = this
       .state
       .event
@@ -173,64 +175,81 @@ class Event extends React.Component {
   }
 
   render() {
-    // TODO: cool save effect at end of this article...
-    // https://uxplanet.org/7-basic-rules-for-button-design-63dcdf5676b4
-    const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
-    const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();
-    return <div className={this.props.className + " event"}>
-      <div className="event-level-data">
-        <label className="checkbox">active
-          <input
-            type="checkbox"
-            checked={!!this.state.event.isActive}
-            onChange={() => this.toggleActiveState()} />
-          <span className="checkmark"></span>
-        </label>
-      </div>
-      <div className="area">
-        <div className="versions">
-          <div className="segmented-control">
-            <button
-              disabled={!doDisplayPreviousVersionSelector}
-              onClick={() => this.selectPreviousVersion()}
-              title="previous version">
-              <img src="/resources/icons/arrow-backward.svg" alt="previous" />
-            </button>
-            <button key={this.state.selectedEventVersionNumber} className="primary">
-              <span>V{this.state.selectedEventVersionNumber}</span>
-            </button>
-            <button
-              className="secondary"
-              onClick={() => this.copyVersion()}
-              title="copy version">+</button>
-            <button
-              disabled={!doDisplayNextVersionSelector}
-              onClick={() => this.selectNextVersion()}
-              title="next version">
-              <img src="/resources/icons/arrow-forward.svg" alt="next" />
-            </button>
+    if (this.props.error) {
+      return <div>Error: {this.props.error.message}</div>;
+    } else {
+      const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
+      const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();
+      return <div className={this.props.className + " event"}>
+        <div className="event-level-data">
+          <label className="checkbox">active
+            <input
+              type="checkbox"
+              checked={!!this.state.event.isActive}
+              onChange={() => this.toggleActiveState()} />
+            <span className="checkmark"></span>
+          </label>
+        </div>
+        <div className="area">
+          <div className="versions">
+            <div className="segmented-control">
+              <button
+                disabled={!doDisplayPreviousVersionSelector}
+                onClick={() => this.selectPreviousVersion()}
+                title="previous version">
+                <img src="/resources/icons/arrow-backward.svg" alt="previous" />
+              </button>
+              <button key={this.state.selectedEventVersionNumber} className="primary">
+                <span>V{this.state.selectedEventVersionNumber}</span>
+              </button>
+              <button
+                className="secondary"
+                onClick={() => this.copyVersion()}
+                title="copy version">+</button>
+              <button
+                disabled={!doDisplayNextVersionSelector}
+                onClick={() => this.selectNextVersion()}
+                title="next version">
+                <img src="/resources/icons/arrow-forward.svg" alt="next" />
+              </button>
+            </div>
+          </div>
+          <div className="maps">
+            <ul>
+              <li>
+                <h6>event property</h6>
+                <h6>context property</h6>
+              </li>
+              {this.renderMaps()}
+            </ul>
           </div>
         </div>
-        <div className="maps">
-          <ul>
-            <li>
-              <h6>event property</h6>
-              <h6>context property</h6>
-            </li>
-            {this.renderMaps()}
-          </ul>
+        <div className="actions">
+          {
+            this.props.isEventSaving &&
+            <button onClick={() => this.props.onEventSaved(this.state.event)}>
+              saving
+              <Loader />
+            </button>
+          }
+          {
+            !this.props.isEventSaving &&
+            <button onClick={() => this.props.onEventSaved(this.state.event)}>
+              save
+            </button>
+          }
+          <button onClick={() => this.cancel()}>cancel</button>
         </div>
-      </div>
-      <div className="actions">
-        <button onClick={() => this.props.onEventSaved(this.state.event)}>save</button>
-        <button onClick={() => this.cancel()}>cancel</button>
-      </div>
-    </div>;
+      </div>;
+    }
   }
 }
+
 Event.propTypes = {
   event: PropTypes.object.isRequired,
   className: PropTypes.string.isRequired,
+  isEventSaving: PropTypes.bool.isRequired,
+  error: PropTypes.object,
   onEventSaved: PropTypes.func.isRequired
 };
 

@@ -17,7 +17,7 @@ class Queues extends React.Component {
   }
 
   render() {
-    return <div className="row">
+    return <div className="row page">
       <List
         onQueueSelected={this
           .handleQueueSelected

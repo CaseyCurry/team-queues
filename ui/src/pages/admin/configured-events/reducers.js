@@ -1,22 +1,23 @@
 const initialState = Object.freeze({
-  isLoading: false,
+  areEventsLoading: false,
   events: [],
   error: null,
   selectedEvent: null,
   isAddingEvent: false,
-  searchString: null
+  searchString: null,
+  isEventSaving: false
 });
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case "GET_EVENTS_PENDING": {
       return Object.assign({}, initialState, {
-        isLoading: true
+        areEventsLoading: true
       });
     }
     case "GET_EVENTS_REJECTED": {
       return Object.assign({}, state, {
-        isLoading: false,
+        areEventsLoading: false,
         error: action.payload
       });
     }
@@ -55,15 +56,18 @@ export default (state = initialState, action) => {
         selectedEvent
       });
     }
-    case "SAVE_EVENT":{
-      if (!action.payload.isSuccessful) {
-        return Object.assign({}, state, {
-          error: {
-            message: "An error occurred"
-          }
-        });
-      }
-      return state;
+    case "SAVE_EVENT_PENDING": {
+      return Object.assign({}, state, {
+        isEventSaving: true
+      });
+    }
+    case "SAVE_EVENT_REJECTED": {
+      return Object.assign({}, state, {
+        isEventSaving: false,
+        error: {
+          message: "An error occurred"
+        }
+      });
     }
   }
 

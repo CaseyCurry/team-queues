@@ -36,14 +36,14 @@
   }
 
   // controls
+  @import "../controls/Loader";
+
   @import "workspace";
   @import "buttons";
   @import "tabs";
   @import "segmented-control";
-  @import "loader";
   @import "checkbox";
 
   // pages
-  @import "../pages/admin/configured-events/components/Event";
-  @import "../pages/admin/configured-events/components/List";
+  @import "../pages/admin/configured-events/styles";
 }
