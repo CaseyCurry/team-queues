@@ -9,11 +9,13 @@ const QueueController = (app, queueData) => {
         } catch (error) {
           console.error(error);
           response.status(500)
-            .send(process.env.DEV ? error : "An error occurred");
+            .end();
         }
       });
     }
   };
 };
 
-export { QueueController };
+export {
+  QueueController
+};

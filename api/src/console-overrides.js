@@ -1,6 +1,7 @@
 const log = console.log;
 const error = console.error;
 
+// TODO: pull out correlation id and log it with message
 console.log = function() {
   log(new Date()
     .toISOString(), "[INFO]", ...arguments);

@@ -9,11 +9,13 @@ const TaskController = (app, taskData) => {
         } catch (error) {
           console.error(error);
           response.status(500)
-            .send(process.env.DEV ? error : "An error occurred");
+            .end();
         }
       });
     }
   };
 };
 
-export { TaskController };
+export {
+  TaskController
+};
