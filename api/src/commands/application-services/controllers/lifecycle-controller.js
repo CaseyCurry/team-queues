@@ -1,6 +1,9 @@
-import { LifecycleModifiedEvent } from "../../domain/events/lifecycle-modified-event";
+import {
+  LifecycleModifiedEvent
+} from "../../domain/events/lifecycle-modified-event";
 
-const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepository) => {
+const LifecycleController = (app, domainEvents, lifecycleFactory,
+  lifecycleRepository) => {
   return {
     register: () => {
       app.post("/api/commands/lifecycles", async (request, response) => {
@@ -10,7 +13,7 @@ const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepos
         } catch (error) {
           console.error(error);
           response.status(400)
-            .send(error);
+            .end();
           return;
         }
         try {
@@ -29,7 +32,7 @@ const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepos
         } catch (error) {
           console.error(error);
           response.status(500)
-            .send(process.env.DEV ? error : "An error occurred");
+            .end();
         }
       });
 
@@ -39,12 +42,13 @@ const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepos
           // TODO: considering moving lifecycle factory to ctor and instantiate here
           lifecycle = request.body;
           if (lifecycle.id !== request.params.id) {
-            throw new Error("The resource id does not match the lifecycle id");
+            throw new Error(
+              "The resource id does not match the lifecycle id");
           }
         } catch (error) {
           console.error(error);
           response.status(400)
-            .send(error);
+            .end();
           return;
         }
         try {
@@ -63,11 +67,13 @@ const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepos
         } catch (error) {
           console.error(error);
           response.status(500)
-            .send(process.env.DEV ? error : "An error occurred");
+            .end();
         }
       });
     }
   };
 };
 
-export { LifecycleController };
+export {
+  LifecycleController
+};

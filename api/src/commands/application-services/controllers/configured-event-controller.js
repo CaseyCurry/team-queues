@@ -1,4 +1,5 @@
-const ConfiguredEventController = (app, domainEvents, configuredEventFactory, configuredEventRepository) => {
+const ConfiguredEventController = (app, domainEvents, configuredEventFactory,
+  configuredEventRepository) => {
   return {
     register: () => {
       app.post("/api/commands/configured-events", async (request, response) => {
@@ -8,13 +9,15 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory, co
         } catch (error) {
           console.error(error);
           response.status(400)
-            .send(error);
+            .end();
           return;
         }
         try {
-          const existingEvent = await configuredEventRepository.getByName(configuredEvent.name);
+          const existingEvent = await configuredEventRepository.getByName(
+            configuredEvent.name);
           // TODO: check etag
-          await configuredEventRepository.createOrUpdate(configuredEvent);
+          await configuredEventRepository.createOrUpdate(
+            configuredEvent);
           if (existingEvent) {
             response.status(200)
               .end();
@@ -27,7 +30,7 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory, co
         } catch (error) {
           console.error(error);
           response.status(500)
-            .send(process.env.DEV ? error : "An error occurred");
+            .end();
         }
       });
 
@@ -39,11 +42,13 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory, co
         } catch (error) {
           console.error(error);
           response.status(500)
-            .send(process.env.DEV ? error : "An error occurred");
+            .end();
         }
       });
     }
   };
 };
 
-export { ConfiguredEventController };
+export {
+  ConfiguredEventController
+};

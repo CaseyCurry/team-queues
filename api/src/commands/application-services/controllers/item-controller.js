@@ -9,11 +9,13 @@ const ItemController = (app, itemRepository) => {
         } catch (error) {
           console.error(error);
           response.status(500)
-            .send(process.env.DEV ? error : "An error occurred");
+            .end();
         }
       });
     }
   };
 };
 
-export { ItemController };
+export {
+  ItemController
+};
