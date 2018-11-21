@@ -31,6 +31,8 @@
   input {
     border: solid 1px $low-contrast-border-color;
     color: $secondary-font-color;
+    padding-left: $control-margin/2;
+    padding-right: $control-margin/2;
   }
 
   // controls

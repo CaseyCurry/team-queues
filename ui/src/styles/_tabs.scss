@@ -35,14 +35,13 @@ $item-padding: $control-margin * 2;
         border-right: solid $border-width $primary-background-color;
         margin-left: -$border-width;
         margin-right: -$border-width;
-        font-weight: bold;
 
         @if (lightness($primary-background-color) < 50) {
-          color: mix(white, $call-to-action-color, 30%);
+          color: mix(white, $call-to-action-color, 50%);
         }
 
         @else {
-          color: mix(black, $call-to-action-color, 30%);
+          color: mix(black, $call-to-action-color, 50%);
         }
       }
     }

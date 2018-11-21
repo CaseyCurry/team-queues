@@ -1,6 +1,6 @@
 // colors
 $primary-background-color: #103d50;
-$secondary-background-color: #e9f1e7;
+$secondary-background-color: mix(white, $primary-background-color, 90%);
 $tertiary-background-color: mix(white, $primary-background-color, 30%);
 $call-to-action-color: #43a443;
 
