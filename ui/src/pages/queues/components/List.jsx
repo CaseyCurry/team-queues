@@ -17,14 +17,17 @@ class List extends React.Component {
         (response) => response.json()
       )
       .then((result) => {
-        this.setState({isLoaded: true, queues: result});
+        this.setState({
+          isLoaded: true,
+          queues: result
+        });
         if (result.length) {
           this
             .props
             .onQueueSelected(result[0].queueId);
         }
       }, (error) => {
-        this.setState({error, isLoaded: true});
+        this.setState({ error, isLoaded: true });
       });
   }
 
@@ -42,8 +45,7 @@ class List extends React.Component {
               .queues
               .map((queue) => {
                 return <option key={queue.queueId} value={queue.queueId}>
-                  {queue.queueName}
-                  / {queue.taskType}
+                  {queue.queueName} / {queue.taskType}
                 </option>;
               })
           }

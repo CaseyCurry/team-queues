@@ -1,4 +1,8 @@
-import { createStore, applyMiddleware, compose } from "redux";
+import {
+  createStore,
+  applyMiddleware,
+  compose
+} from "redux";
 import thunk from "redux-thunk";
 import promise from "redux-promise-middleware";
 import reducers from "./reducers";
@@ -9,6 +13,5 @@ const store = createStore(
   reducers,
   compose(middleware)
 );
-
 
 export default store;

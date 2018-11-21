@@ -1,7 +1,9 @@
 const action = (event) => {
   return {
     type: "SELECT_EVENT",
-    payload: { event }
+    payload: {
+      event
+    }
   };
 };
 

@@ -1,4 +1,8 @@
-import { combineReducers } from "redux";
+import {
+  combineReducers
+} from "redux";
 import configuredEvents from "./pages/admin/configured-events/reducers";
 
-export default combineReducers({ configuredEvents });
+export default combineReducers({
+  configuredEvents
+});

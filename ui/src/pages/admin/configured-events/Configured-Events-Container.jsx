@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import actions from "./actions";
-import ConfiguredEvents from "./Configured-Events";
+import ConfiguredEvents from "./components/Configured-Events";
 
 class ConfiguredEventsContainer extends React.Component {
   constructor(props) {
@@ -25,7 +25,7 @@ class ConfiguredEventsContainer extends React.Component {
       searchString={this.props.searchString}
       onEventSelected={this.props.onEventSelected}
       onEventNameChanged={this.props.onEventNameChanged}
-      onEventSaved={this.props.onEventSaved}/>;
+      onEventSaved={this.props.onEventSaved} />;
   }
 }
 

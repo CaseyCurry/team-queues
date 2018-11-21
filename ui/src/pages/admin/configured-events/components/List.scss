@@ -1,12 +1,12 @@
 .list {
-  > ul {
-    > li {
+  >ul {
+    >li {
       &:first-of-type {
         color: $call-to-action-color;
       }
 
       &.inactive {
-        > span {
+        >span {
           text-decoration: line-through;
         }
       }

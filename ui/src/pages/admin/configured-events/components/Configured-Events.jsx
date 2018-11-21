@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import List from "./components/List";
-import Event from "./components/Event";
+import List from "./List";
+import Event from "./Event";
 
 class ConfiguredEvents extends React.Component {
   constructor(props) {
@@ -22,11 +22,13 @@ class ConfiguredEvents extends React.Component {
           searchString={this.props.searchString}
           onEventSelected={this.props.onEventSelected}
           onEventNameChanged={this.props.onEventNameChanged}
-          onEventSaved={this.props.onEventSaved}/> {
-          this.props.selectedEvent && <Event
+          onEventSaved={this.props.onEventSaved} />
+        {
+          this.props.selectedEvent &&
+          <Event
             className="workspace d-none d-md-block col-md-8 col-lg-9"
             event={this.props.selectedEvent}
-            onEventSaved={this.props.onEventSaved}/>
+            onEventSaved={this.props.onEventSaved} />
         }
       </div>;
     }

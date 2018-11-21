@@ -23,13 +23,17 @@ class Tasks extends React.Component {
 
   getTasks() {
     fetch(`http://localhost:8083/api/queries/queues/${this.props.queue}/tasks`)
-      .then(
-        (response) => response.json()
-      )
+      .then((response) => response.json())
       .then((result) => {
-        this.setState({isLoaded: true, tasks: result});
+        this.setState({
+          isLoaded: true,
+          tasks: result
+        });
       }, (error) => {
-        this.setState({error, isLoaded: true});
+        this.setState({
+          error,
+          isLoaded: true
+        });
       });
   }
 

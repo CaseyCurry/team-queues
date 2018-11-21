@@ -16,16 +16,16 @@ $checkbox-width: 25px;
     height: 0;
     width: 0;
 
-    &:checked ~ .checkmark {
+    &:checked~.checkmark {
       background-color: $primary-neutral-color;
     }
 
-    &:checked ~ .checkmark:after {
+    &:checked~.checkmark:after {
       display: block;
     }
   }
 
-  &:hover input ~ .checkmark {
+  &:hover input~.checkmark {
     @include call-to-action(true);
     transition: 0.3s;
 

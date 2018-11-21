@@ -5,13 +5,13 @@ $item-padding: $base-control-margin * 2;
   white-space: nowrap;
   text-overflow: ellipsis;
 
-  > ul {
+  >ul {
     border: $base-border-width solid $base-border-color;
     height: 100%;
     background-color: $secondary-background-color;
     padding: 0;
 
-    > li {
+    >li {
       padding: $item-padding;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -19,7 +19,7 @@ $item-padding: $base-control-margin * 2;
       border-bottom: $base-border-width solid $base-border-color;
       transition: 0.3s;
 
-      > span {
+      >span {
         height: 32px;
         display: inline-block;
       }

@@ -11,7 +11,9 @@ class Queues extends React.Component {
   }
 
   handleQueueSelected(queue) {
-    this.setState({selectedQueue: queue});
+    this.setState({
+      selectedQueue: queue
+    });
   }
 
   render() {
@@ -19,7 +21,11 @@ class Queues extends React.Component {
       <List
         onQueueSelected={this
           .handleQueueSelected
-          .bind(this)}/> {this.state.selectedQueue && <Tasks queue={this.state.selectedQueue}/>}
+          .bind(this)} />
+      {
+        this.state.selectedQueue &&
+        <Tasks queue={this.state.selectedQueue} />
+      }
     </div>;
   }
 }
