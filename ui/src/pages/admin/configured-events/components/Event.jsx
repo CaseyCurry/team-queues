@@ -177,7 +177,7 @@ class Event extends React.Component {
   render() {
     const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
     const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();
-    return <div className={this.props.className + " event"}>
+    return <div className={this.props.className + " workspace event"}>
       <div className="event-level-data">
         <label className="checkbox">active
           <input

@@ -34,10 +34,12 @@ class List extends React.Component {
       filteredEvents = filteredEvents.filter((event) => event.isActive);
     }
     const selectedEvent = filteredEvents.length ? filteredEvents[0] : null;
-    if (!this.state || selectedEvent !== this.state.selectedEvent) {
-      this
-        .props
-        .onEventSelected(selectedEvent);
+    if (selectedEvent) {
+      if (!this.state || selectedEvent !== this.state.selectedEvent) {
+        this
+          .props
+          .onEventSelected(selectedEvent);
+      }
     }
     return {
       filteredEvents,
@@ -75,7 +77,7 @@ class List extends React.Component {
   render() {
     const eventToAdd = {
       name: "+ EVENT",
-      isActive: true,
+      isActive: false,
       versions: [
         {
           number: 1,
@@ -90,7 +92,7 @@ class List extends React.Component {
       isNew: true
     };
     return (
-      <div className={this.props.className + " list"}>
+      <div className={this.props.className + " vertical-tabs list"}>
         <div className="filter">
           <div className="search">
             <input
@@ -120,7 +122,7 @@ class List extends React.Component {
                 const eventBeingAdded = event.isNew && this.props.isAddingEvent;
                 let className = this.state.selectedEvent && this.state.selectedEvent.name === event.name || eventBeingAdded ?
                   "selected" : "unselected";
-                if (!event.isActive) {
+                if (!event.isActive && !event.isNew) {
                   className = className + " inactive";
                 }
                 if (eventBeingAdded) {
@@ -143,7 +145,7 @@ class List extends React.Component {
                   {
                     (this.state.selectedEvent === event || this.state.selectedEvent && this.state.selectedEvent.isNew && event.isNew) &&
                     <Event
-                      className="workspace d-block d-md-none col-12"
+                      className="d-block d-md-none col-12"
                       event={this.state.selectedEvent}
                       onEventSaved={this.props.onEventSaved}
                       isEventSaving={this.props.isEventSaving} />

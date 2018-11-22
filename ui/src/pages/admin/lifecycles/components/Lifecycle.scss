@@ -1,0 +1,16 @@
+.lifecycle {
+  .lifecycle-level-data {
+    margin-bottom: $section-margin;
+    text-align: left;
+  }
+
+  .actions {
+    margin-top: $section-margin;
+
+    button {
+      margin-left: $control-margin;
+      margin-right: $control-margin;
+      width: 140px;
+    }
+  }
+}

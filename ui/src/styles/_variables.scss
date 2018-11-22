@@ -2,7 +2,6 @@
 $primary-background-color: #103d50;
 $secondary-background-color: mix(white, $primary-background-color, 90%);
 $tertiary-background-color: mix(white, $primary-background-color, 30%);
-$call-to-action-color: #43a443;
 
 // fonts
 $primary-font-size: 110%;
@@ -10,6 +9,10 @@ $primary-font-family: "Lato",
 sans-serif;
 $primary-font-color: white;
 $secondary-font-color: #400C30;
+
+// call-to-action
+$call-to-action-color: #43a443;
+$call-to-action-font-color: white;
 
 // borders
 $border-width: 2px;

@@ -34,7 +34,7 @@ export default (state = initialState, action) => {
     case "SELECT_EVENT": {
       let selectedEvent = action.payload.event;
 
-      if (!selectedEvent || selectedEvent.name === state.selectedEvent.name) {
+      if (!selectedEvent || state.selectedEvent && selectedEvent.name === state.selectedEvent.name) {
         return state;
       }
 

@@ -15,9 +15,9 @@ class ConfiguredEvents extends React.Component {
         <Loader />
       </div>;
     } else {
-      return <div className="row configured-events">
+      return <div className="row page configured-events">
         <List
-          className="vertical-tabs col-sm-12 col-md-4 col-lg-3"
+          className="col-sm-12 col-md-4 col-lg-3"
           events={this.props.events}
           isAddingEvent={this.props.isAddingEvent}
           searchString={this.props.searchString}
@@ -28,7 +28,7 @@ class ConfiguredEvents extends React.Component {
         {
           this.props.selectedEvent &&
           <Event
-            className="workspace d-none d-md-block col-md-8 col-lg-9"
+            className="d-none d-md-block col-md-8 col-lg-9"
             event={this.props.selectedEvent}
             onEventSaved={this.props.onEventSaved}
             isEventSaving={this.props.isEventSaving} />
