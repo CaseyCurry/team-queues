@@ -1,4 +1,5 @@
 import getEvents from "./get-events";
+import notifications from "../../../../components/notifications/actions";
 
 const action = (event) => {
   return (dispatch) => {
@@ -17,10 +18,21 @@ const action = (event) => {
         if (response.status >= 200 && response.status <= 299) {
           dispatch(getEvents(event.name));
         } else {
+          dispatch(notifications.addError({
+            message: "An error occurred on the server saving the event"
+          }));
           dispatch({
             type: "SAVE_EVENT_REJECTED"
           });
         }
+      })
+      .catch(() => {
+        dispatch(notifications.addError({
+          message: "An error occurred on the client saving the event"
+        }));
+        dispatch({
+          type: "SAVE_EVENT_REJECTED"
+        });
       });
   };
 };

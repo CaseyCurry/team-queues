@@ -28,9 +28,7 @@ class List extends React.Component {
       this
         .props
         .events
-        .filter(
-          (event) => event.name.toLowerCase().includes(searchString.toLowerCase())
-        )
+        .filter((event) => event.name.toLowerCase().includes(searchString.toLowerCase()))
       : this.props.events;
     if (onlyIncludeActiveEvents) {
       filteredEvents = filteredEvents.filter((event) => event.isActive);
@@ -60,7 +58,6 @@ class List extends React.Component {
         name: ""
       });
     }
-
     this
       .props
       .onEventSelected(selectedEvent);
@@ -149,8 +146,7 @@ class List extends React.Component {
                       className="workspace d-block d-md-none col-12"
                       event={this.state.selectedEvent}
                       onEventSaved={this.props.onEventSaved}
-                      isEventSaving={this.props.isEventSaving}
-                      error={this.props.error} />
+                      isEventSaving={this.props.isEventSaving} />
                   }
                 </li>;
               })
@@ -167,7 +163,6 @@ List.propTypes = {
   isAddingEvent: PropTypes.bool,
   searchString: PropTypes.string,
   isEventSaving: PropTypes.bool.isRequired,
-  error: PropTypes.object,
   onEventSelected: PropTypes.func.isRequired,
   onEventNameChanged: PropTypes.func.isRequired,
   onEventSaved: PropTypes.func.isRequired

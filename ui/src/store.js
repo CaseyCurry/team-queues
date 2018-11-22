@@ -1,11 +1,18 @@
 import {
   createStore,
   applyMiddleware,
-  compose
+  compose,
+  combineReducers
 } from "redux";
 import thunk from "redux-thunk";
 import promise from "redux-promise-middleware";
-import reducers from "./reducers";
+import notificationReducers from "./components/notifications/reducers";
+import configuredEventReducers from "./pages/admin/configured-events/reducers";
+
+const reducers = combineReducers({
+  notifications: notificationReducers,
+  configuredEvents: configuredEventReducers
+});
 
 const middleware = applyMiddleware(promise(), thunk);
 

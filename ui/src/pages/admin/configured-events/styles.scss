@@ -1,2 +1,4 @@
-@import "./components/Event";
-@import "./components/List";
+.configured-events {
+  @import "./components/Event";
+  @import "./components/List";
+}

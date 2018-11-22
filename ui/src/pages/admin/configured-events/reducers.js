@@ -1,7 +1,6 @@
 const initialState = Object.freeze({
   areEventsLoading: false,
   events: [],
-  error: null,
   selectedEvent: null,
   isAddingEvent: false,
   searchString: null,
@@ -17,16 +16,12 @@ export default (state = initialState, action) => {
     }
     case "GET_EVENTS_REJECTED": {
       return Object.assign({}, state, {
-        areEventsLoading: false,
-        error: action.payload
+        areEventsLoading: false
       });
     }
     case "GET_EVENTS_FULFILLED": {
       const searchString = action.payload.searchString;
-      const sortedEvents = action.payload.events.sort(
-        (x, y) => x.name.toLowerCase() < y.name.toLowerCase() ?
-          -1 : 1
-      );
+      const sortedEvents = action.payload.events.sort((x, y) => x.name.toLowerCase() < y.name.toLowerCase() ? -1 : 1);
       const activeEvents = sortedEvents.filter((event) => event.isActive);
       const selectedEvent = activeEvents.length ?
         activeEvents[0] : null;
@@ -39,7 +34,7 @@ export default (state = initialState, action) => {
     case "SELECT_EVENT": {
       let selectedEvent = action.payload.event;
 
-      if (!selectedEvent) {
+      if (!selectedEvent || selectedEvent.name === state.selectedEvent.name) {
         return state;
       }
 
@@ -63,10 +58,7 @@ export default (state = initialState, action) => {
     }
     case "SAVE_EVENT_REJECTED": {
       return Object.assign({}, state, {
-        isEventSaving: false,
-        error: {
-          message: "An error occurred"
-        }
+        isEventSaving: false
       });
     }
   }

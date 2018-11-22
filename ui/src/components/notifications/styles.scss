@@ -1,0 +1,56 @@
+$notification-transition-speed: 1s;
+$notification-width: 200px;
+$notification-max-height: 100px;
+$notification-margin: $control-margin / 2;
+$notification-margin-when-new: ($notification-max-height + $notification-margin) * -1;
+
+.notifications {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100;
+
+  >li {
+    width: $notification-width;
+    margin-right: $notification-margin;
+    transition:
+      visibility $notification-transition-speed,
+      opacity $notification-transition-speed,
+      margin-top $notification-transition-speed;
+
+    &.new {
+      visibility: hidden;
+      opacity: 0;
+      margin-top: $notification-margin-when-new;
+    }
+
+    &.displayed {
+      visibility: visible;
+      opacity: 1;
+      margin-top: $notification-margin;
+    }
+
+    &.expired {
+      visibility: hidden;
+      opacity: 0;
+      margin-top: 100vh;
+      transition:
+        visibility $notification-transition-speed * 2,
+        opacity $notification-transition-speed * 2,
+        margin-top $notification-transition-speed * 2;
+    }
+
+    &>div {
+      font-size: .8em;
+      width: 100%;
+      height: 100%;
+      max-height: $notification-max-height;
+      overflow: hidden;
+      padding: $control-margin;
+      border-radius: $border-radius * 2;
+      border: solid $border-width/2 $high-contrast-border-color;
+    }
+  }
+
+  @import "./components/Error";
+}

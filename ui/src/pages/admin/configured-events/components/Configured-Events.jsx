@@ -10,9 +10,7 @@ class ConfiguredEvents extends React.Component {
   }
 
   render() {
-    if (this.props.error) {
-      return <div>Error: {this.props.error.message}</div>;
-    } else if (this.props.areEventsLoading) {
+    if (this.props.areEventsLoading) {
       return <div className="page">
         <Loader />
       </div>;
@@ -24,7 +22,6 @@ class ConfiguredEvents extends React.Component {
           isAddingEvent={this.props.isAddingEvent}
           searchString={this.props.searchString}
           isEventSaving={this.props.isEventSaving}
-          error={this.props.error}
           onEventSelected={this.props.onEventSelected}
           onEventNameChanged={this.props.onEventNameChanged}
           onEventSaved={this.props.onEventSaved} />
@@ -34,8 +31,7 @@ class ConfiguredEvents extends React.Component {
             className="workspace d-none d-md-block col-md-8 col-lg-9"
             event={this.props.selectedEvent}
             onEventSaved={this.props.onEventSaved}
-            isEventSaving={this.props.isEventSaving}
-            error={this.props.error} />
+            isEventSaving={this.props.isEventSaving} />
         }
       </div>;
     }
@@ -45,7 +41,6 @@ class ConfiguredEvents extends React.Component {
 ConfiguredEvents.propTypes = {
   areEventsLoading: PropTypes.bool.isRequired,
   events: PropTypes.array.isRequired,
-  error: PropTypes.object,
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
   searchString: PropTypes.string,

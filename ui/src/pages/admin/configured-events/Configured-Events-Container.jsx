@@ -19,7 +19,6 @@ class ConfiguredEventsContainer extends React.Component {
     return <ConfiguredEvents
       areEventsLoading={this.props.areEventsLoading}
       events={this.props.events}
-      error={this.props.error}
       selectedEvent={this.props.selectedEvent}
       isAddingEvent={this.props.isAddingEvent}
       searchString={this.props.searchString}
@@ -33,7 +32,6 @@ class ConfiguredEventsContainer extends React.Component {
 ConfiguredEventsContainer.propTypes = {
   areEventsLoading: PropTypes.bool.isRequired,
   events: PropTypes.array.isRequired,
-  error: PropTypes.object,
   selectedEvent: PropTypes.object,
   isAddingEvent: PropTypes.bool,
   searchString: PropTypes.string,
@@ -65,6 +63,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-  ConfiguredEventsContainer
-);
+export default connect(mapStateToProps, mapDispatchToProps)(ConfiguredEventsContainer);

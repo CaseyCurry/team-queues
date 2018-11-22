@@ -44,6 +44,9 @@
   @import "segmented-control";
   @import "checkbox";
 
+  // components
+  @import "../components/notifications/styles";
+
   // pages
   @import "../pages/admin/configured-events/styles";
 }
