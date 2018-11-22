@@ -5,6 +5,8 @@ describe("lifecycle modified event suite", () => {
   const lifecycle = {
     id: 123,
     lifecycleOf: "coffee",
+    version: 1,
+    status: "Active",
     queues: [{
       id: 456,
       name: "cashier-queue",
@@ -47,6 +49,8 @@ describe("lifecycle modified event suite", () => {
       .to.deep.equal({
         id: lifecycle.id,
         lifecycleOf: lifecycle.lifecycleOf,
+        version: lifecycle.version,
+        status: lifecycle.status,
         queues: lifecycle.queues.map((queue) => {
           return {
             id: queue.id,

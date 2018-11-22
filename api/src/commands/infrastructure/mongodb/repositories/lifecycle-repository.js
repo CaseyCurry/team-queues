@@ -1,4 +1,5 @@
 import { Lifecycle } from "../../../domain/aggregates/lifecycle";
+import { LifecycleStatus } from "../../../domain/value-objects/lifecycle-status";
 
 const extendLifecycle = (lifecycle) => {
   // TODO: maybe move to aggregate
@@ -20,7 +21,11 @@ const extendLifecycle = (lifecycle) => {
   const referencedEvents = eventsInTriggers
     .concat(eventsInQueues)
     .filter((x, y, z) => z.indexOf(x) === y);
-  return Object.assign({}, lifecycle, { _id: lifecycle.id, referencedEvents, isDeleted: false });
+  return Object.assign({}, lifecycle, {
+    _id: lifecycle.id,
+    referencedEvents,
+    isDeleted: false
+  });
 };
 
 const LifecycleRepository = (store) => {
@@ -72,6 +77,14 @@ const LifecycleRepository = (store) => {
       }
       return new Lifecycle(lifecycle);
     },
+    getAll: async () => {
+      const collection = await store.getCollection();
+      const lifecycles = await collection
+        .find({ isDeleted: false })
+        .toArray();
+      collection.close();
+      return lifecycles.map((lifecycle) => new Lifecycle(lifecycle));
+    },
     getThoseListeningForEvent: async (eventName) => {
       const collection = await store.getCollection();
       const lifecycles = await collection
@@ -82,6 +95,20 @@ const LifecycleRepository = (store) => {
         .toArray();
       collection.close();
       return lifecycles.map((lifecycle) => new Lifecycle(lifecycle));
+    },
+    getActive: async (lifecycleOf) => {
+      // TODO: unit test
+      const collection = await store.getCollection();
+      const lifecycle = await collection.findOne({
+        lifecycleOf,
+        status: LifecycleStatus.Active,
+        isDeleted: false
+      });
+      collection.close();
+      if (!lifecycle) {
+        return;
+      }
+      return new Lifecycle(lifecycle);
     }
   };
 };

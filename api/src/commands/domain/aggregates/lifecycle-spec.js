@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { Lifecycle } from "./lifecycle";
+import { v4 as uuidv4 } from "uuid";
 import { Item } from "./item";
 import { ConfiguredEvent } from "./configured-event";
 import { ConfiguredEventVersion } from "../value-objects/configured-event-version";
@@ -11,10 +12,11 @@ import { ConditionalDestination } from "../value-objects/conditional-destination
 import { UnconditionalDestination } from "../value-objects/unconditional-destination";
 import { ConditionFact } from "../value-objects/condition-fact";
 import { TriggeredDestination } from "../value-objects/triggered-destination";
+import { LifecycleStatus } from "../value-objects/lifecycle-status";
 import { DestinationProcessor } from "../services/destination-processor";
 
 describe("lifecycle suite", () => {
-  const lifecycleId = 456;
+  const lifecycleId = uuidv4();
   const lifecycleOf = "coffee";
   const lifecycleVersion = 1;
 
@@ -28,6 +30,7 @@ describe("lifecycle suite", () => {
         id: lifecycleId,
         lifecycleOf,
         version: lifecycleVersion,
+        status: LifecycleStatus.WorkInProgress,
         triggersForItemCreation,
         queues
       });
@@ -38,10 +41,11 @@ describe("lifecycle suite", () => {
         .to.equal(lifecycleId);
     });
 
-    it("should create a lifecycle with the type of object it processes", () => {
-      expect(lifecycle.lifecycleOf)
-        .to.equal(lifecycleOf);
-    });
+    it("should create a lifecycle with the type of object it processes",
+      () => {
+        expect(lifecycle.lifecycleOf)
+          .to.equal(lifecycleOf);
+      });
 
     it("should create a lifecycle with the version", () => {
       expect(lifecycle.version)
@@ -51,6 +55,11 @@ describe("lifecycle suite", () => {
     it("should create a lifecycle with the triggers for item creation", () => {
       expect(lifecycle.triggersForItemCreation)
         .to.deep.equal(triggersForItemCreation);
+    });
+
+    it("should create a lifecycle with the status", () => {
+      expect(lifecycle.status)
+        .to.equal(LifecycleStatus.WorkInProgress);
     });
 
     it("should create a lifecycle with the queues", () => {
@@ -74,7 +83,10 @@ describe("lifecycle suite", () => {
       lifecycle = new Lifecycle({
         id: lifecycleId,
         lifecycleOf,
-        version: lifecycleVersion
+        version: lifecycleVersion,
+        status: LifecycleStatus.Active,
+        triggersForItemCreation: [],
+        queues: []
       });
       lifecycle.createQueue({
         id: "3a038cfe-93a9-4724-991a-0939c798bb3c",
@@ -121,49 +133,63 @@ describe("lifecycle suite", () => {
       });
 
       it("should create an item", async () => {
-        const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        const createdItem = await lifecycle.processEvent(
+          destinationProcessor, occurredEvent,
+          configuredEvent);
         expect(createdItem)
           .to.exist;
       });
 
-      it("should create an item that includes the customer id", async () => {
-        const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
-        expect(createdItem.foreignId)
-          .to.equal(occurredEvent.customer.id);
-      });
+      it("should create an item that includes the customer id",
+        async () => {
+          const createdItem = await lifecycle.processEvent(
+            destinationProcessor, occurredEvent,
+            configuredEvent);
+          expect(createdItem.foreignId)
+            .to.equal(occurredEvent.customer.id);
+        });
 
-      it("should create an item that includes the lifecycle id", async () => {
-        const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
-        expect(createdItem.lifecycleId)
-          .to.equal(lifecycle.id);
-      });
+      it("should create an item that includes the lifecycle id",
+        async () => {
+          const createdItem = await lifecycle.processEvent(
+            destinationProcessor, occurredEvent,
+            configuredEvent);
+          expect(createdItem.lifecycleId)
+            .to.equal(lifecycle.id);
+        });
 
       it("should raise a single event on the lifecycle", async () => {
-        await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        await lifecycle.processEvent(destinationProcessor,
+          occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents.length)
           .to.equal(1);
       });
 
       it("should raise an event for the item creation", async () => {
-        await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        await lifecycle.processEvent(destinationProcessor,
+          occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents[0].name)
           .to.equal("team-queues.item-created");
       });
 
       it("should raise an event that includes the item", async () => {
-        await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        await lifecycle.processEvent(destinationProcessor,
+          occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents[0].message.item)
           .to.exist;
       });
 
       it("should raise an event that includes the item that includes the lifecycle id", async () => {
-        await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        await lifecycle.processEvent(destinationProcessor,
+          occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents[0].message.item.lifecycleId)
           .to.equal(lifecycle.id);
       });
 
       it("should raise an event for the task creation", async () => {
-        const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        const createdItem = await lifecycle.processEvent(
+          destinationProcessor, occurredEvent,
+          configuredEvent);
         expect(createdItem.domainEvents.raisedEvents[0].name)
           .to.equal("team-queues.task-created");
       });
@@ -182,17 +208,21 @@ describe("lifecycle suite", () => {
           }
         };
         configuredEvent = new ConfiguredEvent(
-          Object.assign({}, configuredEvent, { name: "customer-ordered" }));
+          Object.assign({}, configuredEvent, { name: "customer-ordered" })
+        );
       });
 
       it("should not create an item", async () => {
-        const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        const createdItem = await lifecycle.processEvent(
+          destinationProcessor, occurredEvent,
+          configuredEvent);
         expect(createdItem)
           .to.not.be.ok;
       });
 
       it("should not raise an event", async () => {
-        await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        await lifecycle.processEvent(destinationProcessor,
+          occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents.length)
           .to.equal(0);
       });
@@ -203,7 +233,10 @@ describe("lifecycle suite", () => {
         lifecycle = new Lifecycle({
           id: lifecycleId,
           lifecycleOf,
-          version: lifecycleVersion
+          version: lifecycleVersion,
+          status: LifecycleStatus.Active,
+          triggersForItemCreation: [],
+          queues: []
         });
         lifecycle.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
@@ -239,7 +272,8 @@ describe("lifecycle suite", () => {
       });
 
       it("should create an item with two destinations", async () => {
-        const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        const createdItem = await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(createdItem.tasks.length)
           .to.equal(2);
       });
@@ -253,7 +287,10 @@ describe("lifecycle suite", () => {
         lifecycle = new Lifecycle({
           id: lifecycleId,
           lifecycleOf,
-          version: lifecycleVersion
+          version: lifecycleVersion,
+          status: LifecycleStatus.Active,
+          triggersForItemCreation: [],
+          queues: []
         });
         lifecycle.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
@@ -305,45 +342,53 @@ describe("lifecycle suite", () => {
             }
           };
           configuredEvent = new ConfiguredEvent(
-            Object.assign({}, configuredEvent, { name: "customer-ordered" }));
+            Object.assign({}, configuredEvent, { name: "customer-ordered" })
+          );
         });
 
         it("should create a task", async () => {
-          await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+          await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
           expect(itemInLifecycle.tasks.length)
             .to.equal(2);
         });
 
-        it("should create a task that includes the queue id", async () => {
-          await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
-          // the first task was added arranging this test so we expect one additional task
-          expect(itemInLifecycle.tasks[1].queueId)
-            .to.equal(targetQueue);
-        });
+        it("should create a task that includes the queue id",
+          async () => {
+            await lifecycle
+              .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+            // the first task was added arranging this test so we expect one additional task
+            expect(itemInLifecycle.tasks[1].queueId)
+              .to.equal(targetQueue);
+          });
 
         it("should raise an event for the created task", async () => {
-          await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+          await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
           expect(itemInLifecycle.domainEvents.raisedEvents[1].name)
             .to.equal("team-queues.task-created");
         });
 
         describe("when the destination is configured to complete the previous task", () => {
           it("should complete the previous task", async () => {
-            await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+            await lifecycle
+              .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
             // the first task was added arranging this test so we expect one additional task
             expect(itemInLifecycle.tasks[0].isComplete)
               .to.equal(true);
           });
 
           it("should raise a pair of event", async () => {
-            await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+            await lifecycle
+              .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
             // the first event occurred arranging this test so we expect two additional events
             expect(itemInLifecycle.domainEvents.raisedEvents.length)
               .to.equal(3);
           });
 
           it("should raise an event for the completed task", async () => {
-            await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+            await lifecycle
+              .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
             expect(itemInLifecycle.domainEvents.raisedEvents[2].name)
               .to.equal("team-queues.task-completed");
           });
@@ -354,7 +399,10 @@ describe("lifecycle suite", () => {
             lifecycle = new Lifecycle({
               id: lifecycleId,
               lifecycleOf,
-              version: lifecycleVersion
+              version: lifecycleVersion,
+              status: LifecycleStatus.Active,
+              triggersForItemCreation: [],
+              queues: []
             });
             lifecycle.createQueue({
               id: "da8057b4-8f03-4e04-aa62-867ccf4364f7",
@@ -362,7 +410,9 @@ describe("lifecycle suite", () => {
               taskType: "Take Order",
               destinationsWhenEventOccurred: [
                 new TriggeredDestination({
-                  eventNames: ["customer-ordered"],
+                  eventNames: [
+                    "customer-ordered"
+                  ],
                   destinations: [
                     new UnconditionalDestination({
                       queueId: targetQueue,
@@ -380,7 +430,8 @@ describe("lifecycle suite", () => {
           });
 
           it("should not complete the existing task", async () => {
-            await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+            await lifecycle
+              .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
             // the first task was added arranging this test so we expect one additional task
             expect(itemInLifecycle.tasks[0].isComplete)
               .to.equal(false);
@@ -401,11 +452,13 @@ describe("lifecycle suite", () => {
             }
           };
           configuredEvent = new ConfiguredEvent(
-            Object.assign({}, configuredEvent, { name: "make-coffee" }));
+            Object.assign({}, configuredEvent, { name: "make-coffee" })
+          );
         });
 
         it("should not create a task ", async () => {
-          await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+          await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
           // the first task was added arranging this test so we expect one additional task
           expect(itemInLifecycle.tasks.length)
             .to.equal(1);
@@ -421,7 +474,10 @@ describe("lifecycle suite", () => {
         lifecycle = new Lifecycle({
           id: lifecycleId,
           lifecycleOf,
-          version: lifecycleVersion
+          version: lifecycleVersion,
+          status: LifecycleStatus.Active,
+          triggersForItemCreation: [],
+          queues: []
         });
         lifecycle.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
@@ -472,31 +528,36 @@ describe("lifecycle suite", () => {
 
       describe("when a task is created", () => {
         it("should create another new task", async () => {
-          const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
           expect(createdItem.tasks.length)
             .to.equal(3);
         });
 
         it("should create a task in the first queue", async () => {
-          const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
           expect(createdItem.tasks[0].queueId)
             .to.equal("da8057b4-8f03-4e04-aa62-867ccf4364f7");
         });
 
         it("should create a task in the second queue", async () => {
-          const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
           expect(createdItem.tasks[1].queueId)
             .to.equal(targetQueue1);
         });
 
         it("should create a task in the third queue", async () => {
-          const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
           expect(createdItem.tasks[2].queueId)
             .to.equal(targetQueue2);
         });
 
         it("should raise another event for the new task", async () => {
-          const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
           expect(createdItem.domainEvents.raisedEvents.length)
             .to.equal(3);
         });
@@ -511,7 +572,10 @@ describe("lifecycle suite", () => {
         lifecycle = new Lifecycle({
           id: lifecycleId,
           lifecycleOf,
-          version: lifecycleVersion
+          version: lifecycleVersion,
+          status: LifecycleStatus.Active,
+          triggersForItemCreation: [],
+          queues: []
         });
         lifecycle.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
@@ -562,7 +626,8 @@ describe("lifecycle suite", () => {
 
       describe("when a task is completed", () => {
         it("should create another task", async () => {
-          const createdItem = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
           expect(createdItem.tasks.length)
             .to.equal(3);
         });
@@ -609,7 +674,10 @@ describe("lifecycle suite", () => {
         lifecycle = new Lifecycle({
           id: lifecycleId,
           lifecycleOf,
-          version: lifecycleVersion
+          version: lifecycleVersion,
+          status: LifecycleStatus.Active,
+          triggersForItemCreation: [],
+          queues: []
         });
         lifecycle.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
@@ -650,9 +718,11 @@ describe("lifecycle suite", () => {
             isNextOrderFree: false
           }
         };
-        item = await lifecycle.processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        item = await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         customerOrderedConfiguredEvent = new ConfiguredEvent(
-          Object.assign({}, configuredEvent, { name: "customer-ordered" }));
+          Object.assign({}, configuredEvent, { name: "customer-ordered" })
+        );
       });
 
       describe("when condition is not met", () => {
@@ -677,11 +747,14 @@ describe("lifecycle suite", () => {
               destinationArgument = destination;
               factArgument = fact;
               return new Promise((resolve) => {
-                resolve(destinationsWhenConditionIsNotMet);
+                resolve(
+                  destinationsWhenConditionIsNotMet
+                );
               });
             }
           });
-          await lifecycle.processEvent(destinationProcessor, customerOrderedOccurredEvent, customerOrderedConfiguredEvent, item);
+          await lifecycle
+            .processEvent(destinationProcessor, customerOrderedOccurredEvent, customerOrderedConfiguredEvent, item);
         });
 
         it("should create task in the queue bound to when the condition is not met", () => {
@@ -717,11 +790,14 @@ describe("lifecycle suite", () => {
           destinationProcessor = new DestinationProcessor({
             getNextDestinations: () => {
               return new Promise((resolve) => {
-                resolve(destinationsWhenConditionIsMet);
+                resolve(
+                  destinationsWhenConditionIsMet
+                );
               });
             }
           });
-          await lifecycle.processEvent(destinationProcessor, customerOrderedOccurredEvent, customerOrderedConfiguredEvent, item);
+          await lifecycle
+            .processEvent(destinationProcessor, customerOrderedOccurredEvent, customerOrderedConfiguredEvent, item);
           expect(item.tasks[1].queueId)
             .to.equal(targetQueueWhenConditionIsMet);
         });

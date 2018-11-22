@@ -1,25 +1,84 @@
 import { v4 as uuidv4 } from "uuid";
+import validate from "uuid-validate";
 import { BaseAggregate } from "./base-aggregate";
 import { Item } from "./item";
 import { ItemCreatedEvent } from "../events/item-created-event";
 import { Queue } from "../entities/queue";
 import { DestinationFactory } from "../factories/destination-factory";
 import { TriggeredCompletion } from "../value-objects/triggered-completion";
+import { LifecycleStatus } from "../value-objects/lifecycle-status";
+import { LifecycleModifiedEvent } from "../../domain/events/lifecycle-modified-event";
 
 const Lifecycle = class extends BaseAggregate {
-  constructor({ id, lifecycleOf, version, isActive, triggersForItemCreation, queues }) {
+  constructor({
+    id,
+    lifecycleOf,
+    version,
+    status,
+    triggersForItemCreation,
+    queues
+  }) {
     super();
+    // TODO: unit test validation
+    const errorMessages = [];
+    if (!id || !validate(id)) {
+      errorMessages.push("The id must be a v4 uuid");
+    }
+    if (!lifecycleOf || typeof lifecycleOf !== "string") {
+      errorMessages
+        .push("The lifecycleOf must have a value and must be a string");
+    }
+    if (!version || typeof version !== "number" || version < 0) {
+      errorMessages.push("The version must be a number greater than 0");
+    }
+    if (!status || !LifecycleStatus[status]) {
+      errorMessages.push("The status must be either Active, Inactive, or WorkInProgress");
+    }
+    if (!Array.isArray(triggersForItemCreation)) {
+      errorMessages.push("The triggersForItemCreation must be an array");
+    }
+    if (!Array.isArray(queues)) {
+      errorMessages.push("The queues must be an array");
+    }
+    if (errorMessages.length) {
+      throw new Error(errorMessages);
+    }
     this.id = id;
     this.lifecycleOf = lifecycleOf;
     this.version = version;
-    this.isActive = isActive;
+    this.status = status;
     this.triggersForItemCreation = triggersForItemCreation ?
       triggersForItemCreation.map((trigger) => DestinationFactory.create(trigger)) : [];
-    this.queues = queues ?
-      queues.map((queue) => new Queue(queue)) : [];
+    this.queues = queues ? queues.map((queue) => new Queue(queue)) : [];
+  }
+
+  canBeModified() {
+    return this.status === LifecycleStatus.WorkInProgress;
+  }
+
+  activate() {
+    // TODO: unit test
+    if (!this.canBeModified()) {
+      throw new Error("Only works in progress can be activated");
+    }
+    this.status = LifecycleStatus.Active;
+    this.domainEvents.raise(new LifecycleModifiedEvent(this));
+  }
+
+  deactivate() {
+    // TODO: unit test
+    if (this.status !== LifecycleStatus.Active) {
+      throw new Error("Only actives can be deactivated");
+    }
+    this.status = LifecycleStatus.Inactive;
+    this.domainEvents.raise(new LifecycleModifiedEvent(this));
   }
 
   async processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle) {
+    if (this.status !== LifecycleStatus.Active) {
+      // TODO: unit test
+      throw new Error("Only active lifecycles can process events");
+    }
     // TODO: Do I need the configuredEvent here or can I just pass the context from the event handler?
     const eventContext = configuredEvent.getContext(occurredEvent);
     return !itemInLifecycle ?
@@ -56,7 +115,7 @@ const Lifecycle = class extends BaseAggregate {
     destinationsWhenTaskCompleted,
     destinationsWhenEventOccurred
   }) {
-    // TODO: fix tests and then remove id from params
+    // TODO: fix tests and then remove id from params... maybe
     id = id ? id : uuidv4();
     if (!name || typeof name !== "string") {
       throw new Error("The name must have a value and must be a string");
@@ -84,7 +143,8 @@ const Lifecycle = class extends BaseAggregate {
   }
 };
 
-const processEventWhenItemDoesNotExist = async function(destinationProcessor, occurredEvent, eventContext) {
+const processEventWhenItemDoesNotExist = async function(destinationProcessor,
+  occurredEvent, eventContext) {
   const trigger = this.triggersForItemCreation
     .find((trigger) => trigger.listensFor(occurredEvent.name));
   if (trigger) {
@@ -97,7 +157,8 @@ const processEventWhenItemDoesNotExist = async function(destinationProcessor, oc
   }
 };
 
-const processEventWhenItemExists = async function(destinationProcessor, occurredEvent, eventContext, item) {
+const processEventWhenItemExists = async function(destinationProcessor,
+  occurredEvent, eventContext, item) {
   listenToTaskEvents.call(this, item, eventContext, destinationProcessor);
   for (const incompleteTask of item.incompleteTasks) {
     const trigger = this.queues
@@ -114,7 +175,8 @@ const processEventWhenItemExists = async function(destinationProcessor, occurred
         }
       } else {
         for (const destination of trigger.destinations) {
-          await destinationProcessor.process(destination, item, eventContext, incompleteTask);
+          await destinationProcessor.process(destination, item,
+            eventContext, incompleteTask);
         }
       }
     }

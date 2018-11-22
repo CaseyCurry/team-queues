@@ -52,7 +52,7 @@ const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, d
 
   return {
     register: async () => {
-      const configuredEvents = await configuredEventRepository.getActive();
+      const configuredEvents = await configuredEventRepository.getAllActive();
       configuredEvents.forEach((configuredEvent) => {
         /* TODO: Passing the configured event here helps with performance b/c
            we don't have to query the db every time an event occurs.

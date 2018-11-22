@@ -7,6 +7,8 @@ const LifecycleModifiedEvent = class extends BaseEventMetadata {
     this.message.lifecycle = {
       id: lifecycle.id,
       lifecycleOf: lifecycle.lifecycleOf,
+      version: lifecycle.versions,
+      status: lifecycle.status,
       queues: lifecycle.queues.map((queue) => {
         return {
           id: queue.id,

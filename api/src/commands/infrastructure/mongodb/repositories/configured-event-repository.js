@@ -47,7 +47,7 @@ const ConfiguredEventRepository = (store) => {
       collection.close();
       return events.map((event) => new ConfiguredEvent(event));
     },
-    getActive: async () => {
+    getAllActive: async () => {
       // TODO: unit test
       const collection = await store.getCollection();
       const events = await collection

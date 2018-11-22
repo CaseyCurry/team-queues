@@ -1,7 +1,8 @@
 import { ConfiguredEvent } from "../aggregates/configured-event";
 
 const ConfiguredEventFactory = {
-  create: ({ name, isActive,  versions }) => {
+  create: ({ name, isActive, versions }) => {
+    // TODO: move validation to ctor
     const errorMessages = [];
     if (!name || typeof name !== "string") {
       errorMessages.push("The name must have a value and must be a string");

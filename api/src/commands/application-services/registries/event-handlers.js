@@ -1,12 +1,11 @@
 import { ConfiguredDomainEventHandler } from "../event-handlers/configured-domain-event-handler";
 import { Repositories } from "./repositories";
-import { DomainServices } from "./domain-services";
 
-const EventHandlers = (domainEvents) => {
+const EventHandlers = (domainEvents, domainServices) => {
   const configuredDomainEventHandler = ConfiguredDomainEventHandler(
     domainEvents,
     Repositories.configuredEvent,
-    DomainServices.destinationProcessor,
+    domainServices.destinationProcessor,
     Repositories.lifecycle,
     Repositories.item);
   return {
