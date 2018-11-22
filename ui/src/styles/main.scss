@@ -45,8 +45,8 @@
   @import "checkbox";
 
   // components
-  @import "../components/notifications/styles";
+  @import "../components/notifications/components/Notifications";
 
   // pages
-  @import "../pages/admin/configured-events/styles";
+  @import "../pages/admin/configured-events/components/Configured-Events";
 }
