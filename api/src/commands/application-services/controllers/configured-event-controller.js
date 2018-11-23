@@ -2,6 +2,7 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory,
   configuredEventRepository) => {
   return {
     register: () => {
+      // TODO: consider separating post and put to increase the granularity of logs
       app.post("/api/commands/configured-events", async (request, response) => {
         let configuredEvent;
         try {

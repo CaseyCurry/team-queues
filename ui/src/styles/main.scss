@@ -35,6 +35,11 @@
     padding-right: $control-margin/2;
   }
 
+  textarea {
+    color: inherit;
+    padding: $control-margin/2;
+  }
+
   // controls
   @import "../controls/Loader";
 

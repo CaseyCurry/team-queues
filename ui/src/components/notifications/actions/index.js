@@ -5,6 +5,9 @@ import removeNotification from "./remove-notification";
 
 export default {
   addError: addNotification("error"),
+  addInfo: addNotification("info"),
+  addWarning: addNotification("warning"),
+  addHighAlert: addNotification("highAlert"),
   displayNotification,
   expireNotification,
   removeNotification

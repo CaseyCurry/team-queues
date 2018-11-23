@@ -1,10 +1,14 @@
 .workspace {
-  padding: 5%;
+  padding: $area-margin;
 
   .area {
     background-color: $secondary-background-color;
     color: $secondary-font-color;
     border-radius: $border-radius * 3;
     padding: $area-margin / 2;
+  }
+
+  textarea:disabled {
+    background-color: $secondary-background-color;
   }
 }

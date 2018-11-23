@@ -1,7 +1,40 @@
 .lifecycle {
+  text-align: center;
+
   .lifecycle-level-data {
     margin-bottom: $section-margin;
     text-align: left;
+  }
+
+  .versions {
+    margin-bottom: $section-margin;
+
+    button {
+      width: 140px;
+    }
+  }
+
+  .definition {
+    text-align: left;
+
+    >h6 {
+      margin: 0 0 $control-margin/2 0;
+    }
+
+    >textarea {
+      min-height: 150px;
+      width: 100%;
+      height: calc((100vh - #{$area-margin} - #{$area-margin} - #{$section-margin} - #{$section-margin} - #{$section-margin} - #{$control-margin} - #{$control-margin} - #{$control-margin} - 19px - 19px - 48px - 48px) / 2);
+      margin: 0 0 $control-margin 0;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      &.error {
+        border: solid $border-width red;
+      }
+    }
   }
 
   .actions {

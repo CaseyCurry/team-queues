@@ -1,5 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Info from "./Info";
+import Warning from "./Warning";
+import HighAlert from "./High-Alert";
 import Error from "./Error";
 
 class Notifications extends React.Component {
@@ -15,6 +18,18 @@ class Notifications extends React.Component {
               key={notification.id}
               className={notification.isExpired ? "expired" : notification.isDisplayed ? "displayed" : "new"}
               onClick={() => this.props.onRemoveNotification(notification.id)}>
+              {
+                notification.type === "info" &&
+                <Info message={notification.message} />
+              }
+              {
+                notification.type === "warning" &&
+                <Warning message={notification.message} />
+              }
+              {
+                notification.type === "highAlert" &&
+                <HighAlert message={notification.message} />
+              }
               {
                 notification.type === "error" &&
                 <Error message={notification.message} />

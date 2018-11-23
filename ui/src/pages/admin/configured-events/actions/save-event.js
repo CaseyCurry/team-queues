@@ -17,9 +17,12 @@ const action = (event) => {
       .then((response) => {
         if (response.status >= 200 && response.status <= 299) {
           dispatch(getEvents(event.name));
+          dispatch(notifications.addInfo({
+            message: "event saved"
+          }));
         } else {
           dispatch(notifications.addError({
-            message: "An error occurred on the server saving the event"
+            message: "error occurred on the server saving the event"
           }));
           dispatch({
             type: "SAVE_EVENT_REJECTED"
@@ -28,7 +31,7 @@ const action = (event) => {
       })
       .catch(() => {
         dispatch(notifications.addError({
-          message: "An error occurred on the client saving the event"
+          message: "error occurred on the client saving the event"
         }));
         dispatch({
           type: "SAVE_EVENT_REJECTED"

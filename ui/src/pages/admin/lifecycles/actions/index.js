@@ -1,11 +1,13 @@
 import changeLifecycleOf from "./change-lifecycle-of";
 import getLifecycles from "./get-lifecycles";
-import saveLifecycle from "./save-lifecycle";
+import saveNextVersion from "./save-next-version";
+import activateNextVersion from "./activate-next-version";
 import selectLifecycle from "./select-lifecycle";
 
 export default {
   changeLifecycleOf,
   getLifecycles,
-  saveLifecycle,
+  saveNextVersion,
+  activateNextVersion,
   selectLifecycle
 };

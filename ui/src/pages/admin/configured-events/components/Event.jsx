@@ -191,6 +191,7 @@ class Event extends React.Component {
         <div className="versions">
           <div className="segmented-control">
             <button
+              className="selector"
               disabled={!doDisplayPreviousVersionSelector}
               onClick={() => this.selectPreviousVersion()}
               title="previous version">
@@ -204,6 +205,7 @@ class Event extends React.Component {
               onClick={() => this.copyVersion()}
               title="copy version">+</button>
             <button
+              className="selector"
               disabled={!doDisplayNextVersionSelector}
               onClick={() => this.selectNextVersion()}
               title="next version">
@@ -224,7 +226,7 @@ class Event extends React.Component {
       <div className="actions">
         {
           this.props.isEventSaving &&
-          <button onClick={() => this.props.onEventSaved(this.state.event)}>
+          <button>
             saving
             <Loader />
           </button>

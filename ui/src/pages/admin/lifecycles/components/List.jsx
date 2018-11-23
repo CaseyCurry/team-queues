@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import uuidv4 from "uuid/v4";
 import Lifecycle from "./Lifecycle";
 
 const countToDisplay = 30;
@@ -8,33 +7,24 @@ const countToDisplay = 30;
 class List extends React.Component {
   constructor(props) {
     super(props);
-    // TODO: Is active/inactive the best characteristic or is active/inactive/WIP better?
-    const onlyIncludeActiveLifecycles = true;
     const filteredLifecycles = this.filter(
-      this.props.searchString,
-      onlyIncludeActiveLifecycles
+      this.props.searchString
     );
     this.state = Object.assign({}, filteredLifecycles);
   }
 
   search(searchString) {
-    const filteredLifecycles = this.filter(
-      searchString,
-      this.state.onlyIncludeActiveLifecycles
-    );
+    const filteredLifecycles = this.filter(searchString);
     this.setState(Object.assign({}, this.state, filteredLifecycles));
   }
 
-  filter(searchString, onlyIncludeActiveLifecycles) {
+  filter(searchString) {
     let filteredLifecycles = this.props.lifecycles && searchString ?
       this
         .props
         .lifecycles
-        .filter((lifecycle) => lifecycle.displayName().toLowerCase().includes(searchString.toLowerCase()))
+        .filter((lifecycle) => lifecycle.lifecycleOf.toLowerCase().includes(searchString.toLowerCase()))
       : this.props.lifecycles;
-    if (onlyIncludeActiveLifecycles) {
-      filteredLifecycles = filteredLifecycles.filter((lifecycle) => lifecycle.isActive);
-    }
     const selectedLifecycle = filteredLifecycles.length ? filteredLifecycles[0] : null;
     if (selectedLifecycle) {
       if (!this.state || selectedLifecycle !== this.state.selectedLifecycle) {
@@ -46,14 +36,8 @@ class List extends React.Component {
     return {
       filteredLifecycles,
       selectedLifecycle,
-      searchString,
-      onlyIncludeActiveLifecycles
+      searchString
     };
-  }
-
-  toggleInclusionOfActiveLifecycles() {
-    const filteredLifecycles = this.filter(this.state.searchString, !this.state.onlyIncludeActiveLifecycles);
-    this.setState(Object.assign({}, this.state, filteredLifecycles));
   }
 
   selectLifecycle(selectedLifecycle) {
@@ -78,13 +62,10 @@ class List extends React.Component {
 
   render() {
     const lifecycleToAdd = {
-      id: uuidv4(),
       lifecycleOf: "+ LIFECYCLE",
-      displayName: () => "+ LIFECYCLE",
-      version: 1,
-      isActive: false,
-      triggersForItemCreation: [],
-      queues: [],
+      previousVerion: null,
+      activeVersion: null,
+      nextVersion: this.props.defaultVersionCreator(),
       isNew: true
     };
     return (
@@ -95,16 +76,6 @@ class List extends React.Component {
               placeholder="search"
               value={this.state.searchString ? this.state.searchString : ""}
               onChange={(e) => this.search(e.target.value)} />
-          </div>
-          <div className="inactives">
-            <label className="checkbox">
-              <span>only include active lifecycles</span>
-              <input
-                type="checkbox"
-                checked={this.state.onlyIncludeActiveLifecycles}
-                onChange={() => this.toggleInclusionOfActiveLifecycles()} />
-              <span className="checkmark"></span>
-            </label>
           </div>
         </div>
         <ul>
@@ -119,9 +90,6 @@ class List extends React.Component {
                 const lifecycleBeingAdded = lifecycle.isNew && this.props.isAddingLifecycle;
                 let className = this.state.selectedLifecycle && this.state.selectedLifecycle.lifecycleOf === lifecycle.lifecycleOf || lifecycleBeingAdded ?
                   "selected" : "unselected";
-                if (!lifecycle.isActive && !lifecycle.isNew) {
-                  className = className + " inactive";
-                }
                 if (lifecycleBeingAdded) {
                   itemValue =
                     <input
@@ -131,12 +99,12 @@ class List extends React.Component {
                       onChange={(e) => this.changeLifecycleOf(e.target.value)}
                       onClick={(e) => e.stopPropagation()} />;
                 } else {
-                  itemValue = lifecycle.displayName();
+                  itemValue = lifecycle.lifecycleOf;
                 }
                 return <li
-                  key={lifecycle.id}
+                  key={lifecycle.lifecycleOf}
                   className={className}
-                  title={`${lifecycle.displayName()} ${lifecycle.id}`}
+                  title={lifecycle.lifecycleOf}
                   onClick={() => this.selectLifecycle(lifecycle)}>
                   <span>{itemValue}</span>
                   {
@@ -144,8 +112,11 @@ class List extends React.Component {
                     <Lifecycle
                       className="d-block d-md-none col-12"
                       lifecycle={this.state.selectedLifecycle}
-                      onLifecycleSaved={this.props.onLifecycleSaved}
-                      isLifecycleSaving={this.props.isLifecycleSaving} />
+                      isNextVersionSaving={this.props.isNextVersionSaving}
+                      isNextVersionActivating={this.props.isNextVersionActivating}
+                      onNextVersionSaved={this.props.onNextVersionSaved}
+                      onNextVersionActivated={this.props.onNextVersionActivated}
+                      onNextVersionSaveValidationFailed={this.props.onNextVersionSaveValidationFailed} />
                   }
                 </li>;
               })
@@ -161,10 +132,14 @@ List.propTypes = {
   lifecycles: PropTypes.array.isRequired,
   isAddingLifecycle: PropTypes.bool,
   searchString: PropTypes.string,
-  isLifecycleSaving: PropTypes.bool.isRequired,
+  isNextVersionSaving: PropTypes.bool.isRequired,
+  isNextVersionActivating: PropTypes.bool.isRequired,
+  defaultVersionCreator: PropTypes.func.isRequired,
   onLifecycleSelected: PropTypes.func.isRequired,
   onLifecycleOfChanged: PropTypes.func.isRequired,
-  onLifecycleSaved: PropTypes.func.isRequired
+  onNextVersionSaved: PropTypes.func.isRequired,
+  onNextVersionActivated: PropTypes.func.isRequired,
+  onNextVersionSaveValidationFailed: PropTypes.func.isRequired
 };
 
 export default List;

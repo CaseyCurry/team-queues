@@ -52,5 +52,8 @@ $notification-margin-when-new: ($notification-max-height + $notification-margin)
     }
   }
 
+  @import "./Info";
+  @import "./Warning";
+  @import "./High-Alert";
   @import "./Error";
 }

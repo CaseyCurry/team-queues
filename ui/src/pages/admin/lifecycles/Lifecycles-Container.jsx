@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import actions from "./actions";
+import notifications from "../../../components/notifications/actions";
 import Lifecycles from "./components/Lifecycles";
 
 class LifecyclesContainer extends React.Component {
@@ -10,9 +11,7 @@ class LifecyclesContainer extends React.Component {
   }
 
   componentDidMount() {
-    this
-      .props
-      .onGetLifecycles();
+    this.props.onGetLifecycles();
   }
 
   render() {
@@ -22,10 +21,14 @@ class LifecyclesContainer extends React.Component {
       selectedLifecycle={this.props.selectedLifecycle}
       isAddingLifecycle={this.props.isAddingLifecycle}
       searchString={this.props.searchString}
-      isLifecycleSaving={this.props.isLifecycleSaving}
+      isNextVersionSaving={this.props.isNextVersionSaving}
+      isNextVersionActivating={this.props.isNextVersionActivating}
+      defaultVersionCreator={this.props.defaultVersionCreator}
       onLifecycleSelected={this.props.onLifecycleSelected}
       onLifecycleOfChanged={this.props.onLifecycleOfChanged}
-      onLifecycleSaved={this.props.onLifecycleSaved} />;
+      onNextVersionSaved={this.props.onNextVersionSaved}
+      onNextVersionActivated={this.props.onNextVersionActivated}
+      onNextVersionSaveValidationFailed={this.props.onNextVersionSaveValidationFailed} />;
   }
 }
 
@@ -35,11 +38,15 @@ LifecyclesContainer.propTypes = {
   selectedLifecycle: PropTypes.object,
   isAddingLifecycle: PropTypes.bool,
   searchString: PropTypes.string,
-  isLifecycleSaving: PropTypes.bool.isRequired,
+  isNextVersionSaving: PropTypes.bool.isRequired,
+  isNextVersionActivating: PropTypes.bool.isRequired,
+  defaultVersionCreator: PropTypes.func.isRequired,
   onGetLifecycles: PropTypes.func.isRequired,
   onLifecycleSelected: PropTypes.func.isRequired,
   onLifecycleOfChanged: PropTypes.func.isRequired,
-  onLifecycleSaved: PropTypes.func.isRequired
+  onNextVersionSaved: PropTypes.func.isRequired,
+  onNextVersionActivated: PropTypes.func.isRequired,
+  onNextVersionSaveValidationFailed: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -57,8 +64,14 @@ const mapDispatchToProps = (dispatch) => {
     onLifecycleOfChanged: (lifecycleOf) => {
       dispatch(actions.changeLifecycleOf(lifecycleOf));
     },
-    onLifecycleSaved: (lifecycle) => {
-      dispatch(actions.saveLifecycle(lifecycle));
+    onNextVersionSaved: (nextVersion) => {
+      dispatch(actions.saveNextVersion(nextVersion));
+    },
+    onNextVersionActivated: (nextVersion) => {
+      dispatch(actions.activateNextVersion(nextVersion));
+    },
+    onNextVersionSaveValidationFailed: (message) => {
+      dispatch(notifications.addError({ message }));
     }
   };
 };

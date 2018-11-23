@@ -21,8 +21,10 @@ export default (state = initialState, action) => {
     }
     case "GET_EVENTS_FULFILLED": {
       const searchString = action.payload.searchString;
-      const sortedEvents = action.payload.events.sort((x, y) => x.name.toLowerCase() < y.name.toLowerCase() ? -1 : 1);
-      const activeEvents = sortedEvents.filter((event) => event.isActive);
+      const sortedEvents = action.payload.events
+        .sort((x, y) => x.name.toLowerCase() < y.name.toLowerCase() ? -1 : 1);
+      const activeEvents = sortedEvents
+        .filter((event) => event.isActive);
       const selectedEvent = activeEvents.length ?
         activeEvents[0] : null;
       return Object.assign({}, initialState, {

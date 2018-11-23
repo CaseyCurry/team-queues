@@ -1,10 +1,22 @@
+import uuidv4 from "uuid/v4";
+
 const initialState = Object.freeze({
   areLifecyclesLoading: false,
   lifecycles: [],
   selectedLifecycle: null,
   isAddingLifecycle: false,
   searchString: null,
-  isLifecycleSaving: false
+  isNextVersionSaving: false,
+  isNextVersionActivating: false,
+  defaultVersionCreator: () => {
+    return {
+      id: uuidv4(),
+      version: 1,
+      triggersForItemCreation: [],
+      queues: [],
+      isNew: true
+    };
+  }
 });
 
 export default (state = initialState, action) => {
@@ -21,12 +33,43 @@ export default (state = initialState, action) => {
     }
     case "GET_LIFECYCLES_FULFILLED": {
       const searchString = action.payload.searchString;
-      const sortedLifecycles = action.payload.lifecycles
-        .map((lifecycle) => Object.assign({}, lifecycle, { displayName: () => `${lifecycle.lifecycleOf} V${lifecycle.version}`}))
-        .sort((x, y) => x.displayName().toLowerCase() < y.displayName().toLowerCase() ? -1 : 1);
-      const activeLifecycles = sortedLifecycles.filter((lifecycle) => lifecycle.isActive);
-      const selectedLifecycle = activeLifecycles.length ?
-        activeLifecycles[0] : null;
+      const mergedLifecycles = action.payload.lifecycles
+        .map((lifecycle) => lifecycle.lifecycleOf)
+        .filter((x, y, z) => z.indexOf(x) === y)
+        .map((lifecycleOf) => {
+          const sortedVersions = action.payload.lifecycles
+            .filter((lifecycle) => lifecycle.lifecycleOf === lifecycleOf)
+            .sort((x, y) => x.version < y.version ? -1 : 1);
+          const activeVersion = sortedVersions
+            .find((lifecycle) => lifecycle.status === "Active");
+          let nextVersion = sortedVersions
+            .find((lifecycle) => lifecycle.status === "WorkInProgress");
+          let previousVersion = activeVersion ?
+            sortedVersions.find((lifecycle) => lifecycle.version < activeVersion.version) : null;
+          if (!previousVersion) {
+            /* The nextVersion actually persisted is used here prior to conditionally creating
+               a default immediately below. */
+            previousVersion = nextVersion ?
+              sortedVersions
+                .find((lifecycle) => lifecycle.version < nextVersion.version) : null;
+          }
+          /* We always create a place to add a WIP if there isn't one already. But we
+             only do it after the previous version that is actually persisted has been
+             used in the logic immediately above. */
+          if (!nextVersion) {
+            nextVersion = state.defaultVersionCreator();
+          }
+          return {
+            lifecycleOf,
+            previousVersion,
+            activeVersion,
+            nextVersion
+          };
+        });
+      const sortedLifecycles = mergedLifecycles
+        .sort((x, y) => x.lifecycleOf.toLowerCase() < y.lifecycleOf.toLowerCase() ? -1 : 1);
+      const selectedLifecycle = sortedLifecycles.length ?
+        sortedLifecycles[0] : null;
       return Object.assign({}, initialState, {
         lifecycles: sortedLifecycles,
         selectedLifecycle,
@@ -35,11 +78,9 @@ export default (state = initialState, action) => {
     }
     case "SELECT_LIFECYCLE": {
       let selectedLifecycle = action.payload.lifecycle;
-
-      if (!selectedLifecycle || state.selectedLifecycle && selectedLifecycle.id === state.selectedLifecycle.id) {
+      if (!selectedLifecycle || state.selectedLifecycle &&selectedLifecycle.lifecycleOf === state.selectedLifecycle.lifecycleOf) {
         return state;
       }
-
       return Object.assign({}, state, {
         selectedLifecycle,
         isAddingLifecycle: selectedLifecycle.isNew
@@ -53,14 +94,24 @@ export default (state = initialState, action) => {
         selectedLifecycle
       });
     }
-    case "SAVE_LIFECYCLE_PENDING": {
+    case "SAVE_NEXT_VERSION_PENDING": {
       return Object.assign({}, state, {
-        isLifecycleSaving: true
+        isNextVersionSaving: true
       });
     }
-    case "SAVE_LIFECYCLE_REJECTED": {
+    case "SAVE_NEXT_VERSION_REJECTED": {
       return Object.assign({}, state, {
-        isLifecycleSaving: false
+        isNextVersionSaving: false
+      });
+    }
+    case "ACTIVATE_NEXT_VERSION_PENDING": {
+      return Object.assign({}, state, {
+        isNextVersionActivating: true
+      });
+    }
+    case "ACTIVATE_NEXT_VERSION_REJECTED": {
+      return Object.assign({}, state, {
+        isNextVersionActivating: false
       });
     }
   }
