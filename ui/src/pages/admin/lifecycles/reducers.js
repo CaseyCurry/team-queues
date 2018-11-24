@@ -8,6 +8,8 @@ const initialState = Object.freeze({
   searchString: null,
   isNextVersionSaving: false,
   isNextVersionActivating: false,
+  hasNextVersionBeenModified: false,
+  doPromptToSaveChanges: false,
   defaultVersionCreator: () => {
     return {
       id: uuidv4(),
@@ -77,13 +79,17 @@ export default (state = initialState, action) => {
       });
     }
     case "SELECT_LIFECYCLE": {
+      if (state.hasNextVersionBeenModified) {
+        return Object.assign({}, state, { doPromptToSaveChanges: true });
+      }
       let selectedLifecycle = action.payload.lifecycle;
-      if (!selectedLifecycle || state.selectedLifecycle &&selectedLifecycle.lifecycleOf === state.selectedLifecycle.lifecycleOf) {
+      if (!selectedLifecycle || state.selectedLifecycle && selectedLifecycle.lifecycleOf === state.selectedLifecycle.lifecycleOf) {
         return state;
       }
       return Object.assign({}, state, {
         selectedLifecycle,
-        isAddingLifecycle: selectedLifecycle.isNew
+        isAddingLifecycle: selectedLifecycle.isNew,
+        doPromptToSaveChanges: false
       });
     }
     case "CHANGE_LIFECYCLE_OF": {
@@ -112,6 +118,12 @@ export default (state = initialState, action) => {
     case "ACTIVATE_NEXT_VERSION_REJECTED": {
       return Object.assign({}, state, {
         isNextVersionActivating: false
+      });
+    }
+    case "MODIFY_NEXT_VERSION": {
+      return Object.assign({}, state, {
+        hasNextVersionBeenModified: action.payload.hasNextVersionBeenModified,
+        doPromptToSaveChanges: false
       });
     }
   }

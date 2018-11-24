@@ -9,6 +9,8 @@ button {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
+  margin-left: $control-margin;
+  margin-right: $control-margin;
 
   img {
     filter: invert(1);

@@ -42,12 +42,12 @@
 
   // controls
   @import "../controls/Loader";
-
-  @import "workspace";
-  @import "buttons";
-  @import "tabs";
-  @import "segmented-control";
-  @import "checkbox";
+  @import "../controls/Workspace";
+  @import "../controls/Button";
+  @import "../controls/Vertical-Tabs.scss";
+  @import "../controls/Segmented-Control.scss";
+  @import "../controls/Checkbox.scss";
+  @import "../controls/Dialog.scss";
 
   // components
   @import "../components/notifications/components/Notifications";

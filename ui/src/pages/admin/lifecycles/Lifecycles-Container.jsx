@@ -24,11 +24,14 @@ class LifecyclesContainer extends React.Component {
       isNextVersionSaving={this.props.isNextVersionSaving}
       isNextVersionActivating={this.props.isNextVersionActivating}
       defaultVersionCreator={this.props.defaultVersionCreator}
+      hasNextVersionBeenModified={this.props.hasNextVersionBeenModified}
+      doPromptToSaveChanges={this.props.doPromptToSaveChanges}
       onLifecycleSelected={this.props.onLifecycleSelected}
       onLifecycleOfChanged={this.props.onLifecycleOfChanged}
       onNextVersionSaved={this.props.onNextVersionSaved}
       onNextVersionActivated={this.props.onNextVersionActivated}
-      onNextVersionSaveValidationFailed={this.props.onNextVersionSaveValidationFailed} />;
+      onNextVersionSaveValidationFailed={this.props.onNextVersionSaveValidationFailed}
+      onNextVersionModified={this.props.onNextVersionModified} />;
   }
 }
 
@@ -41,12 +44,15 @@ LifecyclesContainer.propTypes = {
   isNextVersionSaving: PropTypes.bool.isRequired,
   isNextVersionActivating: PropTypes.bool.isRequired,
   defaultVersionCreator: PropTypes.func.isRequired,
+  doPromptToSaveChanges: PropTypes.bool.isRequired,
+  hasNextVersionBeenModified: PropTypes.bool.isRequired,
   onGetLifecycles: PropTypes.func.isRequired,
   onLifecycleSelected: PropTypes.func.isRequired,
   onLifecycleOfChanged: PropTypes.func.isRequired,
   onNextVersionSaved: PropTypes.func.isRequired,
   onNextVersionActivated: PropTypes.func.isRequired,
-  onNextVersionSaveValidationFailed: PropTypes.func.isRequired
+  onNextVersionSaveValidationFailed: PropTypes.func.isRequired,
+  onNextVersionModified: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -72,6 +78,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     onNextVersionSaveValidationFailed: (message) => {
       dispatch(notifications.addError({ message }));
+    },
+    onNextVersionModified: (hasNextVersionChanged) => {
+      dispatch(actions.modifyNextVersion(hasNextVersionChanged));
     }
   };
 };

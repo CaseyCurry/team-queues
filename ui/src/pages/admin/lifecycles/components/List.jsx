@@ -15,6 +15,9 @@ class List extends React.Component {
 
   search(searchString) {
     const filteredLifecycles = this.filter(searchString);
+    if (this.props.hasNextVersionBeenModified) {
+      return;
+    }
     this.setState(Object.assign({}, this.state, filteredLifecycles));
   }
 
@@ -49,7 +52,9 @@ class List extends React.Component {
     this
       .props
       .onLifecycleSelected(selectedLifecycle);
-    this.setState(Object.assign({}, this.state, { selectedLifecycle }));
+    if (!this.props.hasNextVersionBeenModified) {
+      this.setState(Object.assign({}, this.state, { selectedLifecycle }));
+    }
   }
 
   changeLifecycleOf(lifecycleOf) {
@@ -112,11 +117,13 @@ class List extends React.Component {
                     <Lifecycle
                       className="d-block d-md-none col-12"
                       lifecycle={this.state.selectedLifecycle}
+                      doPromptToSaveChanges={this.props.doPromptToSaveChanges}
                       isNextVersionSaving={this.props.isNextVersionSaving}
                       isNextVersionActivating={this.props.isNextVersionActivating}
                       onNextVersionSaved={this.props.onNextVersionSaved}
                       onNextVersionActivated={this.props.onNextVersionActivated}
-                      onNextVersionSaveValidationFailed={this.props.onNextVersionSaveValidationFailed} />
+                      onNextVersionSaveValidationFailed={this.props.onNextVersionSaveValidationFailed}
+                      onNextVersionModified={this.props.onNextVersionModified} />
                   }
                 </li>;
               })
@@ -135,11 +142,14 @@ List.propTypes = {
   isNextVersionSaving: PropTypes.bool.isRequired,
   isNextVersionActivating: PropTypes.bool.isRequired,
   defaultVersionCreator: PropTypes.func.isRequired,
+  hasNextVersionBeenModified: PropTypes.bool.isRequired,
+  doPromptToSaveChanges: PropTypes.bool.isRequired,
   onLifecycleSelected: PropTypes.func.isRequired,
   onLifecycleOfChanged: PropTypes.func.isRequired,
   onNextVersionSaved: PropTypes.func.isRequired,
   onNextVersionActivated: PropTypes.func.isRequired,
-  onNextVersionSaveValidationFailed: PropTypes.func.isRequired
+  onNextVersionSaveValidationFailed: PropTypes.func.isRequired,
+  onNextVersionModified: PropTypes.func.isRequired
 };
 
 export default List;

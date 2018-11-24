@@ -1,0 +1,24 @@
+.dialog {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, .8);
+  z-index: 99;
+
+  >div {
+    display: inline-block;
+    background-color: $secondary-background-color;
+    overflow: auto;
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
+    border-radius: $border-radius * 3;
+    padding: $section-margin;
+
+    button {
+      margin-top: $section-margin;
+    }
+  }
+}
