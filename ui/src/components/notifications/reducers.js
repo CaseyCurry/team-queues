@@ -1,19 +1,25 @@
-export default (state = [], action) => {
-  // TODO: add pause functionality
+const initialState = Object.freeze({
+  notifications: [],
+  isPaused: false
+});
+
+export default (state = initialState, action) => {
   switch (action.type) {
     case "ADD_NOTIFICATION": {
-      return state.slice().concat(Object.assign({}, action.payload.notification, { isNew: true }));
-    }
-    case "DISPLAY_NOTIFICATION": {
-      return state.map((notification) => notification.id === action.payload.id ?
-        Object.assign({}, notification, { isDisplayed: true, isExpired: false, isNew: false }) : notification);
-    }
-    case "EXPIRE_NOTIFICATION": {
-      return state.map((notification) => notification.id === action.payload.id ?
-        Object.assign({}, notification, { isExpired: true, isDisplayed: false, isNew: false }) : notification);
+      return Object.assign({}, state, {
+        notifications: state.notifications.slice().concat(action.payload.notification)
+      });
     }
     case "REMOVE_NOTIFICATION": {
-      return state.filter((notification) => notification.id !== action.payload.id);
+      return Object.assign({}, state, {
+        notifications: state.notifications.filter((notification) => notification.id !== action.payload.id)
+      });
+    }
+    case "PAUSE": {
+      return Object.assign({}, state, { isPaused: true });
+    }
+    case "PLAY": {
+      return Object.assign({}, state, { isPaused: false });
     }
   }
 

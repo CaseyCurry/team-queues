@@ -1,5 +1,25 @@
 @import "variables";
-@import "call-to-action";
+
+@mixin call-to-action($lighten-background: false) {
+  @if $lighten-background==true {
+    background-color: mix(white, $call-to-action-color, 20%);
+  }
+
+  @else {
+    background-color: $call-to-action-color;
+  }
+
+  color: $call-to-action-font-color;
+  font-weight: bold;
+}
+
+@mixin error() {
+  &.error {
+    outline: none;
+    border: solid $border-width red;
+    box-shadow: 0 0 5px red;
+  }
+}
 
 #app {
   >div {
@@ -26,6 +46,7 @@
   ul {
     list-style-type: none;
     margin: 0;
+    padding: 0;
   }
 
   input {
@@ -33,11 +54,15 @@
     color: $secondary-font-color;
     padding-left: $control-margin/2;
     padding-right: $control-margin/2;
+
+    @include error();
   }
 
   textarea {
     color: inherit;
     padding: $control-margin/2;
+
+    @include error();
   }
 
   // controls

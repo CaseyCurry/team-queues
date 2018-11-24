@@ -1,6 +1,7 @@
 const originalFetch = window.fetch;
 
 // TODO: include correlation id and authorization with all requests
+// TODO: I'm not sure I like overriding fetch like this.
 window.fetch = function() {
   let input = arguments[0];
   if (typeof input === "string") {

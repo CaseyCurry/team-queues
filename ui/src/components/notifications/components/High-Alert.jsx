@@ -1,12 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const HighAlert = ({ message }) => {
-  return <div className="high-alert">{message}</div>;
+const HighAlert = ({ notification, className }) => {
+  return <div className={`high-alert ${className}`}>
+    {`${notification.message} id: ${notification.id}`}
+  </div>;
 };
 
 HighAlert.propTypes = {
-  message: PropTypes.string.isRequired
+  notification: PropTypes.object.isRequired,
+  className: PropTypes.string.isRequired
 };
 
 export default HighAlert;

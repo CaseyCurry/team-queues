@@ -3,3 +3,4 @@
 *.log
 /spec/coverage/*
 .nyc_output
+.DS_Store

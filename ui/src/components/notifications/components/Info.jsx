@@ -1,12 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const Info = ({ message }) => {
-  return <div className="info">{message}</div>;
+const Info = ({ notification, className }) => {
+  return <div className={`info ${className}`}>
+    {`${notification.message} id: ${notification.id}`}
+  </div>;
 };
 
 Info.propTypes = {
-  message: PropTypes.string.isRequired
+  notification: PropTypes.object.isRequired,
+  className: PropTypes.string.isRequired
 };
 
 export default Info;

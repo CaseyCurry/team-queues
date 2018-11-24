@@ -10,6 +10,7 @@ class ConfiguredEvents extends React.Component {
   }
 
   render() {
+    // TODO: check for unsaved data
     if (this.props.areEventsLoading) {
       return <div className="page">
         <Loader />
