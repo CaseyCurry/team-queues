@@ -15,6 +15,7 @@ const LifecycleController = (app, domainEvents, lifecycleAggregate, lifecycleFac
           return;
         }
         try {
+          // TODO: prevent multiple version numbers from being created
           // TODO: What needs to be checked to handle versioning and concurrency?
           // TODO: use 412 for concurrency issues
           // TODO: confirm all events have been configured

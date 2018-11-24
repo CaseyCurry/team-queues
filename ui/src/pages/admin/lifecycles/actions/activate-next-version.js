@@ -7,8 +7,7 @@ const action = (lifecycle) => {
     dispatch({
       type: "ACTIVATE_NEXT_VERSION_PENDING"
     });
-    // TODO: abstract http calls; include correlation id with all requests
-    const url = `http://localhost:8083/api/commands/lifecycles/${nextVersionId}/active`;
+    const url = `/api/commands/lifecycles/${nextVersionId}/active`;
     fetch(url, {
       method: "POST"
     })

@@ -5,8 +5,7 @@ export default (searchString) => {
     dispatch({
       type: "GET_LIFECYCLES_PENDING"
     });
-    // TODO: abstract http calls; include correlation id with all requests
-    fetch("http://localhost:8083/api/commands/lifecycles")
+    fetch("/api/commands/lifecycles")
       .then((response) => {
         if (response.status < 200 || response.status > 299) {
           dispatch(notifications.addError({

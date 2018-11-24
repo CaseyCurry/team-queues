@@ -7,8 +7,7 @@ const action = (lifecycle) => {
     dispatch({
       type: "SAVE_NEXT_VERSION_PENDING"
     });
-    // TODO: abstract http calls; include correlation id with all requests
-    let url = "http://localhost:8083/api/commands/lifecycles";
+    let url = "/api/commands/lifecycles";
     if (!nextVersion.isNew) {
       url = `${url}/${nextVersion.id}`;
     }

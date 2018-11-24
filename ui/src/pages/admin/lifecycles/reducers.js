@@ -10,10 +10,10 @@ const initialState = Object.freeze({
   isNextVersionActivating: false,
   hasNextVersionBeenModified: false,
   doPromptToSaveChanges: false,
-  defaultVersionCreator: () => {
+  defaultVersionCreator: (versionNumber) => {
     return {
       id: uuidv4(),
-      version: 1,
+      version: versionNumber ? versionNumber : 1,
       triggersForItemCreation: [],
       queues: [],
       isNew: true
@@ -59,7 +59,7 @@ export default (state = initialState, action) => {
              only do it after the previous version that is actually persisted has been
              used in the logic immediately above. */
           if (!nextVersion) {
-            nextVersion = state.defaultVersionCreator();
+            nextVersion = state.defaultVersionCreator(activeVersion.version + 1);
           }
           return {
             lifecycleOf,

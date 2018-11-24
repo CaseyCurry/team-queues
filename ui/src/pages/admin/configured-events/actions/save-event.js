@@ -6,8 +6,7 @@ const action = (event) => {
     dispatch({
       type: "SAVE_EVENT_PENDING"
     });
-    // TODO: abstract http calls; include correlation id with all requests
-    fetch("http://localhost:8083/api/commands/configured-events", {
+    fetch("/api/commands/configured-events", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
