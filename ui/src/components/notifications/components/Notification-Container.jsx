@@ -1,23 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Info from "./Info";
-import Warning from "./Warning";
-import HighAlert from "./High-Alert";
-import Error from "./Error";
+import Notification from "./Notification";
 
 const notificationExpirationInSeconds = 3;
+// This value needs to match the transition speed set in style on the .expired class.
+const notificationRemovalInSeconds = 2;
 
 class NotificationContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isNew: true,
-      isDisplayed: false,
-      isExpired: false,
-      displayer: this.scheduleDisplay(),
+      status: "new",
+      displayer: null,
       expirer: null,
       remover: null
     };
+  }
+
+  componentDidMount() {
+    this.setState(Object.assign({}, this.state, { displayer: this.scheduleDisplay() }));
   }
 
   componentDidUpdate(previousProps) {
@@ -55,15 +56,15 @@ class NotificationContainer extends React.Component {
   }
 
   play() {
-    if (this.state.isNew) {
+    if (this.state.status === "new") {
       this.setState(Object.assign({}, this.state, {
         displayer: this.scheduleDisplay()
       }));
-    } else if (this.state.isDisplayed) {
+    } else if (this.state.status === "displayed") {
       this.setState(Object.assign({}, this.state, {
         expirer: this.scheduleExpiration()
       }));
-    } else if (this.state.isExpired) {
+    } else if (this.state.status === "expired") {
       this.setState(Object.assign({}, this.state, {
         remover: this.scheduleRemoval()
       }));
@@ -73,7 +74,7 @@ class NotificationContainer extends React.Component {
   scheduleDisplay() {
     return setTimeout(() => {
       this.setState(Object.assign({}, this.state, {
-        isDisplayed: true,
+        status: "displayed",
         expirer: this.scheduleExpiration()
       }));
     }, 0);
@@ -82,8 +83,7 @@ class NotificationContainer extends React.Component {
   scheduleExpiration() {
     return setTimeout(() => {
       this.setState(Object.assign({}, this.state, {
-        isExpired: true,
-        isDisplayed: false,
+        status: "expired",
         remover: this.scheduleRemoval()
       }));
     }, notificationExpirationInSeconds * 1000);
@@ -92,23 +92,13 @@ class NotificationContainer extends React.Component {
   scheduleRemoval() {
     return setTimeout(() => {
       this.props.onRemoveNotification(this.props.notification.id);
-    }, notificationExpirationInSeconds + 3 * 1000);
+    }, notificationRemovalInSeconds * 1000);
   }
 
   render() {
-    const notification = this.props.notification;
-    const className = this.state.isExpired ?
-      "expired" : this.state.isDisplayed ? "displayed" : "new";
-
-    if (notification.type === "info") {
-      return <Info className={className} notification={notification} />;
-    } else if (notification.type === "warning") {
-      return <Warning className={className} notification={notification} />;
-    } else if (notification.type === "highAlert") {
-      return <HighAlert className={className} notification={notification} />;
-    } else {
-      return <Error className={className} notification={notification} />;
-    }
+    return <Notification
+      notification={this.props.notification}
+      status={this.state.status} />;
   }
 }
 

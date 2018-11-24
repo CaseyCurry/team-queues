@@ -1,22 +1,29 @@
-$notification-transition-speed: 1s;
 $notification-width: 200px;
 $notification-margin: $control-margin / 2;
+$action-height: 24px;
 
 .notifications {
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 100;
 
   .actions {
     display: inline-block;
+    position: relative;
+    z-index: 100;
     margin-right: $notification-width + ($notification-margin * 2);
-    margin-top: $control-margin;
+    transition: transform .5s;
+    transform: translateY(-100%);
+
+    &.displayed {
+      transform: translateY(0);
+      margin-top: $control-margin;
+    }
 
     >img {
       filter: invert(.9);
-      height: 24px;
-      width: 24px;
+      height: $action-height;
+      width: $action-height;
       margin-right: $control-margin;
     }
   }
@@ -30,45 +37,7 @@ $notification-margin: $control-margin / 2;
       width: $notification-width;
       margin: $notification-margin $notification-margin 0 0;
 
-      >div {
-        transition: transform $notification-transition-speed;
-      }
-
-      .new {
-        transform: translateY(-100%);
-      }
-
-      .displayed {
-        visibility: visible;
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .expired {
-        visibility: hidden;
-        opacity: 0;
-        transform: translateY(100vh);
-        transition:
-          visibility $notification-transition-speed,
-          opacity $notification-transition-speed,
-          transform $notification-transition-speed * 2;
-      }
-
-      &>div {
-        font-size: .8em;
-        width: 100%;
-        height: 100%;
-        max-height: 300px;
-        overflow: hidden;
-        padding: $control-margin;
-        border-radius: $border-radius * 3;
-        border: solid $border-width/2 $high-contrast-border-color;
-      }
+      @import "./Notification";
     }
   }
-
-  @import "./Info";
-  @import "./Warning";
-  @import "./High-Alert";
-  @import "./Error";
 }

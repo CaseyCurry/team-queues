@@ -4,21 +4,22 @@ import NotificationContainer from "./Notification-Container";
 
 class Notifications extends React.Component {
   render() {
+    let actionsClassName = "actions";
+    if (this.props.notifications.length) {
+      actionsClassName = `${actionsClassName} displayed`;
+    }
     return <div className="notifications">
-      {
-        this.props.notifications.length > 0 &&
-        <div className="actions">
-          {
-            this.props.isPaused &&
-            <img src="/resources/icons/play.svg" alt="play" onClick={() => this.props.onPlay()} />
-          }
-          {
-            !this.props.isPaused &&
-            <img src="/resources/icons/pause.svg" alt="pause" onClick={() => this.props.onPause()} />
-          }
-          <img src="/resources/icons/settings.svg" alt="settings" />
-        </div>
-      }
+      <div className={actionsClassName}>
+        {
+          this.props.isPaused &&
+          <img src="/resources/icons/play.svg" alt="play" onClick={() => this.props.onPlay()} />
+        }
+        {
+          !this.props.isPaused &&
+          <img src="/resources/icons/pause.svg" alt="pause" onClick={() => this.props.onPause()} />
+        }
+        <img src="/resources/icons/settings.svg" alt="settings" />
+      </div>
       <ul>
         {
           this

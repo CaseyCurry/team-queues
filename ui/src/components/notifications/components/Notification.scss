@@ -1,0 +1,40 @@
+$notification-transition-speed: 1s;
+
+.notification {
+  position: relative;
+  z-index: 100;
+  transition: transform $notification-transition-speed;
+  font-size: .8em;
+  width: 100%;
+  height: 100%;
+  max-height: 300px;
+  overflow: hidden;
+  padding: $control-margin;
+  border-radius: $border-radius * 3;
+  border: solid $border-width/2 $high-contrast-border-color;
+
+  &.new {
+    transform: translateY(-100%);
+  }
+
+  &.displayed {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.expired {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(100vh);
+    transition:
+      visibility $notification-transition-speed * 2,
+      opacity $notification-transition-speed * 2,
+      transform $notification-transition-speed * 2;
+  }
+
+  @import "./Info";
+  @import "./Warning";
+  @import "./High-Alert";
+  @import "./Error";
+}
