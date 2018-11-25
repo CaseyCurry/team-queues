@@ -29,7 +29,7 @@ class ListContainer extends React.Component {
     const selectedLifecycle = filteredLifecycles.length ? filteredLifecycles[0] : null;
     if (selectedLifecycle) {
       if (!this.state || selectedLifecycle !== this.state.selectedLifecycle) {
-        this.props.onLifecycleSelected(selectedLifecycle);
+        this.props.onSelected(selectedLifecycle);
       }
     }
     return {
@@ -45,7 +45,7 @@ class ListContainer extends React.Component {
         lifecycleOf: ""
       });
     }
-    this.props.onLifecycleSelected(selectedLifecycle);
+    this.props.onSelected(selectedLifecycle);
     if (!this.props.hasNextVersionBeenModified) {
       this.setState(Object.assign({}, this.state, { selectedLifecycle }));
     }
@@ -79,7 +79,7 @@ class ListContainer extends React.Component {
       isNextVersionSaving={this.props.isNextVersionSaving}
       isNextVersionActivating={this.props.isNextVersionActivating}
       doPromptToSaveChanges={this.props.doPromptToSaveChanges}
-      onLifecycleSelected={this.select.bind(this)}
+      onSelected={this.select.bind(this)}
       onLifecycleOfChanged={this.changeLifecycleOf.bind(this)}
       onNextVersionSaved={this.props.onNextVersionSaved}
       onNextVersionActivated={this.props.onNextVersionActivated}
@@ -99,7 +99,7 @@ ListContainer.propTypes = {
   defaultVersionCreator: PropTypes.func.isRequired,
   hasNextVersionBeenModified: PropTypes.bool.isRequired,
   doPromptToSaveChanges: PropTypes.bool.isRequired,
-  onLifecycleSelected: PropTypes.func.isRequired,
+  onSelected: PropTypes.func.isRequired,
   onLifecycleOfChanged: PropTypes.func.isRequired,
   onNextVersionSaved: PropTypes.func.isRequired,
   onNextVersionActivated: PropTypes.func.isRequired,

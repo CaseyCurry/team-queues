@@ -3,152 +3,13 @@ import PropTypes from "prop-types";
 import Loader from "../../../../controls/Loader";
 
 class Event extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = this.getInitialState();
-  }
-
-  getInitialState() {
-    const event = this.props.event;
-    return {
-      event,
-      selectedEventVersionNumber: event
-        .versions
-        .map((version) => version.number)
-        .sort((x, y) => y - x)[0],
-      mapInputSelected: null
-    };
-  }
-
-  componentDidUpdate(previousProps) {
-    if (this.props.event !== previousProps.event) {
-      this.setState(this.getInitialState());
-    }
-  }
-
-  changeMap(property, mapIndex, value) {
-    const event = JSON.parse(JSON.stringify(this.state.event));
-    const version = event
-      .versions
-      .find((version) => version.number === this.state.selectedEventVersionNumber);
-    let map = version.maps[mapIndex];
-    if (!map) {
-      map = {
-        source: "",
-        target: ""
-      };
-      version
-        .maps
-        .push(map);
-    }
-    map[property] = value;
-    this.setState(Object.assign({}, this.state, {
-      event,
-      mapInputSelected: property + mapIndex
-    }));
-  }
-
-  selectVersion(number) {
-    this.setState(
-      Object.assign({}, this.state, {
-        selectedEventVersionNumber: number
-      })
-    );
-  }
-
-  cancel() {
-    this.setState(this.getInitialState());
-  }
-
-  toggleActiveState() {
-    const event = Object.assign({}, this.state.event, {
-      isActive: !this.state.event.isActive
-    });
-    this.setState(Object.assign({}, this.state, {
-      event
-    }));
-  }
-
-  selectPreviousVersion() {
-    const previousVersion = this
-      .state
-      .event
-      .versions
-      .map((version) => version.number)
-      .sort((x, y) => y - x)
-      .find((number) => number < this.state.selectedEventVersionNumber);
-    this.selectVersion(previousVersion);
-  }
-
-  selectNextVersion() {
-    const nextVersion = this
-      .state
-      .event
-      .versions
-      .map((version) => version.number)
-      .sort((x, y) => x - y)
-      .find((number) => number > this.state.selectedEventVersionNumber);
-    this.selectVersion(nextVersion);
-  }
-
-  copyVersion() {
-    const event = JSON.parse(JSON.stringify(this.state.event));
-    const lastVersion = event
-      .versions
-      .sort((x, y) => y.number - x.number)[0];
-    const nextNumber = lastVersion.number + 1;
-    if (!lastVersion.maps.length) {
-      event
-        .versions
-        .shift();
-    }
-    const selectedVersionMapsToCopy = this
-      .state
-      .event
-      .versions
-      .find((version) => version.number === this.state.selectedEventVersionNumber)
-      .maps;
-    event
-      .versions
-      .unshift({
-        number: nextNumber,
-        maps: selectedVersionMapsToCopy.slice()
-      });
-    this.setState(
-      Object.assign({}, this.state, {
-        event,
-        selectedEventVersionNumber: nextNumber
-      })
-    );
-  }
-
-  doDisplayPreviousVersionSelector() {
-    const oldestVersionNumber = this
-      .state
-      .event
-      .versions
-      .map((version) => version.number)
-      .reduce((min, x) => x < min ? x : min);
-    return this.state.event.versions.length > 1 && this.state.selectedEventVersionNumber > oldestVersionNumber;
-  }
-
-  doDisplayNextVersionSelector() {
-    const latestVersionNumber = this
-      .state
-      .event
-      .versions
-      .map((version) => version.number)
-      .reduce((max, x) => x > max ? x : max);
-    return this.state.event.versions.length > 1 && this.state.selectedEventVersionNumber < latestVersionNumber;
-  }
-
   renderMaps() {
     // TODO: implement a better UX when adding an event by using tabindex
     const maps = this
-      .state
+      .props
       .event
       .versions
-      .find((version) => version.number === this.state.selectedEventVersionNumber)
+      .find((version) => version.number === this.props.selectedEventVersionNumber)
       .maps
       .concat({
         source: "",
@@ -161,13 +22,19 @@ class Event extends React.Component {
         <li key={mapIndex} className="map">
           <input
             value={map.source}
-            autoFocus={"source" + mapIndex === this.state.mapInputSelected}
-            onChange={(e) => this.changeMap("source", mapIndex, e.target.value)} />
+            autoFocus={"source" + mapIndex === this.props.selectedMap}
+            onChange={(e) => {
+              this.props.onMapModified("source", mapIndex, e.target.value);
+              e.stopPropagation();
+            }} />
           <img src="/resources/icons/arrow-map-right-hollow.svg" alt="maps to" />
           <input
             value={map.target}
-            autoFocus={"target" + mapIndex === this.state.mapInputSelected}
-            onChange={(e) => this.changeMap("target", mapIndex, e.target.value)} />
+            autoFocus={"target" + mapIndex === this.props.selectedMap}
+            onChange={(e) => {
+              this.props.onMapModified("target", mapIndex, e.target.value);
+              e.stopPropagation();
+            }} />
         </li>;
       list.push(item);
     }
@@ -175,15 +42,16 @@ class Event extends React.Component {
   }
 
   render() {
-    const doDisplayPreviousVersionSelector = this.doDisplayPreviousVersionSelector();
-    const doDisplayNextVersionSelector = this.doDisplayNextVersionSelector();
     return <div className={this.props.className + " workspace event"}>
       <div className="event-level-data">
         <label className="checkbox">active
           <input
             type="checkbox"
-            checked={!!this.state.event.isActive}
-            onChange={() => this.toggleActiveState()} />
+            checked={!!this.props.event.isActive}
+            onChange={(e) => {
+              this.props.onActiveStateToggled();
+              e.stopPropagation();
+            }} />
           <span className="checkmark"></span>
         </label>
       </div>
@@ -192,22 +60,31 @@ class Event extends React.Component {
           <div className="segmented-control">
             <button
               className="selector"
-              disabled={!doDisplayPreviousVersionSelector}
-              onClick={() => this.selectPreviousVersion()}
+              disabled={!this.props.doDisplayPreviousVersionSelector}
+              onClick={(e) => {
+                this.props.onPreviousVersionSelected();
+                e.stopPropagation();
+              }}
               title="previous version">
               <img src="/resources/icons/arrow-backward.svg" alt="previous" />
             </button>
-            <button key={this.state.selectedEventVersionNumber} className="primary">
-              <span>V{this.state.selectedEventVersionNumber}</span>
+            <button key={this.props.selectedEventVersionNumber} className="primary">
+              <span>V{this.props.selectedEventVersionNumber}</span>
             </button>
             <button
               className="secondary"
-              onClick={() => this.copyVersion()}
+              onClick={(e) => {
+                this.props.onVersionCopied();
+                e.stopPropagation();
+              }}
               title="copy version">+</button>
             <button
               className="selector"
-              disabled={!doDisplayNextVersionSelector}
-              onClick={() => this.selectNextVersion()}
+              disabled={!this.props.doDisplayNextVersionSelector}
+              onClick={(e) => {
+                this.props.onNextVersionSelected();
+                e.stopPropagation();
+              }}
               title="next version">
               <img src="/resources/icons/arrow-forward.svg" alt="next" />
             </button>
@@ -225,19 +102,25 @@ class Event extends React.Component {
       </div>
       <div className="actions">
         {
-          this.props.isEventSaving &&
+          this.props.isSaving &&
           <button>
             saving
             <Loader />
           </button>
         }
         {
-          !this.props.isEventSaving &&
-          <button onClick={() => this.props.onEventSaved(this.state.event)}>
+          !this.props.isSaving &&
+          <button onClick={(e) => {
+            this.props.onSaved(this.props.event);
+            e.stopPropagation();
+          }}>
             save
           </button>
         }
-        <button onClick={() => this.cancel()}>cancel</button>
+        <button onClick={(e) => {
+          this.props.onCancelled();
+          e.stopPropagation();
+        }}>cancel</button>
       </div>
     </div>;
   }
@@ -246,8 +129,18 @@ class Event extends React.Component {
 Event.propTypes = {
   event: PropTypes.object.isRequired,
   className: PropTypes.string.isRequired,
-  isEventSaving: PropTypes.bool.isRequired,
-  onEventSaved: PropTypes.func.isRequired
+  selectedEventVersionNumber: PropTypes.number.isRequired,
+  selectedMap: PropTypes.string,
+  doDisplayPreviousVersionSelector: PropTypes.bool.isRequired,
+  doDisplayNextVersionSelector: PropTypes.bool.isRequired,
+  isSaving: PropTypes.bool.isRequired,
+  onSaved: PropTypes.func.isRequired,
+  onCancelled: PropTypes.func.isRequired,
+  onMapModified: PropTypes.func.isRequired,
+  onActiveStateToggled: PropTypes.func.isRequired,
+  onPreviousVersionSelected: PropTypes.func.isRequired,
+  onNextVersionSelected: PropTypes.func.isRequired,
+  onVersionCopied: PropTypes.func.isRequired
 };
 
 export default Event;

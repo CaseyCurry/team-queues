@@ -2,9 +2,9 @@ const initialState = Object.freeze({
   areEventsLoading: false,
   events: [],
   selectedEvent: null,
-  isAddingEvent: false,
+  isEventBeingAdded: false,
   searchString: null,
-  isEventSaving: false
+  isSaving: false
 });
 
 export default (state = initialState, action) => {
@@ -42,7 +42,7 @@ export default (state = initialState, action) => {
 
       return Object.assign({}, state, {
         selectedEvent,
-        isAddingEvent: selectedEvent.isNew
+        isEventBeingAdded: !!selectedEvent.isNew
       });
     }
     case "CHANGE_EVENT_NAME": {
@@ -55,12 +55,12 @@ export default (state = initialState, action) => {
     }
     case "SAVE_EVENT_PENDING": {
       return Object.assign({}, state, {
-        isEventSaving: true
+        isSaving: true
       });
     }
     case "SAVE_EVENT_REJECTED": {
       return Object.assign({}, state, {
-        isEventSaving: false
+        isSaving: false
       });
     }
   }

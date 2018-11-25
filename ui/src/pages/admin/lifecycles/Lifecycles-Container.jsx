@@ -26,7 +26,7 @@ class LifecyclesContainer extends React.Component {
       defaultVersionCreator={this.props.defaultVersionCreator}
       hasNextVersionBeenModified={this.props.hasNextVersionBeenModified}
       doPromptToSaveChanges={this.props.doPromptToSaveChanges}
-      onLifecycleSelected={this.props.onLifecycleSelected}
+      onSelected={this.props.onSelected}
       onLifecycleOfChanged={this.props.onLifecycleOfChanged}
       onNextVersionSaved={this.props.onNextVersionSaved}
       onNextVersionActivated={this.props.onNextVersionActivated}
@@ -47,7 +47,7 @@ LifecyclesContainer.propTypes = {
   doPromptToSaveChanges: PropTypes.bool.isRequired,
   hasNextVersionBeenModified: PropTypes.bool.isRequired,
   onGetLifecycles: PropTypes.func.isRequired,
-  onLifecycleSelected: PropTypes.func.isRequired,
+  onSelected: PropTypes.func.isRequired,
   onLifecycleOfChanged: PropTypes.func.isRequired,
   onNextVersionSaved: PropTypes.func.isRequired,
   onNextVersionActivated: PropTypes.func.isRequired,
@@ -64,7 +64,7 @@ const mapDispatchToProps = (dispatch) => {
     onGetLifecycles: () => {
       dispatch(actions.getLifecycles());
     },
-    onLifecycleSelected: (lifecycle) => {
+    onSelected: (lifecycle) => {
       dispatch(actions.selectLifecycle(lifecycle));
     },
     onLifecycleOfChanged: (lifecycleOf) => {

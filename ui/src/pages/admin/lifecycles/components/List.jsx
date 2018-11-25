@@ -38,11 +38,7 @@ class List extends React.Component {
                         this.props.onLifecycleOfChanged(e.target.value);
                         e.stopPropagation();
                       }}
-                      onClick={(e) => {
-                        /* This prevents the event from bubbling up to the list when 
-                           the lifecycle is rendered underneath the li on a small device. */
-                        e.stopPropagation();
-                      }} />;
+                      onClick={(e) => e.stopPropagation()} />;
                 } else {
                   itemValue = lifecycle.lifecycleOf;
                 }
@@ -51,7 +47,7 @@ class List extends React.Component {
                   className={className}
                   title={lifecycle.lifecycleOf}
                   onClick={(e) => {
-                    this.props.onLifecycleSelected(lifecycle);
+                    this.props.onSelected(lifecycle);
                     e.stopPropagation();
                   }}>
                   <span>{itemValue}</span>
@@ -87,7 +83,7 @@ List.propTypes = {
   isNextVersionActivating: PropTypes.bool.isRequired,
   doPromptToSaveChanges: PropTypes.bool.isRequired,
   onSearch: PropTypes.func.isRequired,
-  onLifecycleSelected: PropTypes.func.isRequired,
+  onSelected: PropTypes.func.isRequired,
   onNextVersionSaved: PropTypes.func.isRequired,
   onNextVersionActivated: PropTypes.func.isRequired,
   onNextVersionSaveValidationFailed: PropTypes.func.isRequired,

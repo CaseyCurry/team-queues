@@ -26,7 +26,7 @@ class Lifecycles extends React.Component {
           defaultVersionCreator={this.props.defaultVersionCreator}
           hasNextVersionBeenModified={this.props.hasNextVersionBeenModified}
           doPromptToSaveChanges={this.props.doPromptToSaveChanges}
-          onLifecycleSelected={this.props.onLifecycleSelected}
+          onSelected={this.props.onSelected}
           onLifecycleOfChanged={this.props.onLifecycleOfChanged}
           onNextVersionSaved={this.props.onNextVersionSaved}
           onNextVersionActivated={this.props.onNextVersionActivated}
@@ -61,7 +61,7 @@ Lifecycles.propTypes = {
   defaultVersionCreator: PropTypes.func.isRequired,
   doPromptToSaveChanges: PropTypes.bool.isRequired,
   hasNextVersionBeenModified: PropTypes.bool.isRequired,
-  onLifecycleSelected: PropTypes.func.isRequired,
+  onSelected: PropTypes.func.isRequired,
   onLifecycleOfChanged: PropTypes.func.isRequired,
   onNextVersionSaved: PropTypes.func.isRequired,
   onNextVersionActivated: PropTypes.func.isRequired,

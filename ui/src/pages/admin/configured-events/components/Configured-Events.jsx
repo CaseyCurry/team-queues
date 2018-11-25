@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Loader from "../../../../controls/Loader";
-import List from "./List";
-import Event from "./Event";
+import ListContainer from "./List-Container";
+import EventContainer from "./Event-Container";
 
 class ConfiguredEvents extends React.Component {
   constructor(props) {
@@ -17,22 +17,22 @@ class ConfiguredEvents extends React.Component {
       </div>;
     } else {
       return <div className="row page configured-events">
-        <List
+        <ListContainer
           className="col-sm-12 col-md-4 col-lg-3"
           events={this.props.events}
-          isAddingEvent={this.props.isAddingEvent}
+          isEventBeingAdded={this.props.isEventBeingAdded}
           searchString={this.props.searchString}
-          isEventSaving={this.props.isEventSaving}
-          onEventSelected={this.props.onEventSelected}
-          onEventNameChanged={this.props.onEventNameChanged}
-          onEventSaved={this.props.onEventSaved} />
+          isSaving={this.props.isSaving}
+          onSelected={this.props.onSelected}
+          onNameChanged={this.props.onNameChanged}
+          onSaved={this.props.onSaved} />
         {
           this.props.selectedEvent &&
-          <Event
+          <EventContainer
             className="d-none d-md-block col-md-8 col-lg-9"
             event={this.props.selectedEvent}
-            onEventSaved={this.props.onEventSaved}
-            isEventSaving={this.props.isEventSaving} />
+            onSaved={this.props.onSaved}
+            isSaving={this.props.isSaving} />
         }
       </div>;
     }
@@ -43,12 +43,12 @@ ConfiguredEvents.propTypes = {
   areEventsLoading: PropTypes.bool.isRequired,
   events: PropTypes.array.isRequired,
   selectedEvent: PropTypes.object,
-  isAddingEvent: PropTypes.bool,
+  isEventBeingAdded: PropTypes.bool,
   searchString: PropTypes.string,
-  isEventSaving: PropTypes.bool.isRequired,
-  onEventSelected: PropTypes.func.isRequired,
-  onEventNameChanged: PropTypes.func.isRequired,
-  onEventSaved: PropTypes.func.isRequired
+  isSaving: PropTypes.bool.isRequired,
+  onSelected: PropTypes.func.isRequired,
+  onNameChanged: PropTypes.func.isRequired,
+  onSaved: PropTypes.func.isRequired
 };
 
 export default ConfiguredEvents;

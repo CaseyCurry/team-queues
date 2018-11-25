@@ -20,12 +20,12 @@ class ConfiguredEventsContainer extends React.Component {
       areEventsLoading={this.props.areEventsLoading}
       events={this.props.events}
       selectedEvent={this.props.selectedEvent}
-      isAddingEvent={this.props.isAddingEvent}
+      isEventBeingAdded={this.props.isEventBeingAdded}
       searchString={this.props.searchString}
-      isEventSaving={this.props.isEventSaving}
-      onEventSelected={this.props.onEventSelected}
-      onEventNameChanged={this.props.onEventNameChanged}
-      onEventSaved={this.props.onEventSaved} />;
+      isSaving={this.props.isSaving}
+      onSelected={this.props.onSelected}
+      onNameChanged={this.props.onNameChanged}
+      onSaved={this.props.onSaved} />;
   }
 }
 
@@ -33,13 +33,13 @@ ConfiguredEventsContainer.propTypes = {
   areEventsLoading: PropTypes.bool.isRequired,
   events: PropTypes.array.isRequired,
   selectedEvent: PropTypes.object,
-  isAddingEvent: PropTypes.bool,
+  isEventBeingAdded: PropTypes.bool,
   searchString: PropTypes.string,
-  isEventSaving: PropTypes.bool.isRequired,
+  isSaving: PropTypes.bool.isRequired,
   onGetEvents: PropTypes.func.isRequired,
-  onEventSelected: PropTypes.func.isRequired,
-  onEventNameChanged: PropTypes.func.isRequired,
-  onEventSaved: PropTypes.func.isRequired
+  onSelected: PropTypes.func.isRequired,
+  onNameChanged: PropTypes.func.isRequired,
+  onSaved: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -51,13 +51,13 @@ const mapDispatchToProps = (dispatch) => {
     onGetEvents: () => {
       dispatch(actions.getEvents());
     },
-    onEventSelected: (event) => {
+    onSelected: (event) => {
       dispatch(actions.selectEvent(event));
     },
-    onEventNameChanged: (name) => {
+    onNameChanged: (name) => {
       dispatch(actions.changeEventName(name));
     },
-    onEventSaved: (event) => {
+    onSaved: (event) => {
       dispatch(actions.saveEvent(event));
     }
   };
