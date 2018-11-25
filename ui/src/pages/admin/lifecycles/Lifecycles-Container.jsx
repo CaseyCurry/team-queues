@@ -19,7 +19,7 @@ class LifecyclesContainer extends React.Component {
       areLifecyclesLoading={this.props.areLifecyclesLoading}
       lifecycles={this.props.lifecycles}
       selectedLifecycle={this.props.selectedLifecycle}
-      isAddingLifecycle={this.props.isAddingLifecycle}
+      isLifecycleBeingAdded={this.props.isLifecycleBeingAdded}
       searchString={this.props.searchString}
       isNextVersionSaving={this.props.isNextVersionSaving}
       isNextVersionActivating={this.props.isNextVersionActivating}
@@ -39,7 +39,7 @@ LifecyclesContainer.propTypes = {
   areLifecyclesLoading: PropTypes.bool.isRequired,
   lifecycles: PropTypes.array.isRequired,
   selectedLifecycle: PropTypes.object,
-  isAddingLifecycle: PropTypes.bool,
+  isLifecycleBeingAdded: PropTypes.bool,
   searchString: PropTypes.string,
   isNextVersionSaving: PropTypes.bool.isRequired,
   isNextVersionActivating: PropTypes.bool.isRequired,

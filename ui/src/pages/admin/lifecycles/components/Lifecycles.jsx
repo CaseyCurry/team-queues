@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Loader from "../../../../controls/Loader";
-import List from "./List";
-import Lifecycle from "./Lifecycle";
+import ListContainer from "./List-Container";
+import LifecycleContainer from "./Lifecycle-Container";
 
 class Lifecycles extends React.Component {
   constructor(props) {
@@ -16,10 +16,10 @@ class Lifecycles extends React.Component {
       </div>;
     } else {
       return <div className="row page lifecycles">
-        <List
+        <ListContainer
           className="col-sm-12 col-md-4 col-lg-3"
           lifecycles={this.props.lifecycles}
-          isAddingLifecycle={this.props.isAddingLifecycle}
+          isLifecycleBeingAdded={this.props.isLifecycleBeingAdded}
           searchString={this.props.searchString}
           isNextVersionSaving={this.props.isNextVersionSaving}
           isNextVersionActivating={this.props.isNextVersionActivating}
@@ -34,7 +34,7 @@ class Lifecycles extends React.Component {
           onNextVersionModified={this.props.onNextVersionModified} />
         {
           this.props.selectedLifecycle &&
-          <Lifecycle
+          <LifecycleContainer
             className="d-none d-md-block col-md-8 col-lg-9"
             lifecycle={this.props.selectedLifecycle}
             doPromptToSaveChanges={this.props.doPromptToSaveChanges}
@@ -54,7 +54,7 @@ Lifecycles.propTypes = {
   areLifecyclesLoading: PropTypes.bool.isRequired,
   lifecycles: PropTypes.array.isRequired,
   selectedLifecycle: PropTypes.object,
-  isAddingLifecycle: PropTypes.bool,
+  isLifecycleBeingAdded: PropTypes.bool,
   searchString: PropTypes.string,
   isNextVersionSaving: PropTypes.bool.isRequired,
   isNextVersionActivating: PropTypes.bool.isRequired,

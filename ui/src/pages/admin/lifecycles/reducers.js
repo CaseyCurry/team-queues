@@ -4,7 +4,7 @@ const initialState = Object.freeze({
   areLifecyclesLoading: false,
   lifecycles: [],
   selectedLifecycle: null,
-  isAddingLifecycle: false,
+  isLifecycleBeingAdded: false,
   searchString: null,
   isNextVersionSaving: false,
   isNextVersionActivating: false,
@@ -88,7 +88,7 @@ export default (state = initialState, action) => {
       }
       return Object.assign({}, state, {
         selectedLifecycle,
-        isAddingLifecycle: selectedLifecycle.isNew,
+        isLifecycleBeingAdded: !!selectedLifecycle.isNew,
         doPromptToSaveChanges: false
       });
     }

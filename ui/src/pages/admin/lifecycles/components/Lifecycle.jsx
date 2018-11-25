@@ -3,181 +3,21 @@ import PropTypes from "prop-types";
 import Loader from "../../../../controls/Loader";
 
 class Lifecycle extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = this.getInitialState();
-  }
-
-  getInitialState() {
-    let selectedVersion;
-    if (this.props.lifecycle.nextVersion && !this.props.lifecycle.nextVersion.isNew) {
-      selectedVersion = this.props.lifecycle.nextVersion;
-    } else if (this.props.lifecycle.nextVersion && !this.props.lifecycle.activeVersion && !this.props.lifecycle.previousVersion) {
-      selectedVersion = this.props.lifecycle.nextVersion;
-    } else if (this.props.lifecycle.activeVersion) {
-      selectedVersion = this.props.lifecycle.activeVersion;
-    } else {
-      selectedVersion = this.props.lifecycle.previousVersion;
-    }
-    return {
-      lifecycle: this.props.lifecycle,
-      selectedVersion,
-      triggerDefinition: null,
-      isTriggerDefinitionValid: true,
-      queueDefinition: null,
-      isQueueDefinitionValid: true
-    };
-  }
-
-  componentDidUpdate(previousProps) {
-    if (this.props.lifecycle !== previousProps.lifecycle) {
-      this.setState(this.getInitialState());
-    }
-  }
-
-  cancel() {
-    this.setState(this.getInitialState());
-    const hasNextVersionBeenModified = false;
-    this.props.onNextVersionModified(hasNextVersionBeenModified);
-  }
-
-  selectVersion(selectedVersion) {
-    if (selectedVersion === this.state.selectedVersion) {
-      return;
-    }
-    this.setState(Object.assign({}, this.state, {
-      selectedVersion,
-      isTriggerDefinitionValid: true,
-      isQueueDefinitionValid: true
-    }));
-  }
-
-  validateTriggers() {
-    try {
-      JSON.parse(this.state.triggerDefinition);
-      this.setState(Object.assign({}, this.state, {
-        isTriggerDefinitionValid: true
-      }));
-    } catch (error) {
-      this.setState(Object.assign({}, this.state, {
-        isTriggerDefinitionValid: false
-      }));
-    }
-  }
-
-  validateQueues() {
-    try {
-      JSON.parse(this.state.queueDefinition);
-      this.setState(Object.assign({}, this.state, {
-        isQueueDefinitionValid: true
-      }));
-    } catch (error) {
-      this.setState(Object.assign({}, this.state, {
-        isQueueDefinitionValid: false
-      }));
-    }
-  }
-
-  changeTriggers(triggerDefinition) {
-    this.setState(Object.assign({}, this.state, { triggerDefinition }));
-  }
-
-  changeQueues(queueDefinition) {
-    this.setState(Object.assign({}, this.state, { queueDefinition }));
-  }
-
-  saveChanges(e) {
-    let isTriggerDefinitionValid = true;
-    let isQueueDefinitionValid = true;
-    let triggers;
-    let queues;
-
-    try {
-      triggers = this.state.triggerDefinition !== null ?
-        JSON.parse(this.state.triggerDefinition) : this.state.lifecycle.nextVersion.triggersForItemCreation;
-    } catch (error) {
-      isTriggerDefinitionValid = false;
-    }
-
-    try {
-      queues = this.state.queueDefinition !== null ?
-        JSON.parse(this.state.queueDefinition) : this.state.lifecycle.nextVersion.queues;
-    } catch (error) {
-      isQueueDefinitionValid = false;
-    }
-
-    if (!isTriggerDefinitionValid || !isQueueDefinitionValid) {
-      this.setState(Object.assign({}, this.state, {
-        isTriggerDefinitionValid,
-        isQueueDefinitionValid
-      }));
-      this.props.onNextVersionSaveValidationFailed("invalid json caused the save to fail");
-      e.stopPropagation();
-      return;
-    }
-
-    const lifecycle = JSON.parse(JSON.stringify(this.state.lifecycle));
-    lifecycle.nextVersion.triggersForItemCreation = triggers;
-    lifecycle.nextVersion.queues = queues;
-    this.setState(Object.assign({}, this.state, {
-      lifecycle,
-      selectedVersion: lifecycle.nextVersion,
-      triggerDefinition: null,
-      isTriggerDefinitionValid: true,
-      queueDefinition: null,
-      isQueueDefinitionValid: true
-    }));
-    this.props.onNextVersionSaved(lifecycle);
-  }
-
-  hasNextVersionBeenModified() {
-    if (!this.state) {
-      return false;
-    }
-
-    try {
-      // parse then stringify to avoid formatting differences
-      const currentTriggerDefinition = this.state.triggerDefinition === null ?
-        JSON.stringify(this.state.lifecycle.nextVersion.triggersForItemCreation) : JSON.stringify(JSON.parse(this.state.triggerDefinition));
-      const currentQueueDefinition = this.state.queueDefinition === null ?
-        JSON.stringify(this.state.lifecycle.nextVersion.queues) : JSON.stringify(JSON.parse(this.state.queueDefinition));
-      const originalTriggerDefinition = JSON.stringify(this.props.lifecycle.nextVersion.triggersForItemCreation);
-      const originalQueueDefinition = JSON.stringify(this.props.lifecycle.nextVersion.queues);
-      return currentTriggerDefinition !== originalTriggerDefinition ||
-        currentQueueDefinition !== originalQueueDefinition;
-    } catch (error) {
-      // if there is invalid json, then something has changed
-      return true;
-    }
-  }
-
-  leaveTriggers() {
-    if (!this.state.isTriggerDefinitionValid) {
-      this.validateTriggers();
-    }
-    this.props.onNextVersionModified(this.hasNextVersionBeenModified());
-  }
-
-  leaveQueues() {
-    if (!this.state.isQueueDefinitionValid) {
-      this.validateQueues();
-    }
-    this.props.onNextVersionModified(this.hasNextVersionBeenModified());
-  }
-
   render() {
-    const isActiveSelected = this.state.lifecycle.activeVersion === this.state.selectedVersion;
-    const isPreviousSelected = this.state.lifecycle.previousVersion === this.state.selectedVersion;
-    const isNextSelected = this.state.lifecycle.nextVersion === this.state.selectedVersion;
-    const hasNextVersionBeenModified = this.hasNextVersionBeenModified();
     const saveButton = <button
-      disabled={!hasNextVersionBeenModified || !isNextSelected}
-      onClick={(e) => this.saveChanges(e)}>
+      disabled={!this.props.hasNextVersionBeenModified || !this.props.isNextSelected}
+      onClick={(e) => {
+        this.props.onNextVersionSaved(e);
+        e.stopPropagation();
+      }}>
       save
     </button>;
     const cancelButton = <button
-      disabled={!hasNextVersionBeenModified || !isNextSelected}
-      onClick={() => this.cancel()}>
+      disabled={!this.props.hasNextVersionBeenModified || !this.props.isNextSelected}
+      onClick={(e) => {
+        this.props.onNextVersionModificationsCancelled();
+        e.stopPropagation();
+      }}>
       cancel
     </button>;
     return <div className={this.props.className + " workspace lifecycle"}>
@@ -185,23 +25,32 @@ class Lifecycle extends React.Component {
         <div className="versions">
           <div className="segmented-control">
             <button
-              className={isPreviousSelected ? "selected" : "unselected"}
-              disabled={!this.state.lifecycle.previousVersion}
-              onClick={() => this.selectVersion(this.state.lifecycle.previousVersion)}
+              className={this.props.isPreviousSelected ? "selected" : "unselected"}
+              disabled={!this.props.lifecycle.previousVersion}
+              onClick={(e) => {
+                this.props.onVersionSelected(this.props.lifecycle.previousVersion);
+                e.stopPropagation();
+              }}
               title="previous version">
               previous
             </button>
             <button
-              className={isActiveSelected ? "selected" : "unselected"}
-              disabled={!this.state.lifecycle.activeVersion}
-              onClick={() => this.selectVersion(this.state.lifecycle.activeVersion)}
+              className={this.props.isActiveSelected ? "selected" : "unselected"}
+              disabled={!this.props.lifecycle.activeVersion}
+              onClick={(e) => {
+                this.props.onVersionSelected(this.props.lifecycle.activeVersion);
+                e.stopPropagation();
+              }}
               title="active version">
               active
             </button>
             <button
-              className={isNextSelected ? "selected" : "unselected"}
-              disabled={!this.state.lifecycle.nextVersion}
-              onClick={() => this.selectVersion(this.state.lifecycle.nextVersion)}
+              className={this.props.isNextSelected ? "selected" : "unselected"}
+              disabled={!this.props.lifecycle.nextVersion}
+              onClick={(e) => {
+                this.props.onVersionSelected(this.props.lifecycle.nextVersion);
+                e.stopPropagation();
+              }}
               title="next version">
               next
             </button>
@@ -210,31 +59,43 @@ class Lifecycle extends React.Component {
         <div className="definition">
           <h6>triggers</h6>
           {
-            isNextSelected &&
+            this.props.isNextSelected &&
             <textarea
-              className={!this.state.isTriggerDefinitionValid ? "error" : undefined}
-              value={this.state.triggerDefinition !== null ? this.state.triggerDefinition : JSON.stringify(this.state.selectedVersion.triggersForItemCreation, null, 4)}
-              onChange={(e) => this.changeTriggers(e.target.value)}
-              onBlur={() => this.leaveTriggers()}>
+              className={!this.props.isTriggerDefinitionValid ? "error" : undefined}
+              value={this.props.triggerDefinition !== null ? this.props.triggerDefinition : JSON.stringify(this.props.selectedVersion.triggersForItemCreation, null, 4)}
+              onChange={(e) => {
+                this.props.onTriggerModified(e.target.value);
+                e.stopPropagation();
+              }}
+              onBlur={(e) => {
+                this.props.onTriggerExited();
+                e.stopPropagation();
+              }}>
             </textarea>
           }
           {
-            !isNextSelected &&
-            <textarea disabled defaultValue={JSON.stringify(this.state.selectedVersion.triggersForItemCreation, null, 4)}></textarea>
+            !this.props.isNextSelected &&
+            <textarea disabled defaultValue={JSON.stringify(this.props.selectedVersion.triggersForItemCreation, null, 4)}></textarea>
           }
           <h6>queues</h6>
           {
-            isNextSelected &&
+            this.props.isNextSelected &&
             <textarea
-              className={!this.state.isQueueDefinitionValid ? "error" : undefined}
-              value={this.state.queueDefinition !== null ? this.state.queueDefinition : JSON.stringify(this.state.selectedVersion.queues, null, 4)}
-              onChange={(e) => this.changeQueues(e.target.value)}
-              onBlur={() => this.leaveQueues()}>
+              className={!this.props.isQueueDefinitionValid ? "error" : undefined}
+              value={this.props.queueDefinition !== null ? this.props.queueDefinition : JSON.stringify(this.props.selectedVersion.queues, null, 4)}
+              onChange={(e) => {
+                this.props.onQueueModified(e.target.value);
+                e.stopPropagation();
+              }}
+              onBlur={(e) => {
+                this.props.onQueueExited();
+                e.stopPropagation();
+              }}>
             </textarea>
           }
           {
-            !isNextSelected &&
-            <textarea disabled defaultValue={JSON.stringify(this.state.selectedVersion.queues, null, 4)}></textarea>
+            !this.props.isNextSelected &&
+            <textarea disabled defaultValue={JSON.stringify(this.props.selectedVersion.queues, null, 4)}></textarea>
           }
         </div>
         {
@@ -270,8 +131,8 @@ class Lifecycle extends React.Component {
         {
           !this.props.isNextVersionActivating &&
           <button
-            disabled={hasNextVersionBeenModified || !isNextSelected}
-            onClick={() => this.props.onNextVersionActivated(this.state.lifecycle)}>
+            disabled={this.props.hasNextVersionBeenModified || !this.props.isNextSelected}
+            onClick={() => this.props.onNextVersionActivated(this.props.lifecycle)}>
             activate
           </button>
         }
@@ -284,13 +145,26 @@ class Lifecycle extends React.Component {
 Lifecycle.propTypes = {
   lifecycle: PropTypes.object.isRequired,
   className: PropTypes.string.isRequired,
+  selectedVersion: PropTypes.object.isRequired,
+  hasNextVersionBeenModified: PropTypes.bool.isRequired,
+  isNextSelected: PropTypes.bool.isRequired,
+  isPreviousSelected: PropTypes.bool.isRequired,
+  isActiveSelected: PropTypes.bool.isRequired,
+  triggerDefinition: PropTypes.string,
+  isTriggerDefinitionValid: PropTypes.bool.isRequired,
+  queueDefinition: PropTypes.string,
+  isQueueDefinitionValid: PropTypes.bool.isRequired,
   isNextVersionSaving: PropTypes.bool.isRequired,
   isNextVersionActivating: PropTypes.bool.isRequired,
   doPromptToSaveChanges: PropTypes.bool.isRequired,
+  onVersionSelected: PropTypes.func.isRequired,
   onNextVersionSaved: PropTypes.func.isRequired,
-  onNextVersionActivated: PropTypes.func.isRequired,
-  onNextVersionSaveValidationFailed: PropTypes.func.isRequired,
-  onNextVersionModified: PropTypes.func.isRequired
+  onNextVersionModificationsCancelled: PropTypes.func.isRequired,
+  onTriggerModified: PropTypes.func.isRequired,
+  onTriggerExited: PropTypes.func.isRequired,
+  onQueueModified: PropTypes.func.isRequired,
+  onQueueExited: PropTypes.func.isRequired,
+  onNextVersionActivated: PropTypes.func.isRequired
 };
 
 export default Lifecycle;
