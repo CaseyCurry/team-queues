@@ -1,9 +1,7 @@
 .segmented-control {
-  height: 48px;
-
   button {
-    height: 100%;
     vertical-align: middle;
+    height: 100%;
     margin-left: 0;
     margin-right: 0;
 
@@ -17,36 +15,8 @@
       border-bottom-left-radius: 0;
     }
 
-    &.selector {
-      padding: 0;
-      width: 48px !important;
-
-      :first-child {
-        height: 100%;
-        width: 100%;
-      }
-    }
-
     &:not(:first-child):not(:last-child) {
       border-radius: 0;
-    }
-
-    &.primary {
-      @include call-to-action();
-    }
-
-    &.unselected:not(:disabled) {
-      background-color: $primary-font-color;
-      color: $tertiary-background-color;
-    }
-
-    &:hover:not(:disabled):not(.primary) {
-      @include call-to-action(true);
-      transition: 0;
-
-      img {
-        filter: invert(1);
-      }
     }
   }
 }

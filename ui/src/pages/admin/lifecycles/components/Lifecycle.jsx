@@ -86,7 +86,7 @@ class Lifecycle extends React.Component {
     this.setState(Object.assign({}, this.state, { queueDefinition }));
   }
 
-  saveChanges() {
+  saveChanges(e) {
     let isTriggerDefinitionValid = true;
     let isQueueDefinitionValid = true;
     let triggers;
@@ -112,6 +112,7 @@ class Lifecycle extends React.Component {
         isQueueDefinitionValid
       }));
       this.props.onNextVersionSaveValidationFailed("invalid json caused the save to fail");
+      e.stopPropagation();
       return;
     }
 
@@ -171,7 +172,7 @@ class Lifecycle extends React.Component {
     const hasNextVersionBeenModified = this.hasNextVersionBeenModified();
     const saveButton = <button
       disabled={!hasNextVersionBeenModified || !isNextSelected}
-      onClick={() => this.saveChanges()}>
+      onClick={(e) => this.saveChanges(e)}>
       save
     </button>;
     const cancelButton = <button
@@ -221,6 +222,7 @@ class Lifecycle extends React.Component {
             !isNextSelected &&
             <textarea disabled defaultValue={JSON.stringify(this.state.selectedVersion.triggersForItemCreation, null, 4)}></textarea>
           }
+          <h6>queues</h6>
           {
             isNextSelected &&
             <textarea

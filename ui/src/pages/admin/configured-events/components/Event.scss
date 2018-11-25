@@ -1,4 +1,5 @@
 .event {
+  // TODO: work on making this look better on small devices
   text-align: center;
 
   .event-level-data {
@@ -14,11 +15,23 @@
 
       &.primary {
         cursor: default;
+        @include call-to-action();
       }
 
       &.secondary {
         width: 40px;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      &.selector {
         padding: 0;
+        width: 48px !important;
+
+        :first-child {
+          height: 100%;
+          width: 100%;
+        }
       }
     }
   }
@@ -60,6 +73,12 @@
 
     button {
       width: 140px;
+
+      @media screen and (max-width: 650px) {
+        margin: $section-margin 0 0 0;
+        display: block;
+        width: 100% !important;
+      }
     }
   }
 }
