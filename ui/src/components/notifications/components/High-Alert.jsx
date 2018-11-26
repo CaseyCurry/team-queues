@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 const HighAlert = ({ notification, className }) => {
   return <div className={`high-alert ${className}`}>
-    {`${notification.message} id: ${notification.id}`}
+    {notification.message}
   </div>;
 };
 

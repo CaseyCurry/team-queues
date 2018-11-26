@@ -12,19 +12,15 @@ class List extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:8083/api/queries/queues")
-      .then(
-        (response) => response.json()
-      )
+    fetch("/api/queries/queues")
+      .then((response) => response.json())
       .then((result) => {
         this.setState({
           isLoaded: true,
           queues: result
         });
         if (result.length) {
-          this
-            .props
-            .onQueueSelected(result[0].queueId);
+          this.props.onQueueSelected(result[0].queueName, result[0].taskType);
         }
       }, (error) => {
         this.setState({ error, isLoaded: true });
@@ -38,13 +34,19 @@ class List extends React.Component {
       return <div>Loading...</div>;
     } else {
       return (
-        <select onChange={(event) => this.props.onQueueSelected(event.target.value)}>
+        <select onChange={(e) => {
+          const queueName = e.target.options[e.target.selectedIndex].dataset.name;
+          const taskType = e.target.options[e.target.selectedIndex].dataset.type;
+          this.props.onQueueSelected(queueName, taskType);
+          e.stopPropagation();
+        }}>
           {
             this
               .state
               .queues
               .map((queue) => {
-                return <option key={queue.queueId} value={queue.queueId}>
+                const key = `${queue.queueName}.${queue.taskType}`;
+                return <option key={key} data-name={queue.queueName} data-type={queue.taskType}>
                   {queue.queueName} / {queue.taskType}
                 </option>;
               })

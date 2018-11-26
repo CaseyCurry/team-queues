@@ -7,7 +7,7 @@ const extendLifecycle = (lifecycle) => {
     .map((trigger) => {
       return trigger.eventNames;
     })
-    .reduce((x, y) => x.concat(y));
+    .reduce((x, y) => x.concat(y), []);
   const eventsInQueues = lifecycle.queues
     .map((queue) => {
       return queue.destinationsWhenEventOccurred;

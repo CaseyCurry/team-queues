@@ -6,7 +6,7 @@ class Tasks extends React.Component {
     super(props);
     this.state = {
       error: null,
-      isLoaded: false,
+      isLoading: false,
       tasks: []
     };
   }
@@ -15,24 +15,28 @@ class Tasks extends React.Component {
     this.getTasks();
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.queue !== prevProps.queue) {
+  componentDidUpdate(previousProps) {
+    if (this.props !== previousProps) {
       this.getTasks();
     }
   }
 
   getTasks() {
-    fetch(`http://localhost:8083/api/queries/queues/${this.props.queue}/tasks`)
+    this.setState({
+      isLoading: true,
+      tasks: []
+    });
+    fetch(`/api/queries/queues/${this.props.queueName}/task-types/${this.props.taskType}/tasks`)
       .then((response) => response.json())
       .then((result) => {
         this.setState({
-          isLoaded: true,
+          isLoading: false,
           tasks: result
         });
       }, (error) => {
         this.setState({
           error,
-          isLoaded: true
+          isLoading: false
         });
       });
   }
@@ -40,7 +44,7 @@ class Tasks extends React.Component {
   render() {
     if (this.state.error) {
       return <div>Error: {this.state.error.message}</div>;
-    } else if (!this.state.isLoaded) {
+    } else if (this.state.isLoading) {
       return <div>Loading...</div>;
     } else {
       return (
@@ -75,7 +79,8 @@ class Tasks extends React.Component {
 }
 
 Tasks.propTypes = {
-  queue: PropTypes.string.isRequired
+  queueName: PropTypes.string.isRequired,
+  taskType: PropTypes.string.isRequired
 };
 
 export default Tasks;

@@ -6,25 +6,26 @@ class Queues extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedQueue: null
+      selectedQueueName: null,
+      selectedTaskType: null
     };
   }
 
-  handleQueueSelected(queue) {
+  handleQueueSelected(queueName, taskType) {
     this.setState({
-      selectedQueue: queue
+      selectedQueueName: queueName,
+      selectedTaskType: taskType
     });
   }
 
   render() {
     return <div className="row page">
-      <List
-        onQueueSelected={this
-          .handleQueueSelected
-          .bind(this)} />
+      <List onQueueSelected={this.handleQueueSelected.bind(this)} />
       {
-        this.state.selectedQueue &&
-        <Tasks queue={this.state.selectedQueue} />
+        this.state.selectedQueueName &&
+        <Tasks
+          queueName={this.state.selectedQueueName}
+          taskType={this.state.selectedTaskType} />
       }
     </div>;
   }

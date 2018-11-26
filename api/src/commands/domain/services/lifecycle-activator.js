@@ -12,10 +12,10 @@ const LifecycleActivator = class {
     if (currentlyActiveLifecycle) {
       currentlyActiveLifecycle.deactivate();
       await this.lifecycleRepository.update(currentlyActiveLifecycle);
-      this.domainEvents.raise(currentlyActiveLifecycle.domainEvents.raisedEvent);
+      this.domainEvents.raise(currentlyActiveLifecycle.domainEvents.raisedEvents);
     }
     await this.lifecycleRepository.update(lifecycle);
-    this.domainEvents.raise(lifecycle.domainEvents.raisedEvent);
+    this.domainEvents.raise(lifecycle.domainEvents.raisedEvents);
   }
 };
 

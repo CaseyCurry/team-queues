@@ -22,16 +22,16 @@ DomainEvents(kafka)
   });
 
 const configureEventHandlers = async (domainEvents, domainServices) => {
-  const configure = async (domainEvents, handlers) => {
+  const configure = async (handlers) => {
     for (const handler of Object.keys(handlers)) {
       console.debug(`registering the ${handler} event handler`);
       await handlers[handler].register();
     }
   };
   const commandHandlers = CommandEventHandlers(domainEvents, domainServices);
-  await configure(domainEvents, commandHandlers);
+  await configure(commandHandlers);
   const queryHandlers = QueryEventHandlers(domainEvents);
-  await configure(domainEvents, queryHandlers);
+  await configure(queryHandlers);
   domainEvents.start();
 };
 

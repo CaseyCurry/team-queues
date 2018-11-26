@@ -75,7 +75,7 @@ class Lifecycle extends React.Component {
           }
           {
             !this.props.isNextSelected &&
-            <textarea disabled defaultValue={JSON.stringify(this.props.selectedVersion.triggersForItemCreation, null, 4)}></textarea>
+            <textarea disabled value={JSON.stringify(this.props.selectedVersion.triggersForItemCreation, null, 4)}></textarea>
           }
           <h6>queues</h6>
           {
@@ -95,7 +95,7 @@ class Lifecycle extends React.Component {
           }
           {
             !this.props.isNextSelected &&
-            <textarea disabled defaultValue={JSON.stringify(this.props.selectedVersion.queues, null, 4)}></textarea>
+            <textarea disabled value={JSON.stringify(this.props.selectedVersion.queues, null, 4)}></textarea>
           }
         </div>
         {

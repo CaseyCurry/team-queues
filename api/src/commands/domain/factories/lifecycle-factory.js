@@ -9,8 +9,9 @@ const LifecycleFactory = {
     triggersForItemCreation,
     queues
   }) => {
-    // Do not generate an id here because it demotes idempotency. Force the client to generate an id.
+    // Do not generate the lifecycle id here because it demotes idempotency. Force the client to generate an id.
     // TODO: validate that events in lifecycle are configured
+    // TODO: the queue id should just be a next number instead of a guid
     if (!triggersForItemCreation) {
       triggersForItemCreation = [];
     }
@@ -26,10 +27,8 @@ const LifecycleFactory = {
       triggersForItemCreation: [],
       queues: []
     });
-    queues
-      .forEach((queue) => lifecycle.createQueue(queue));
-    triggersForItemCreation
-      .forEach((trigger) => lifecycle.createTriggerForItemCreation(trigger));
+    queues.forEach((queue) => lifecycle.createQueue(queue));
+    triggersForItemCreation.forEach((trigger) => lifecycle.createTriggerForItemCreation(trigger));
     return lifecycle;
   }
 };

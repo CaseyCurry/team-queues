@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 // TODO: add some sort of id - correlation, error, session? - and add copy to clipboard button
 const Error = ({ notification, className }) => {
   return <div className={`error ${className}`}>
-    {`${notification.message} id: ${notification.id}`}
+    {notification.message}
   </div>;
 };
 

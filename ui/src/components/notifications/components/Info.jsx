@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 const Info = ({ notification, className }) => {
   return <div className={`info ${className}`}>
-    {`${notification.message} id: ${notification.id}`}
+    {notification.message}
   </div>;
 };
 
