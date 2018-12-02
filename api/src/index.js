@@ -1,7 +1,7 @@
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
-import kafka from "kafka-node";
+import kafka from "node-rdkafka";
 import "./console-overrides";
 import { DomainEvents } from "./commands/infrastructure/kafka/domain-events";
 import { DomainServices } from "./commands/application-services/registries/domain-services";

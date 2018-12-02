@@ -5,6 +5,7 @@ const TaskCompletedEvent = class extends BaseEventMetadata {
   constructor(task) {
     super({ name: "team-queues.task-completed", version: 1 });
     this.message.task = {
+      itemId: task.itemId,
       id: task.id
     };
     deepFreeze(this);

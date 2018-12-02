@@ -2,7 +2,7 @@ const LifecycleVersionActivatedHandler = (domainEvents, queueData) => {
   const handler = async (event) => {
     // TODO: Why are these events being raised once but handled four times?
     const lifecycle = event.message.lifecycle;
-    console.debug(`handling lifecycle ${lifecycle.id} version ${lifecycle.version.number} because the ${event.name} event occurred`);
+    console.debug(`handling ${event.name} for lifecycle ${lifecycle.id} version ${lifecycle.version.number}`);
     const queues = lifecycle.version.queues
       .map((queue) => {
         return {

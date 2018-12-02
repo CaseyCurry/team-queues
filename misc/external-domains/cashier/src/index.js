@@ -12,12 +12,38 @@ app.get("/", (request, response) => {
   response.end();
 });
 
-app.post("/orders", async (request, response) => {
+app.post("/orders/hot", async (request, response) => {
   const order = {
     id: uuidv4(),
     coffee: {
       isHot: true,
       isFree: false
+    }
+  };
+  await raiseEvent(order);
+  response.status(201)
+    .send(order.id);
+});
+
+app.post("/orders/cold", async (request, response) => {
+  const order = {
+    id: uuidv4(),
+    coffee: {
+      isHot: false,
+      isFree: false
+    }
+  };
+  await raiseEvent(order);
+  response.status(201)
+    .send(order.id);
+});
+
+app.post("/orders/free", async (request, response) => {
+  const order = {
+    id: uuidv4(),
+    coffee: {
+      isHot: true,
+      isFree: true
     }
   };
   await raiseEvent(order);
@@ -44,7 +70,7 @@ const raiseEvent = (order) => {
         message: order
       };
       const payload = [{
-        topic: event.name,
+        topic: event.name.split(".")[0],
         messages: [JSON.stringify(event)],
         partition: 0
       }];

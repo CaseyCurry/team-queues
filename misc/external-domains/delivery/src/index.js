@@ -37,7 +37,7 @@ const raiseEvent = (orderId) => {
         message: { orderId }
       };
       const payload = [{
-        topic: event.name,
+        topic: event.name.split(".")[0],
         messages: [JSON.stringify(event)],
         partition: 0
       }];

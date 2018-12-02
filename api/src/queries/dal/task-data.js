@@ -5,14 +5,14 @@ const TaskData = (store) => {
       await collection.insertOne(task);
       collection.close();
     },
-    deleteId: async (itemId, taskId) => {
+    deleteById: async (itemId, taskId) => {
       const collection = await store.getCollection();
-      await collection.deleteOne({ item: { id: itemId }, taskId });
+      await collection.deleteOne({ id: taskId, "item.id": itemId });
       collection.close();
     },
     getById: async (itemId, taskId) => {
       const collection = await store.getCollection();
-      const task = await collection.findOne({ item: { id: itemId }, taskId });
+      const task = await collection.findOne({ id: taskId, "item.id": itemId });
       collection.close();
       return task;
     },

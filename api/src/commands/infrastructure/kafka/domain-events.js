@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-
+// TODO: support broadcasts
 // TODO: exponential backoffs
+// TODO: partitition by aggregate id
 // TODO: poison messages
 // TODO: research kafka best practices
 const DomainEvents = (kafka) => {
@@ -8,8 +8,32 @@ const DomainEvents = (kafka) => {
     let subscriptions = {};
     // TODO: pass config to client
     const brokerLocation = "localhost:9092";
-    const producerClient = new kafka.KafkaClient();
-    const producer = new kafka.Producer(producerClient);
+    const producer = new kafka.Producer({
+      "client.id": "team-queues",
+      "metadata.broker.list": brokerLocation,
+      "max.in.flight.requests.per.connection": 1
+    });
+
+    const getTopic = (eventName) => {
+      return eventName.split(".")[0];
+    };
+
+    const addSubscription = (eventName, handler) => {
+      const topic = getTopic(eventName);
+      if (!subscriptions[topic]) {
+        subscriptions[topic] = {
+          events: {}
+        };
+      }
+      if (!subscriptions[topic][eventName]) {
+        subscriptions[topic][eventName] = {
+          handlers: []
+        };
+      }
+      subscriptions[topic][eventName].handlers.push(handler);
+    };
+
+    producer.connect();
 
     producer.on("ready", () => {
       console.debug(`the kafka producer is ready to send messages to ${brokerLocation}`);
@@ -21,71 +45,70 @@ const DomainEvents = (kafka) => {
           if (!events || !Array.isArray(events) || !events.length) {
             return;
           }
-          const payload = events
-            .map((event) => event.name)
-            .filter((x, y, z) => z.indexOf(x) === y)
-            .map((eventName) => {
-              const messages = events
-                .filter((event) => event.name === eventName)
-                .map((event) => JSON.stringify(event));
-              return {
-                topic: eventName,
-                messages,
-                partition: 0
-              };
+          // make sure events are sent in the order of occurrence
+          events
+            .sort((x, y) => x.occurredOn < y.occurredOn ? -1 : 1)
+            .forEach((event) => {
+              const topic = getTopic(event.name);
+              console.debug(`raising the ${event.name} event with id ${event.id} on topic ${topic}`);
+              const partition = null;
+              try {
+                producer.produce(topic, partition, Buffer.from(JSON.stringify(event)));
+              } catch (error) {
+                console.error(error);
+              }
             });
-          console.debug(`raising the ${payload[0].topic} event`);
-          producer.send(payload, (error) => {
-            if (error) {
-              console.error(error);
-            }
-          });
         },
         listenAndHandleOnce: (eventName, handler) => {
           console.debug(`subscribing to the ${eventName} event`);
-          if (!subscriptions[eventName]) {
-            subscriptions[eventName] = {
-              handlers: [],
-              handleOnce: true
-            };
-          }
-          subscriptions[eventName].handlers.push(handler);
+          addSubscription(eventName, handler, true);
         },
         listenToBroadcast: (eventName, handler) => {
           // TODO: unit test
           // TODO: this will be used to update configured events and lifecycles in application-services
           console.debug(`subscribing to the ${eventName} event`);
-          if (!subscriptions[eventName]) {
-            subscriptions[eventName] = {
-              handlers: [],
-              handleOnce: false
-            };
-          }
-          subscriptions[eventName].handlers.push(handler);
+          addSubscription(eventName, handler, false);
         },
         start: () => {
-          const groupIdForBroadcastClients = uuidv4();
           Object.keys(subscriptions)
-            .forEach((eventName) => {
-              console.debug(`the kafka consumer is waiting for the ${eventName} event`);
-              const consumer = new kafka.ConsumerGroup({
-                kafkaHost: brokerLocation,
-                groupId: subscriptions[eventName].handleOnce ?
-                  "team-queues" : groupIdForBroadcastClients,
-                autoCommit: true,
-                fromOffset: "latest"
-              }, eventName);
-              subscriptions[eventName].consumer = consumer;
-              consumer.on("message", (message) => {
-                console.debug(`event ${message.topic} occurred`);
-                for (const handler of subscriptions[message.topic].handlers) {
-                  const event = JSON.parse(message.value);
+            .forEach((topic) => {
+              console.debug(`the kafka consumer is waiting for events on topic ${topic}`);
+
+              const consumer = new kafka.KafkaConsumer({
+                "group.id": "kafka",
+                "metadata.broker.list": brokerLocation
+              });
+              subscriptions[topic].consumer = consumer;
+              consumer.connect();
+
+              consumer.on("ready", () => {
+                consumer.subscribe([topic]);
+                setInterval(() => {
+                  consumer.consume(1);
+                }, 1000);
+              });
+
+              consumer.on("data", (data) => {
+                const event = JSON.parse(data.value.toString());
+                const eventSubscriptions = subscriptions[topic][event.name];
+                if (!eventSubscriptions) {
+                  return;
+                }
+                console.debug(`event ${event.name} occurred with id ${event.id}`);
+                for (const handler of eventSubscriptions.handlers) {
                   handler(event)
                     .catch((error) => {
                       console.error(error);
+                      // TODO: What needs to happen here to force a retry?
                     });
+                  console.debug(`event ${event.id} handled`);
                 }
               });
+
+              consumer.on("event.error", (error) => {
+                console.error(error);
+              });
+
               consumer.on("error", (error) => {
                 console.error(error);
               });
@@ -95,26 +118,17 @@ const DomainEvents = (kafka) => {
       });
     });
 
-    producer.on("error", function(error) {
+    producer.on("event.error", function(error) {
       reject(error);
     });
 
     const end = () => {
       if (Object.keys(subscriptions)
         .length) {
-        producer.close();
-        producerClient.close((error) => {
-          if (error) {
-            console.error(error);
-          }
-        });
+        producer.disconnect();
         Object.keys(subscriptions)
-          .forEach((eventName) => {
-            subscriptions[eventName].consumer.close(true, (error) => {
-              if (error) {
-                console.error(error);
-              }
-            });
+          .forEach((topic) => {
+            subscriptions[topic].consumer.disconnect();
           });
         subscriptions = {};
       }

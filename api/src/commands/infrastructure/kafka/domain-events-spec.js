@@ -1,11 +1,11 @@
 import { expect } from "chai";
-import kafka from "kafka-node";
+import kafka from "node-rdkafka";
 import { DomainEvents } from "./domain-events";
 
 describe("domain events suite", () => {
   describe("integration tests", function() {
     let domainEvents;
-    let eventName = "test-event";
+    let eventName = "team-queues-tests.test-event";
 
     beforeEach(async () => {
       domainEvents = await DomainEvents(kafka);

@@ -4,6 +4,7 @@ import { Task } from "../entities/task";
 
 describe("task assigned event suite", () => {
   const task = new Task({
+    itemId: 456,
     id: 123,
     assignee: { name: "Jane" }
   });
@@ -41,6 +42,7 @@ describe("task assigned event suite", () => {
   it("should include the task", () => {
     expect(event.message.task)
       .to.deep.equal({
+        itemId: task.itemId,
         id: task.id,
         assigneeName: task.assignee.name
       });

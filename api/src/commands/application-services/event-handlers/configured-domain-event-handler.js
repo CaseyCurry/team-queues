@@ -13,6 +13,8 @@ const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, d
         return;
       }
 
+      const raisedDomainEvents = [];
+
       for (const lifecycle of lifecycles) {
         /* I can't imagine multiple lifecycles would listen to the same event, so lifecycles.length
            should generally be 1 at the most. Otherwise querying the db in a loop would be a
@@ -28,13 +30,13 @@ const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, d
           continue;
         }
         if (item) {
-          console.debug(`handling item ${item.id} in lifecycle of ${lifecycle.lifecycleOf} because the ${event.name} event occurred`);
+          console.debug(`handling ${event.name} for item ${item.id} in lifecycle of ${lifecycle.lifecycleOf}`);
           const updatedItem = await lifecycle
             .processEvent(destinationProcessor, event, configuredEvent, item);
           console.debug(`updating item ${item.id} in lifecycle of ${lifecycle.lifecycleOf} because of event ${event.name} having occurred`);
           // TODO: change this to not upsert if separating insert and update  will increase performance
           await itemRepository.createOrUpdate(updatedItem);
-          domainEvents.raise(updatedItem.domainEvents.raisedEvents);
+          raisedDomainEvents.push(...updatedItem.domainEvents.raisedEvents);
         } else {
           console.debug(`handling the occurred event ${event.name} in lifecycle of ${lifecycle.lifecycleOf}`);
           const createdItem = await lifecycle
@@ -44,9 +46,10 @@ const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, d
             return;
           }
           itemRepository.createOrUpdate(createdItem);
-          domainEvents.raise(createdItem.domainEvents.raisedEvents);
+          raisedDomainEvents.push(...createdItem.domainEvents.raisedEvents);
         }
-        domainEvents.raise(lifecycle.domainEvents.raisedEvents);
+        raisedDomainEvents.push(...lifecycle.domainEvents.raisedEvents);
+        domainEvents.raise(raisedDomainEvents);
       }
     };
   };
