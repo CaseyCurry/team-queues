@@ -36,7 +36,7 @@ const configureEventHandlers = async (domainEvents, domainServices) => {
   await configure(commandHandlers);
   const queryHandlers = QueryEventHandlers(domainEvents);
   await configure(queryHandlers);
-  domainEvents.start();
+  await domainEvents.start();
 };
 
 const configureControllers = (app, domainEvents) => {

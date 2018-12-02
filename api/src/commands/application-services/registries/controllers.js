@@ -6,6 +6,7 @@ import { LifecycleController } from "../controllers/lifecycle-controller";
 const Controllers = (app, domainEvents) => {
   const configuredEventController = ConfiguredEventController(
     app,
+    domainEvents,
     Factories.configuredEvent,
     Repositories.configuredEvent);
   const lifecycleController = LifecycleController(

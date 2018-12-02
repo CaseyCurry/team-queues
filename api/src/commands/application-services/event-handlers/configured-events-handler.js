@@ -1,11 +1,11 @@
 // TODO: unit test
-const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, destinationProcessor, lifecycleRepository, itemRepository) => {
+// TODO: enforce idempotency and test by changing the group id in the kafka consumer to confirm current state is respected
+const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destinationProcessor, lifecycleRepository, itemRepository) => {
   const handler = (configuredEvent) => {
     return async (event) => {
       // TODO: make sure this method handles multi-phase commits properly
       const context = configuredEvent.getContext(event);
 
-      // TODO: there needs to be a way to deactivate old verions so performance doesn't degrade; probably part of the re-versioning process of items
       const lifecycles = await lifecycleRepository
         .getThoseListeningForEvent(event.name);
       if (!lifecycles.length) {
@@ -54,20 +54,42 @@ const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, d
     };
   };
 
+  let registeredEvents = [];
+
+  const registerEvent = (configuredEvent) => {
+    domainEvents.listenAndHandleOnce(configuredEvent.name, handler(configuredEvent));
+    registeredEvents.push(configuredEvent.name);
+  };
+
+  const register = (configuredEvents) => {
+    registeredEvents = [];
+    configuredEvents.forEach((configuredEvent) => {
+      /* Passing the configured event here helps with performance b/c we don't
+         have to query the db every time an event occurs. However, if someone
+         changes the configured event aggregate, this instance will be stale.
+         We listen for team-queues.configured-event-modified to re-register the
+         handlers. */
+      /* TODO: Do something similar for lifecycles listening to events
+         considering they don't change often. */
+      registerEvent(configuredEvent);
+    });
+  };
+
   return {
     register: async () => {
       const configuredEvents = await configuredEventRepository.getAllActive();
-      configuredEvents.forEach((configuredEvent) => {
-        /* TODO: Passing the configured event here helps with performance b/c
-           we don't have to query the db every time an event occurs.
-           However, if someone changes the configured event aggregate, this
-           instance will be stale. Listen for the team-queues.event-configured event
-           to update the handler. */
-        // TODO: do something similar for lifecycles considering they don't change often
-        domainEvents.listenAndHandleOnce(configuredEvent.name, handler(configuredEvent));
+      register(configuredEvents);
+    },
+    reregister: async () => {
+      const configuredEvents = await configuredEventRepository.getAllActive();
+      /* Ingoring and reregistering needs to be synchronous. Otherwise, events
+         could be handled while there are missing subscriptions in DomainEvents. */
+      registeredEvents.forEach((eventName) => {
+        domainEvents.ignore(eventName);
       });
+      register(configuredEvents);
     }
   };
 };
 
-export { ConfiguredDomainEventHandler };
+export { ConfiguredEventsHandler };

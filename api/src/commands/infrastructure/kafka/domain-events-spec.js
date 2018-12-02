@@ -22,11 +22,13 @@ describe("domain events suite", () => {
           .to.equal(eventName);
         done();
       });
-      domainEvents.start();
-      domainEvents.raise({
-        name: eventName,
-        occurredOn: new Date()
-      });
+      domainEvents.start()
+        .then(() => {
+          domainEvents.raise({
+            name: eventName,
+            occurredOn: new Date()
+          });
+        });
     });
   });
 });
