@@ -1,3 +1,4 @@
+// TODO: unit test
 const ConfiguredDomainEventHandler = (domainEvents, configuredEventRepository, destinationProcessor, lifecycleRepository, itemRepository) => {
   const handler = (configuredEvent) => {
     return async (event) => {

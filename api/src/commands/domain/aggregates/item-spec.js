@@ -63,7 +63,8 @@ describe("item suite", () => {
       beforeEach(async () => {
         item = new Item({ id: 123 });
         destination = new UnconditionalDestination({
-          queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
+          queueName: "Barista Queue",
+          taskType: "Make Coffee",
           doesCompletePreviousTask: true
         });
         await item.createTask(destination);
@@ -79,9 +80,14 @@ describe("item suite", () => {
           .to.equal(item.id);
       });
 
-      it("should add a task with the queue id", () => {
-        expect(item.tasks[0].queueId)
-          .to.equal(destination.queueId);
+      it("should add a task with the destination's queue name", () => {
+        expect(item.tasks[0].queueName)
+          .to.equal(destination.queueName);
+      });
+
+      it("should add a task of the destination's type", () => {
+        expect(item.tasks[0].type)
+          .to.equal(destination.taskType);
       });
 
       it("should add a task with the created date", () => {
@@ -117,7 +123,8 @@ describe("item suite", () => {
       beforeEach(async () => {
         item = new Item({ id: 123 });
         destination = new UnconditionalDestination({
-          queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
+          queueName: "Barista Queue",
+          taskType: "Make Coffee",
           doesCompletePreviousTask: true
         });
         const currentTask = new Task({
@@ -141,7 +148,8 @@ describe("item suite", () => {
         beforeEach(async () => {
           item = new Item({ id: 123 });
           destination = new UnconditionalDestination({
-            queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
+            queueName: "Barista Queue",
+            taskType: "Make Coffee",
             doesCompletePreviousTask: true
           });
           currentTask = new Task({
@@ -167,7 +175,8 @@ describe("item suite", () => {
         beforeEach(async () => {
           item = new Item({ id: 123 });
           destination = new UnconditionalDestination({
-            queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
+            queueName: "Barista Queue",
+            taskType: "Make Coffee",
             doesCompletePreviousTask: false
           });
           currentTask = new Task({
@@ -195,7 +204,8 @@ describe("item suite", () => {
       beforeEach(async () => {
         item = new Item({ id: 123 });
         destination = new UnconditionalDestination({
-          queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c",
+          queueName: "Barista Queue",
+          taskType: "Make Free Coffee",
           modification: new Modification({ text: "dueOn + @minute(5)" }),
           doesCompletePreviousTask: true
         });

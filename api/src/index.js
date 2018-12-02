@@ -12,18 +12,22 @@ import { EventHandlers as QueryEventHandlers } from "./queries/event-handlers";
 
 DomainEvents(kafka)
   .then((domainEvents) => {
-    const domainServices = DomainServices(domainEvents);
+    const domainServices = DomainServices();
     configureEventHandlers(domainEvents, domainServices)
       .then(() => {
         configureApi((app) => {
-          configureControllers(app, domainEvents, domainServices);
+          configureControllers(app, domainEvents);
         });
       });
+  })
+  .catch((error) => {
+    console.error(error);
   });
 
 const configureEventHandlers = async (domainEvents, domainServices) => {
   const configure = async (handlers) => {
     for (const handler of Object.keys(handlers)) {
+      // TODO: convert some of the debug logs to info
       console.debug(`registering the ${handler} event handler`);
       await handlers[handler].register();
     }
@@ -35,18 +39,18 @@ const configureEventHandlers = async (domainEvents, domainServices) => {
   domainEvents.start();
 };
 
-const configureControllers = (app, domainEvents, domainServices) => {
-  const configure = (app, domainEvents, controllers) => {
+const configureControllers = (app, domainEvents) => {
+  const configure = (controllers) => {
     Object.keys(controllers)
       .forEach((controller) => {
-        console.debug(`register the ${controller} controller`);
+        console.debug(`registering the ${controller} controller`);
         controllers[controller].register();
       });
   };
-  const commandControllers = CommandControllers(app, domainEvents, domainServices);
-  configure(app, domainEvents, commandControllers);
+  const commandControllers = CommandControllers(app, domainEvents);
+  configure(commandControllers);
   const queryControllers = QueryControllers(app, domainEvents);
-  configure(app, domainEvents, queryControllers);
+  configure(queryControllers);
 };
 
 const configureApi = (registerRoutes) => {
@@ -61,6 +65,13 @@ const configureApi = (registerRoutes) => {
   });
 
   registerRoutes(app);
+
+  // this must be the last thing added to app or errors will not go through it
+  app.use((error, request, response, next) => { // eslint-disable-line no-unused-vars
+    console.error(error.stack);
+    response.status(500)
+      .end();
+  });
 
   const port = process.env.PORT || 8080;
   app.listen(port, () => {

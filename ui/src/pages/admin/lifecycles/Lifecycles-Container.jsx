@@ -23,7 +23,6 @@ class LifecyclesContainer extends React.Component {
       searchString={this.props.searchString}
       isNextVersionSaving={this.props.isNextVersionSaving}
       isNextVersionActivating={this.props.isNextVersionActivating}
-      defaultVersionCreator={this.props.defaultVersionCreator}
       hasNextVersionBeenModified={this.props.hasNextVersionBeenModified}
       doPromptToSaveChanges={this.props.doPromptToSaveChanges}
       onSelected={this.props.onSelected}
@@ -43,7 +42,6 @@ LifecyclesContainer.propTypes = {
   searchString: PropTypes.string,
   isNextVersionSaving: PropTypes.bool.isRequired,
   isNextVersionActivating: PropTypes.bool.isRequired,
-  defaultVersionCreator: PropTypes.func.isRequired,
   doPromptToSaveChanges: PropTypes.bool.isRequired,
   hasNextVersionBeenModified: PropTypes.bool.isRequired,
   onGetLifecycles: PropTypes.func.isRequired,

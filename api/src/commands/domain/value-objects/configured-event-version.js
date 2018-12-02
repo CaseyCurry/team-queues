@@ -1,6 +1,7 @@
 import deepFreeze from "deep-freeze";
 import { ConfiguredEventVersionMap } from "./configured-event-version-map";
 
+// TODO: unit test
 const ConfiguredEventVersion = class {
   constructor({ number, maps }) {
     if (!number || typeof number !== "number" || number <= 0) {

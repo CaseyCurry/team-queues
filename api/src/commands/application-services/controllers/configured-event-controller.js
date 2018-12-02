@@ -1,9 +1,9 @@
-const ConfiguredEventController = (app, domainEvents, configuredEventFactory,
-  configuredEventRepository) => {
+// TODO: unit test
+const ConfiguredEventController = (app, configuredEventFactory, configuredEventRepository) => {
   return {
     register: () => {
       // TODO: consider separating post and put to increase the granularity of logs
-      app.post("/api/commands/configured-events", async (request, response) => {
+      app.post("/api/commands/configured-events", async (request, response, next) => {
         let configuredEvent;
         try {
           configuredEvent = configuredEventFactory.create(request.body);
@@ -29,21 +29,17 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory,
               name: configuredEvent.name
             });
         } catch (error) {
-          console.error(error);
-          response.status(500)
-            .end();
+          next(error);
         }
       });
 
-      app.get("/api/commands/configured-events", async (request, response) => {
+      app.get("/api/commands/configured-events", async (request, response, next) => {
         try {
           const events = await configuredEventRepository.getAll();
           response.status(200)
             .send(events);
         } catch (error) {
-          console.error(error);
-          response.status(500)
-            .end();
+          next(error);
         }
       });
     }

@@ -14,6 +14,8 @@ console.error = function() {
     .toISOString(), "[ERROR]", ...arguments);
 };
 
+console.warning = console.log;
+
 console.debug = function() {
   if (process.env.DEBUG) {
     log(new Date()

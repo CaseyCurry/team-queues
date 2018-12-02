@@ -1,5 +1,3 @@
-import uuidv4 from "uuid/v4";
-
 const initialState = Object.freeze({
   areLifecyclesLoading: false,
   lifecycles: [],
@@ -9,16 +7,7 @@ const initialState = Object.freeze({
   isNextVersionSaving: false,
   isNextVersionActivating: false,
   hasNextVersionBeenModified: false,
-  doPromptToSaveChanges: false,
-  defaultVersionCreator: (versionNumber) => {
-    return {
-      id: uuidv4(),
-      version: versionNumber ? versionNumber : 1,
-      triggersForItemCreation: [],
-      queues: [],
-      isNew: true
-    };
-  }
+  doPromptToSaveChanges: false
 });
 
 export default (state = initialState, action) => {
@@ -35,40 +24,7 @@ export default (state = initialState, action) => {
     }
     case "GET_LIFECYCLES_FULFILLED": {
       const searchString = action.payload.searchString;
-      const mergedLifecycles = action.payload.lifecycles
-        .map((lifecycle) => lifecycle.lifecycleOf)
-        .filter((x, y, z) => z.indexOf(x) === y)
-        .map((lifecycleOf) => {
-          const sortedVersions = action.payload.lifecycles
-            .filter((lifecycle) => lifecycle.lifecycleOf === lifecycleOf)
-            .sort((x, y) => x.version < y.version ? -1 : 1);
-          const activeVersion = sortedVersions
-            .find((lifecycle) => lifecycle.status === "Active");
-          let nextVersion = sortedVersions
-            .find((lifecycle) => lifecycle.status === "WorkInProgress");
-          let previousVersion = activeVersion ?
-            sortedVersions.find((lifecycle) => lifecycle.version < activeVersion.version) : null;
-          if (!previousVersion) {
-            /* The nextVersion actually persisted is used here prior to conditionally creating
-               a default immediately below. */
-            previousVersion = nextVersion ?
-              sortedVersions
-                .find((lifecycle) => lifecycle.version < nextVersion.version) : null;
-          }
-          /* We always create a place to add a WIP if there isn't one already. But we
-             only do it after the previous version that is actually persisted has been
-             used in the logic immediately above. */
-          if (!nextVersion) {
-            nextVersion = state.defaultVersionCreator(activeVersion.version + 1);
-          }
-          return {
-            lifecycleOf,
-            previousVersion,
-            activeVersion,
-            nextVersion
-          };
-        });
-      const sortedLifecycles = mergedLifecycles
+      const sortedLifecycles = action.payload.lifecycles
         .sort((x, y) => x.lifecycleOf.toLowerCase() < y.lifecycleOf.toLowerCase() ? -1 : 1);
       const selectedLifecycle = sortedLifecycles.length ?
         sortedLifecycles[0] : null;
@@ -83,7 +39,7 @@ export default (state = initialState, action) => {
         return Object.assign({}, state, { doPromptToSaveChanges: true });
       }
       let selectedLifecycle = action.payload.lifecycle;
-      if (!selectedLifecycle || state.selectedLifecycle && selectedLifecycle.lifecycleOf === state.selectedLifecycle.lifecycleOf) {
+      if (!selectedLifecycle || state.selectedLifecycle && selectedLifecycle.id === state.selectedLifecycle.id) {
         return state;
       }
       return Object.assign({}, state, {

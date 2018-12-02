@@ -1,6 +1,7 @@
 import deepFreeze from "deep-freeze";
 import { DestinationFactory } from "../factories/destination-factory";
 
+// TODO: unit test
 const TriggeredDestination = class {
   constructor({ eventNames, destinations }) {
     if (!eventNames || !Array.isArray(eventNames) || !eventNames.every((name) => typeof name === "string")) {

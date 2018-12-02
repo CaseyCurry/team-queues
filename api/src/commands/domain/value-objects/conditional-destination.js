@@ -2,6 +2,7 @@ import deepFreeze from "deep-freeze";
 import { DestinationFactory } from "../factories/destination-factory";
 import { ConditionGroup } from "./condition-group";
 
+// TODO: unit test
 const ConditionalDestination = class {
   constructor({ group, onTrue, onFalse }) {
     if (!group) {

@@ -11,7 +11,8 @@ const TaskCreatedEvent = class extends BaseEventMetadata {
         foreignId: item.foreignId,
         lifecycleId: item.lifecycleId
       },
-      queueId: task.queueId,
+      queueName: task.queueName,
+      type: task.type,
       createdOn: task.createdOn,
       status: task.status,
       dueOn: task.dueOn,

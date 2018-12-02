@@ -27,7 +27,8 @@ const Item = class extends BaseAggregate {
     const dueOn = new Date();
     const task = new Task({
       itemId: this.id,
-      queueId: destination.queueId,
+      queueName: destination.queueName,
+      type: destination.taskType,
       createdOn: new Date(),
       status: TaskStatus.Unassigned,
       dueOn

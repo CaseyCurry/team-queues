@@ -1,6 +1,7 @@
 import { UnconditionalDestination } from "../value-objects/unconditional-destination";
 import { ConditionFact } from "../value-objects/condition-fact";
 
+// TODO: unit test
 // TODO: Is "processor" the best name to add to the DSL?
 const DestinationProcessor = class {
   constructor(rulesEngine) {

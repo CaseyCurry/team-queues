@@ -1,5 +1,6 @@
 import deepFreeze from "deep-freeze";
 
+// TODO: unit test
 const TeamMember = class {
   constructor({ name }) {
     if (!name || typeof name !== "string") {

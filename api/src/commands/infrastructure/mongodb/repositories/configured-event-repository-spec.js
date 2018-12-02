@@ -1,4 +1,3 @@
-/*eslint no-underscore-dangle: ["error", { "allow": ["_id"] }]*/
 import { expect } from "chai";
 import { MongoClient } from "mongodb";
 import { ConfiguredEventStore } from "../stores/configured-event-store";
@@ -20,7 +19,7 @@ describe("configured event repository suite", () => {
         getCollection: async () => {
           return {
             updateOne: async (filter, eventToUpdate, options) => {
-              expect(filter._id)
+              expect(filter["_id"])
                 .to.equal(event.name);
               expect(eventToUpdate["$set"].name)
                 .to.equal(event.name);
@@ -53,7 +52,7 @@ describe("configured event repository suite", () => {
               });
             },
             updateOne: async (filter, object) => {
-              expect(filter._id)
+              expect(filter["_id"])
                 .to.equal(event.name);
               expect(object["$set"].isDeleted)
                 .to.equal(true);
@@ -79,7 +78,7 @@ describe("configured event repository suite", () => {
               return {
                 toArray: () => {
                   return new Promise((resolve) => {
-                    resolve([{ name: filter._id }]);
+                    resolve([{ name: filter["_id"] }]);
                   });
                 }
               };

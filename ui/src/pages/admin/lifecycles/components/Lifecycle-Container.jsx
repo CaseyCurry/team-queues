@@ -10,9 +10,7 @@ class LifecycleContainer extends React.Component {
 
   getInitialState() {
     let selectedVersion;
-    if (this.props.lifecycle.nextVersion && !this.props.lifecycle.nextVersion.isNew) {
-      selectedVersion = this.props.lifecycle.nextVersion;
-    } else if (this.props.lifecycle.nextVersion && !this.props.lifecycle.activeVersion && !this.props.lifecycle.previousVersion) {
+    if (this.props.lifecycle.nextVersion) {
       selectedVersion = this.props.lifecycle.nextVersion;
     } else if (this.props.lifecycle.activeVersion) {
       selectedVersion = this.props.lifecycle.activeVersion;

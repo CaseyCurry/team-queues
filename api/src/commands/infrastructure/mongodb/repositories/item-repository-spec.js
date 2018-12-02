@@ -1,4 +1,3 @@
-/*eslint no-underscore-dangle: ["error", { "allow": ["_id"] }]*/
 import { expect } from "chai";
 import { MongoClient } from "mongodb";
 import { ItemStore } from "../stores/item-store";
@@ -21,7 +20,7 @@ describe("item repository suite", () => {
         getCollection: async () => {
           return {
             updateOne: async (filter, itemToUpdate, options) => {
-              expect(filter._id)
+              expect(filter["_id"])
                 .to.equal(item.id);
               expect(itemToUpdate["$set"].id)
                 .to.equal(item.id);
@@ -44,10 +43,10 @@ describe("item repository suite", () => {
         getCollection: async () => {
           return {
             findOne: async (filter) => {
-              expect(filter._id)
+              expect(filter["_id"])
                 .to.equal(item.id);
               return new Promise((resolve) => {
-                resolve({ id: filter._id });
+                resolve({ id: filter["_id"] });
               });
             },
             close: () => {}

@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 // TODO: poison messages
 // TODO: research kafka best practices
 const DomainEvents = (kafka) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let subscriptions = {};
     // TODO: pass config to client
     const brokerLocation = "localhost:9092";
@@ -67,7 +67,7 @@ const DomainEvents = (kafka) => {
           const groupIdForBroadcastClients = uuidv4();
           Object.keys(subscriptions)
             .forEach((eventName) => {
-              console.debug(`the kafka consumer is consuming the ${eventName} event`);
+              console.debug(`the kafka consumer is waiting for the ${eventName} event`);
               const consumer = new kafka.ConsumerGroup({
                 kafkaHost: brokerLocation,
                 groupId: subscriptions[eventName].handleOnce ?
@@ -96,7 +96,7 @@ const DomainEvents = (kafka) => {
     });
 
     producer.on("error", function(error) {
-      console.error(error);
+      reject(error);
     });
 
     const end = () => {

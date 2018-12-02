@@ -25,7 +25,7 @@ class List extends React.Component {
               .map((lifecycle) => {
                 let itemValue;
                 const isThisLifecycleBeingAdded = lifecycle.isNew && this.props.isLifecycleBeingAdded;
-                const isThisLifecycleSelected = this.props.selectedLifecycle && this.props.selectedLifecycle.lifecycleOf === lifecycle.lifecycleOf;
+                const isThisLifecycleSelected = this.props.selectedLifecycle && this.props.selectedLifecycle.id === lifecycle.id;
                 let className = isThisLifecycleSelected || isThisLifecycleBeingAdded ?
                   "selected" : "unselected";
                 if (isThisLifecycleBeingAdded) {
@@ -43,9 +43,9 @@ class List extends React.Component {
                   itemValue = lifecycle.lifecycleOf;
                 }
                 return <li
-                  key={lifecycle.lifecycleOf}
+                  key={lifecycle.id}
                   className={className}
-                  title={lifecycle.lifecycleOf}
+                  title={`${lifecycle.lifecycleOf} ${lifecycle.id}`}
                   onClick={(e) => {
                     this.props.onSelected(lifecycle);
                     e.stopPropagation();

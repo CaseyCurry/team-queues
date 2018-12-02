@@ -12,7 +12,8 @@ describe("task created event suite", () => {
   const task = new Task({
     id: 123,
     itemId: item.id,
-    queueId: 789,
+    queueName: "Barista Queue",
+    type: "Make Coffee",
     createdOn: new Date(),
     status: "Completed",
     dueOn: new Date()
@@ -57,7 +58,8 @@ describe("task created event suite", () => {
           foreignId: item.foreignId,
           lifecycleId: item.lifecycleId
         },
-        queueId: task.queueId,
+        queueName: task.queueName,
+        type: task.type,
         createdOn: task.createdOn,
         status: task.status,
         dueOn: task.dueOn,

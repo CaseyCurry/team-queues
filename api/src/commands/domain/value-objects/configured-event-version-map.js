@@ -1,5 +1,6 @@
 import deepFreeze from "deep-freeze";
 
+// TODO: unit test
 const ConfiguredEventVersionMap = class {
   constructor({ source, target }) {
     // TODO: security scrub source and target

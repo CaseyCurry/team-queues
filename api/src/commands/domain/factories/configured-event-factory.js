@@ -1,5 +1,6 @@
 import { ConfiguredEvent } from "../aggregates/configured-event";
 
+// TODO: unit test
 const ConfiguredEventFactory = {
   create: ({ name, isActive, versions }) => {
     // TODO: move validation to ctor

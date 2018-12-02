@@ -1,7 +1,7 @@
-/*eslint no-underscore-dangle: ["error", { "allow": ["_id"] }]*/
 import { expect } from "chai";
 import { MongoClient } from "mongodb";
 import { Lifecycle } from "../../../domain/aggregates/lifecycle";
+import { LifecycleVersion } from "../../../domain/entities/lifecycle-version";
 import { LifecycleStore } from "../stores/lifecycle-store";
 import { LifecycleRepository } from "./lifecycle-repository";
 import { v4 as uuidv4 } from "uuid";
@@ -13,35 +13,42 @@ describe("lifecycle repository suite", () => {
     lifecycle = new Lifecycle({
       id: uuidv4(),
       lifecycleOf: "coffee",
-      version: 1,
-      status: "Active",
-      triggersForItemCreation: [{
-        eventNames: ["1", "2"],
-        destinations: []
-      }, {
-        eventNames: ["3"],
-        destinations: []
-      }],
-      queues: [{
-        destinationsWhenEventOccurred: [{
-          eventNames: ["4", "5"],
+      activeVersion: new LifecycleVersion({
+        number: 1,
+        triggersForItemCreation: [{
+          eventNames: ["1", "2"],
           destinations: []
         }, {
-          eventNames: ["6"],
+          eventNames: ["3"],
           destinations: []
+        }],
+        queues: [{
+          name: "Cashier Queue",
+          taskType: "Take Order",
+          destinationsWhenEventOccurred: [{
+            eventNames: ["4", "5"],
+            destinations: []
+          }, {
+            eventNames: ["6"],
+            destinations: []
+          }]
         }]
-      }]
+      })
     });
   });
 
   describe("unit test suite", () => {
-    it("should create a lifecycle with an _id", async () => {
+    it("should upsert a lifecycle with an _id", async () => {
       const store = {
         getCollection: async () => {
           return {
-            insertOne: async (lifecycleToCreate) => {
-              expect(lifecycleToCreate._id)
+            updateOne: async (filter, lifecycleToUpdate, options) => {
+              expect(filter["_id"])
                 .to.equal(lifecycle.id);
+              expect(lifecycleToUpdate["$set"].id)
+                .to.equal(lifecycle.id);
+              expect(options.upsert)
+                .to.equal(true);
               return new Promise((resolve) => {
                 resolve();
               });
@@ -51,15 +58,15 @@ describe("lifecycle repository suite", () => {
         }
       };
       const repository = LifecycleRepository(store);
-      await repository.create(lifecycle);
+      await repository.createOrUpdate(lifecycle);
     });
 
-    it("should create a lifecycle with the referenced events", async () => {
+    it("should upsert a lifecycle with the referenced events", async () => {
       const store = {
         getCollection: async () => {
           return {
-            insertOne: async (lifecycleToCreate) => {
-              expect(lifecycleToCreate.referencedEvents)
+            updateOne: async (filter, lifecycleToUpdate) => {
+              expect(lifecycleToUpdate["$set"].referencedEvents)
                 .to.deep.equal(["1", "2", "3", "4", "5", "6"]);
               return new Promise((resolve) => {
                 resolve();
@@ -70,7 +77,7 @@ describe("lifecycle repository suite", () => {
         }
       };
       const repository = LifecycleRepository(store);
-      await repository.create(lifecycle);
+      await repository.createOrUpdate(lifecycle);
     });
 
     it("delete a lifecycle by id", async () => {
@@ -88,7 +95,7 @@ describe("lifecycle repository suite", () => {
               });
             },
             updateOne: async (filter, object) => {
-              expect(filter._id)
+              expect(filter["_id"])
                 .to.equal(lifecycle.id);
               expect(object["$set"].isDeleted)
                 .to.equal(true);
@@ -109,7 +116,7 @@ describe("lifecycle repository suite", () => {
         getCollection: async () => {
           return {
             findOne: async (filter) => {
-              expect(filter._id)
+              expect(filter["_id"])
                 .to.equal(lifecycle.id);
               return new Promise((resolve) => {
                 resolve(lifecycle);
@@ -120,7 +127,8 @@ describe("lifecycle repository suite", () => {
         }
       };
       const repository = LifecycleRepository(store);
-      const foundLifecycle = await repository.getById(lifecycle.id);
+      const foundLifecycle = await repository
+        .getById(lifecycle.id);
       expect(foundLifecycle)
         .to.not.be.null;
     });
@@ -135,27 +143,26 @@ describe("lifecycle repository suite", () => {
     before(async () => {
       // TODO: replace this with dropping the db whenever the run starts
       // remove any residue left from previous tests
-      const store = LifecycleStore(MongoClient, dbLocation,
-        dbName);
+      const store = LifecycleStore(MongoClient, dbLocation, dbName);
       const collection = await store.getCollection();
       await collection.deleteMany({});
       collection.close();
     });
 
     beforeEach(async () => {
-      const lifecycleStore = LifecycleStore(MongoClient,
-        dbLocation, dbName);
+      const lifecycleStore = LifecycleStore(MongoClient, dbLocation, dbName);
       lifecycleRepository = LifecycleRepository(lifecycleStore);
       lifecycle = {
         id: uuidv4(),
         lifecycleOf: "coffee",
-        version: 1,
-        status: "Active",
-        triggersForItemCreation: [{
-          eventNames: [eventName],
-          destinations: []
-        }],
-        queues: []
+        activeVersion: new LifecycleVersion({
+          number: 1,
+          triggersForItemCreation: [{
+            eventNames: [eventName],
+            destinations: []
+          }],
+          queues: []
+        })
       };
     });
 
@@ -164,17 +171,17 @@ describe("lifecycle repository suite", () => {
     });
 
     it("should insert a lifecycle into the data store", async () => {
-      await lifecycleRepository.create(lifecycle);
-      const createdLifecycle = await lifecycleRepository.getById(
-        lifecycle.id);
+      await lifecycleRepository.createOrUpdate(lifecycle);
+      const createdLifecycle = await lifecycleRepository
+        .getById(lifecycle.id);
       expect(createdLifecycle)
         .to.exist;
     });
 
     it("get those lifecycles listening for event", async () => {
-      await lifecycleRepository.create(lifecycle);
-      const foundLifecycles = await lifecycleRepository.getThoseListeningForEvent(
-        eventName);
+      await lifecycleRepository.createOrUpdate(lifecycle);
+      const foundLifecycles = await lifecycleRepository
+        .getThoseListeningForEvent(eventName);
       expect(foundLifecycles.length)
         .to.equal(1);
     });

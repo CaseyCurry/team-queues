@@ -1,13 +1,21 @@
 import deepFreeze from "deep-freeze";
-import validate from "uuid-validate";
 import { Modification } from "./modification";
 
+// TODO: unit test
 const UnconditionalDestination = class {
-  constructor({ queueId, modification, doesCompletePreviousTask }) {
-    if (!queueId || !validate(queueId)) {
-      throw new Error("The queueId must be a v4 uuid");
+  constructor({ queueName, taskType, modification, doesCompletePreviousTask }) {
+    const errorMessages = [];
+    if (!queueName || typeof queueName !== "string") {
+      errorMessages.push("The queueName must have a value and must be a string");
     }
-    this.queueId = queueId;
+    if (!taskType || typeof taskType !== "string") {
+      errorMessages.push("The taskType must have a value and must be a string");
+    }
+    if (errorMessages.length) {
+      throw new Error(errorMessages);
+    }
+    this.queueName = queueName;
+    this.taskType = taskType;
     if (modification) {
       this.modification = new Modification(modification);
     }

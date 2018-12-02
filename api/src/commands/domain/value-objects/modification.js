@@ -1,5 +1,6 @@
 import deepFreeze from "deep-freeze";
 
+// TODO: unit test
 const Modification = class {
   constructor({ text }) {
     this.text = text;

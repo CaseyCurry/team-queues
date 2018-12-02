@@ -1,11 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 import { TaskStatus } from "../value-objects/task-status";
 
+// TODO: unit test
 const Task = class {
-  constructor({ id, itemId, queueId, createdOn, status, dueOn, assignee }) {
+  constructor({ id, itemId, queueName, type, createdOn, status, dueOn, assignee }) {
     this.id = id ? id : uuidv4();
     this.itemId = itemId;
-    this.queueId = queueId;
+    this.queueName = queueName;
+    this.type = type;
     this.createdOn = createdOn;
     this.status = status;
     this.dueOn = dueOn;

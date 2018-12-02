@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import uuidv4 from "uuid/v4";
 import List from "./List";
 
 const countToDisplay = 30;
@@ -59,10 +60,14 @@ class ListContainer extends React.Component {
 
   render() {
     const lifecycleToAdd = {
+      id: uuidv4(),
       lifecycleOf: "+ LIFECYCLE",
       previousVerion: null,
       activeVersion: null,
-      nextVersion: this.props.defaultVersionCreator(),
+      nextVersion: {
+        triggersForItemCreation: [],
+        queues: []
+      },
       isNew: true
     };
     const lifecycles = [lifecycleToAdd]
@@ -96,7 +101,6 @@ ListContainer.propTypes = {
   searchString: PropTypes.string,
   isNextVersionSaving: PropTypes.bool.isRequired,
   isNextVersionActivating: PropTypes.bool.isRequired,
-  defaultVersionCreator: PropTypes.func.isRequired,
   hasNextVersionBeenModified: PropTypes.bool.isRequired,
   doPromptToSaveChanges: PropTypes.bool.isRequired,
   onSelected: PropTypes.func.isRequired,

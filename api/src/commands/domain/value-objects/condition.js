@@ -1,5 +1,6 @@
 import deepFreeze from "deep-freeze";
 
+// TODO: unit test
 const Condition = class {
   constructor({ fact, path, operator, value }) {
     if (!fact || typeof fact !== "string") {

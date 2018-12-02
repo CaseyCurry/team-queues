@@ -1,5 +1,6 @@
 import deepFreeze from "deep-freeze";
 
+// TODO: unit test
 const TriggeredCompletion = class {
   constructor({ eventNames, doesCompletePreviousTask, doesCompleteItem }) {
     if (!eventNames || !Array.isArray(eventNames) || !eventNames.every((name) => typeof name === "string")) {

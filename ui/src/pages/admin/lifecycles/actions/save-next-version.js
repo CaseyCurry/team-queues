@@ -2,21 +2,16 @@ import getLifecycles from "./get-lifecycles";
 import notifications from "../../../../components/notifications/actions";
 
 const action = (lifecycle) => {
-  const nextVersion = Object.assign({}, lifecycle.nextVersion, { lifecycleOf: lifecycle.lifecycleOf });
   return (dispatch) => {
     dispatch({
       type: "SAVE_NEXT_VERSION_PENDING"
     });
-    let url = "/api/commands/lifecycles";
-    if (!nextVersion.isNew) {
-      url = `${url}/${nextVersion.id}`;
-    }
-    fetch(url, {
-      method: !nextVersion.isNew ? "PUT" : "POST",
+    fetch(`/api/commands/lifecycles/${lifecycle.id}/versions/next`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(nextVersion)
+      body: JSON.stringify(lifecycle)
     })
       .then((response) => {
         if (response.status >= 200 && response.status <= 299) {

@@ -1,26 +1,28 @@
 import { Lifecycle } from "../../../domain/aggregates/lifecycle";
-import { LifecycleStatus } from "../../../domain/value-objects/lifecycle-status";
 
 const extendLifecycle = (lifecycle) => {
   // TODO: maybe move to aggregate
-  const eventsInTriggers = lifecycle.triggersForItemCreation
-    .map((trigger) => {
-      return trigger.eventNames;
-    })
-    .reduce((x, y) => x.concat(y), []);
-  const eventsInQueues = lifecycle.queues
-    .map((queue) => {
-      return queue.destinationsWhenEventOccurred;
-    })
-    .reduce((x, y) => x.concat(y), [])
-    .map((trigger) => {
-      return trigger.eventNames;
-    })
-    .reduce((x, y) => x.concat(y), []);
-  // get distinct events
-  const referencedEvents = eventsInTriggers
-    .concat(eventsInQueues)
-    .filter((x, y, z) => z.indexOf(x) === y);
+  let referencedEvents = [];
+  if (lifecycle.activeVersion) {
+    const eventsInTriggers = lifecycle.activeVersion.triggersForItemCreation
+      .map((trigger) => {
+        return trigger.eventNames;
+      })
+      .reduce((x, y) => x.concat(y), []);
+    const eventsInQueues = lifecycle.activeVersion.queues
+      .map((queue) => {
+        return queue.destinationsWhenEventOccurred;
+      })
+      .reduce((x, y) => x.concat(y), [])
+      .map((trigger) => {
+        return trigger.eventNames;
+      })
+      .reduce((x, y) => x.concat(y), []);
+    // get distinct events
+    referencedEvents = eventsInTriggers
+      .concat(eventsInQueues)
+      .filter((x, y, z) => z.indexOf(x) === y);
+  }
   return Object.assign({}, lifecycle, {
     _id: lifecycle.id,
     referencedEvents,
@@ -30,14 +32,7 @@ const extendLifecycle = (lifecycle) => {
 
 const LifecycleRepository = (store) => {
   return {
-    create: async (lifecycle) => {
-      const extendedLifecycle = extendLifecycle(lifecycle);
-      const collection = await store.getCollection();
-      await collection.insertOne(extendedLifecycle);
-      collection.close();
-    },
-    update: async (lifecycle) => {
-      // TODO: unit test
+    createOrUpdate: async (lifecycle) => {
       const extendedLifecycle = extendLifecycle(lifecycle);
       const collection = await store.getCollection();
       await collection.updateOne({
@@ -95,20 +90,6 @@ const LifecycleRepository = (store) => {
         .toArray();
       collection.close();
       return lifecycles.map((lifecycle) => new Lifecycle(lifecycle));
-    },
-    getActive: async (lifecycleOf) => {
-      // TODO: unit test
-      const collection = await store.getCollection();
-      const lifecycle = await collection.findOne({
-        lifecycleOf,
-        status: LifecycleStatus.Active,
-        isDeleted: false
-      });
-      collection.close();
-      if (!lifecycle) {
-        return;
-      }
-      return new Lifecycle(lifecycle);
     }
   };
 };

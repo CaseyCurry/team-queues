@@ -2,6 +2,7 @@ import deepFreeze from "deep-freeze";
 import { Condition } from "./condition";
 import { ConditionScope } from "./condition-scope";
 
+// TODO: unit test
 const ConditionGroup = class {
   constructor({ scope, conditions }) {
     if (!scope || !ConditionScope[scope]) {

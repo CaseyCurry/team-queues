@@ -1,12 +1,12 @@
 import { Dal } from "../dal";
-import { LifecycleModifiedHandler } from "./lifecycle-modified-handler";
+import { LifecycleVersionActivatedHandler } from "./lifecycle-version-activated-handler";
 import { TaskCreatedHandler } from "./task-created-handler";
 
 const EventHandlers = (domainEvents) => {
-  const lifecycleModifiedHandler = new LifecycleModifiedHandler(domainEvents, Dal.queueData);
+  const lifecycleVersionActivatedHandler = new LifecycleVersionActivatedHandler(domainEvents, Dal.queueData);
   const taskCreatedHandler = new TaskCreatedHandler(domainEvents, Dal.taskData);
   return {
-    lifecycleModified: lifecycleModifiedHandler,
+    lifecycleVersionActivated: lifecycleVersionActivatedHandler,
     taskCreated: taskCreatedHandler
   };
 };

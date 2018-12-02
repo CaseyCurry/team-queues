@@ -3,6 +3,7 @@ import { Lifecycle } from "./lifecycle";
 import { v4 as uuidv4 } from "uuid";
 import { Item } from "./item";
 import { ConfiguredEvent } from "./configured-event";
+import { LifecycleVersion } from "../entities/lifecycle-version";
 import { ConfiguredEventVersion } from "../value-objects/configured-event-version";
 import { ConfiguredEventVersionMap } from "../value-objects/configured-event-version-map";
 import { ConditionScope } from "../value-objects/condition-scope";
@@ -12,27 +13,40 @@ import { ConditionalDestination } from "../value-objects/conditional-destination
 import { UnconditionalDestination } from "../value-objects/unconditional-destination";
 import { ConditionFact } from "../value-objects/condition-fact";
 import { TriggeredDestination } from "../value-objects/triggered-destination";
-import { LifecycleStatus } from "../value-objects/lifecycle-status";
 import { DestinationProcessor } from "../services/destination-processor";
 
 describe("lifecycle suite", () => {
   const lifecycleId = uuidv4();
   const lifecycleOf = "coffee";
-  const lifecycleVersion = 1;
+  const activeLifecycleVersionNumber = 2;
 
   describe("when lifecycle is created", () => {
-    let triggersForItemCreation = [];
-    let queues = [];
+    const triggersForItemCreation = [];
+    const queues = [];
+    const previousVersion = new LifecycleVersion({
+      number: activeLifecycleVersionNumber - 1,
+      triggersForItemCreation,
+      queues
+    });
+    const activeVersion = new LifecycleVersion({
+      number: activeLifecycleVersionNumber,
+      triggersForItemCreation,
+      queues
+    });
+    const nextVersion = new LifecycleVersion({
+      number: activeLifecycleVersionNumber + 1,
+      triggersForItemCreation,
+      queues
+    });
     let lifecycle;
 
     beforeEach(() => {
       lifecycle = new Lifecycle({
         id: lifecycleId,
         lifecycleOf,
-        version: lifecycleVersion,
-        status: LifecycleStatus.WorkInProgress,
-        triggersForItemCreation,
-        queues
+        previousVersion,
+        activeVersion,
+        nextVersion
       });
     });
 
@@ -41,35 +55,29 @@ describe("lifecycle suite", () => {
         .to.equal(lifecycleId);
     });
 
-    it("should create a lifecycle with the type of object it processes",
-      () => {
-        expect(lifecycle.lifecycleOf)
-          .to.equal(lifecycleOf);
-      });
-
-    it("should create a lifecycle with the version", () => {
-      expect(lifecycle.version)
-        .to.equal(lifecycleVersion);
+    it("should create a lifecycle with the type of object it processes", () => {
+      expect(lifecycle.lifecycleOf)
+        .to.equal(lifecycleOf);
     });
 
-    it("should create a lifecycle with the triggers for item creation", () => {
-      expect(lifecycle.triggersForItemCreation)
-        .to.deep.equal(triggersForItemCreation);
+    it("should create a lifecycle with an previous version", () => {
+      expect(lifecycle.previousVersion)
+        .to.deep.equal(previousVersion);
     });
 
-    it("should create a lifecycle with the status", () => {
-      expect(lifecycle.status)
-        .to.equal(LifecycleStatus.WorkInProgress);
+    it("should create a lifecycle with an active version", () => {
+      expect(lifecycle.activeVersion)
+        .to.deep.equal(activeVersion);
     });
 
-    it("should create a lifecycle with the queues", () => {
-      expect(lifecycle.queues)
-        .to.deep.equal(queues);
+    it("should create a lifecycle with a next version", () => {
+      expect(lifecycle.nextVersion)
+        .to.deep.equal(nextVersion);
     });
 
     it("should create a lifecycle with domain events", () => {
       expect(lifecycle.domainEvents)
-        .to.not.be.null;
+        .to.exist;
     });
   });
 
@@ -80,26 +88,28 @@ describe("lifecycle suite", () => {
     let destinationProcessor;
 
     beforeEach(() => {
-      lifecycle = new Lifecycle({
-        id: lifecycleId,
-        lifecycleOf,
-        version: lifecycleVersion,
-        status: LifecycleStatus.Active,
+      const activeVersion = new LifecycleVersion({
+        number: activeLifecycleVersionNumber,
         triggersForItemCreation: [],
         queues: []
       });
-      lifecycle.createQueue({
-        id: "3a038cfe-93a9-4724-991a-0939c798bb3c",
+      activeVersion.createQueue({
         name: "Cashier Queue",
         taskType: "Take Order"
       });
-      lifecycle.createTriggerForItemCreation({
+      activeVersion.createTriggerForItemCreation({
         eventNames: ["customer-arrived"],
         destinations: [
           new UnconditionalDestination({
-            queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c"
+            queueName: "Cashier Queue",
+            taskType: "Take Order"
           })
         ]
+      });
+      lifecycle = new Lifecycle({
+        id: lifecycleId,
+        lifecycleOf,
+        activeVersion
       });
       destinationProcessor = new DestinationProcessor();
       configuredEvent = new ConfiguredEvent({
@@ -133,63 +143,57 @@ describe("lifecycle suite", () => {
       });
 
       it("should create an item", async () => {
-        const createdItem = await lifecycle.processEvent(
-          destinationProcessor, occurredEvent,
-          configuredEvent);
+        const createdItem = await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(createdItem)
           .to.exist;
       });
 
-      it("should create an item that includes the customer id",
-        async () => {
-          const createdItem = await lifecycle.processEvent(
-            destinationProcessor, occurredEvent,
-            configuredEvent);
-          expect(createdItem.foreignId)
-            .to.equal(occurredEvent.customer.id);
-        });
+      it("should create an item that includes the customer id", async () => {
+        const createdItem = await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        expect(createdItem.foreignId)
+          .to.equal(occurredEvent.customer.id);
+      });
 
-      it("should create an item that includes the lifecycle id",
-        async () => {
-          const createdItem = await lifecycle.processEvent(
-            destinationProcessor, occurredEvent,
-            configuredEvent);
-          expect(createdItem.lifecycleId)
-            .to.equal(lifecycle.id);
-        });
+      it("should create an item that includes the lifecycle id", async () => {
+        const createdItem = await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
+        expect(createdItem.lifecycleId)
+          .to.equal(lifecycle.id);
+      });
 
       it("should raise a single event on the lifecycle", async () => {
-        await lifecycle.processEvent(destinationProcessor,
-          occurredEvent, configuredEvent);
+        await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents.length)
           .to.equal(1);
       });
 
       it("should raise an event for the item creation", async () => {
-        await lifecycle.processEvent(destinationProcessor,
-          occurredEvent, configuredEvent);
+        await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents[0].name)
           .to.equal("team-queues.item-created");
       });
 
       it("should raise an event that includes the item", async () => {
-        await lifecycle.processEvent(destinationProcessor,
-          occurredEvent, configuredEvent);
+        await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents[0].message.item)
           .to.exist;
       });
 
       it("should raise an event that includes the item that includes the lifecycle id", async () => {
-        await lifecycle.processEvent(destinationProcessor,
-          occurredEvent, configuredEvent);
+        await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents[0].message.item.lifecycleId)
           .to.equal(lifecycle.id);
       });
 
       it("should raise an event for the task creation", async () => {
-        const createdItem = await lifecycle.processEvent(
-          destinationProcessor, occurredEvent,
-          configuredEvent);
+        const createdItem = await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(createdItem.domainEvents.raisedEvents[0].name)
           .to.equal("team-queues.task-created");
       });
@@ -213,16 +217,15 @@ describe("lifecycle suite", () => {
       });
 
       it("should not create an item", async () => {
-        const createdItem = await lifecycle.processEvent(
-          destinationProcessor, occurredEvent,
-          configuredEvent);
+        const createdItem = await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(createdItem)
-          .to.not.be.ok;
+          .to.not.exist;
       });
 
       it("should not raise an event", async () => {
-        await lifecycle.processEvent(destinationProcessor,
-          occurredEvent, configuredEvent);
+        await lifecycle
+          .processEvent(destinationProcessor, occurredEvent, configuredEvent);
         expect(lifecycle.domainEvents.raisedEvents.length)
           .to.equal(0);
       });
@@ -230,34 +233,36 @@ describe("lifecycle suite", () => {
 
     describe("when triggering event has two destinations", () => {
       beforeEach(() => {
-        lifecycle = new Lifecycle({
-          id: lifecycleId,
-          lifecycleOf,
-          version: lifecycleVersion,
-          status: LifecycleStatus.Active,
+        const activeVersion = new LifecycleVersion({
+          number: activeLifecycleVersionNumber,
           triggersForItemCreation: [],
           queues: []
         });
-        lifecycle.createTriggerForItemCreation({
+        activeVersion.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
           destinations: [
             new UnconditionalDestination({
-              queueId: "da8057b4-8f03-4e04-aa62-867ccf4364f7"
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
             }),
             new UnconditionalDestination({
-              queueId: "3a038cfe-93a9-4724-991a-0939c798bb3c"
+              queueName: "Barista Queue",
+              taskType: "Make Coffee"
             })
           ]
         });
-        lifecycle.createQueue({
-          id: "da8057b4-8f03-4e04-aa62-867ccf4364f7",
+        activeVersion.createQueue({
           name: "Cashier Queue",
           taskType: "Take Order"
         });
-        lifecycle.createQueue({
-          id: "3a038cfe-93a9-4724-991a-0939c798bb3c",
+        activeVersion.createQueue({
           name: "Barista Queue",
           taskType: "Make Coffee"
+        });
+        lifecycle = new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf,
+          activeVersion
         });
         occurredEvent = {
           id: 123,
@@ -281,27 +286,25 @@ describe("lifecycle suite", () => {
 
     describe("when queue destinations are bound to events", () => {
       let itemInLifecycle;
-      const targetQueue = "3a038cfe-93a9-4724-991a-0939c798bb3c";
+      const targetQueueName = "Barista Queue";
+      const targetTaskType = "Make Coffee";
 
       beforeEach(() => {
-        lifecycle = new Lifecycle({
-          id: lifecycleId,
-          lifecycleOf,
-          version: lifecycleVersion,
-          status: LifecycleStatus.Active,
+        const activeVersion = new LifecycleVersion({
+          number: activeLifecycleVersionNumber,
           triggersForItemCreation: [],
           queues: []
         });
-        lifecycle.createTriggerForItemCreation({
+        activeVersion.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
           destinations: [
             new UnconditionalDestination({
-              queueId: "da8057b4-8f03-4e04-aa62-867ccf4364f7"
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
             })
           ]
         });
-        lifecycle.createQueue({
-          id: "da8057b4-8f03-4e04-aa62-867ccf4364f7",
+        activeVersion.createQueue({
           name: "Cashier Queue",
           taskType: "Take Order",
           destinationsWhenEventOccurred: [
@@ -309,24 +312,32 @@ describe("lifecycle suite", () => {
               eventNames: ["customer-ordered"],
               destinations: [
                 new UnconditionalDestination({
-                  queueId: targetQueue,
+                  queueName: targetQueueName,
+                  taskType: targetTaskType,
                   doesCompletePreviousTask: true
                 })
               ]
             })
           ]
         });
-        lifecycle.createQueue({
-          id: targetQueue,
-          name: "Barista Queue",
-          taskType: "Make Coffee"
+        activeVersion.createQueue({
+          name: targetQueueName,
+          taskType: targetTaskType
+        });
+        lifecycle = new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf,
+          activeVersion
         });
         itemInLifecycle = new Item({
           id: 987,
           foreignId: 789,
           lifecycleId: lifecycleId
         });
-        itemInLifecycle.createTask({ queueId: "da8057b4-8f03-4e04-aa62-867ccf4364f7" });
+        itemInLifecycle.createTask({
+          queueName: "Cashier Queue",
+          taskType: "Take Order"
+        });
       });
 
       describe("when existing item has a task in a queue listening for occurred event", () => {
@@ -353,14 +364,21 @@ describe("lifecycle suite", () => {
             .to.equal(2);
         });
 
-        it("should create a task that includes the queue id",
-          async () => {
-            await lifecycle
-              .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
-            // the first task was added arranging this test so we expect one additional task
-            expect(itemInLifecycle.tasks[1].queueId)
-              .to.equal(targetQueue);
-          });
+        it("should create a task that includes the queue name", async () => {
+          await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+          // the first task was added arranging this test so we expect one additional task
+          expect(itemInLifecycle.tasks[1].queueName)
+            .to.equal(targetQueueName);
+        });
+
+        it("should create a task that includes the task type", async () => {
+          await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+          // the first task was added arranging this test so we expect one additional task
+          expect(itemInLifecycle.tasks[1].type)
+            .to.equal(targetTaskType);
+        });
 
         it("should raise an event for the created task", async () => {
           await lifecycle
@@ -389,6 +407,7 @@ describe("lifecycle suite", () => {
           it("should raise an event for the completed task", async () => {
             await lifecycle
               .processEvent(destinationProcessor, occurredEvent, configuredEvent, itemInLifecycle);
+            // the first event occurred arranging this test so we expect two additional events
             expect(itemInLifecycle.domainEvents.raisedEvents[2].name)
               .to.equal("team-queues.task-completed");
           });
@@ -396,16 +415,12 @@ describe("lifecycle suite", () => {
 
         describe("when the destination is configured to not complete the previous task", () => {
           beforeEach(() => {
-            lifecycle = new Lifecycle({
-              id: lifecycleId,
-              lifecycleOf,
-              version: lifecycleVersion,
-              status: LifecycleStatus.Active,
+            const activeVersion = new LifecycleVersion({
+              number: activeLifecycleVersionNumber,
               triggersForItemCreation: [],
               queues: []
             });
-            lifecycle.createQueue({
-              id: "da8057b4-8f03-4e04-aa62-867ccf4364f7",
+            activeVersion.createQueue({
               name: "Cashier Queue",
               taskType: "Take Order",
               destinationsWhenEventOccurred: [
@@ -415,17 +430,22 @@ describe("lifecycle suite", () => {
                   ],
                   destinations: [
                     new UnconditionalDestination({
-                      queueId: targetQueue,
+                      queueName: targetQueueName,
+                      taskType: targetTaskType,
                       doesCompletePreviousTask: false
                     })
                   ]
                 })
               ]
             });
-            lifecycle.createQueue({
-              id: targetQueue,
-              name: "Barista Queue",
-              taskType: "Make Coffee"
+            activeVersion.createQueue({
+              name: targetQueueName,
+              taskType: targetTaskType
+            });
+            lifecycle = new Lifecycle({
+              id: lifecycleId,
+              lifecycleOf,
+              activeVersion
             });
           });
 
@@ -467,52 +487,56 @@ describe("lifecycle suite", () => {
     });
 
     describe("when queue destinations are bound to task creation", () => {
-      const targetQueue1 = "3a038cfe-93a9-4724-991a-0939c798bb3c";
-      const targetQueue2 = "2008e36b-2ce2-4f1c-9c28-c84856ec1854";
+      const targetQueueName1 = "Barista Queue";
+      const targetTaskType1 = "Make Coffee";
+      const targetQueueName2 = "Barista Queue";
+      const targetTaskType2 = "Deliver Coffee";
 
       beforeEach(() => {
-        lifecycle = new Lifecycle({
-          id: lifecycleId,
-          lifecycleOf,
-          version: lifecycleVersion,
-          status: LifecycleStatus.Active,
+        const activeVersion = new LifecycleVersion({
+          number: activeLifecycleVersionNumber,
           triggersForItemCreation: [],
           queues: []
         });
-        lifecycle.createTriggerForItemCreation({
+        activeVersion.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
           destinations: [
             new UnconditionalDestination({
-              queueId: "da8057b4-8f03-4e04-aa62-867ccf4364f7"
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
             })
           ]
         });
-        lifecycle.createQueue({
-          id: "da8057b4-8f03-4e04-aa62-867ccf4364f7",
+        activeVersion.createQueue({
           name: "Cashier Queue",
           taskType: "Take Order",
           destinationsWhenTaskCreated: [
             new UnconditionalDestination({
-              queueId: targetQueue1,
+              queueName: targetQueueName1,
+              taskType: targetTaskType1,
               doesCompletePreviousTask: false
             })
           ]
         });
-        lifecycle.createQueue({
-          id: targetQueue1,
-          name: "Barista Queue",
-          taskType: "Make Coffee",
+        activeVersion.createQueue({
+          name: targetQueueName1,
+          taskType: targetTaskType1,
           destinationsWhenTaskCreated: [
             new UnconditionalDestination({
-              queueId: targetQueue2,
+              queueName: targetQueueName2,
+              taskType: targetTaskType2,
               doesCompletePreviousTask: false
             })
           ]
         });
-        lifecycle.createQueue({
-          id: targetQueue2,
-          name: "Barista Queue",
-          taskType: "Deliver Coffee"
+        activeVersion.createQueue({
+          name: targetQueueName2,
+          taskType: targetTaskType2
+        });
+        lifecycle = new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf,
+          activeVersion
         });
         occurredEvent = {
           id: 123,
@@ -534,25 +558,46 @@ describe("lifecycle suite", () => {
             .to.equal(3);
         });
 
-        it("should create a task in the first queue", async () => {
+        it("should create a task with the first queue name", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[0].queueId)
-            .to.equal("da8057b4-8f03-4e04-aa62-867ccf4364f7");
+          expect(createdItem.tasks[0].queueName)
+            .to.equal("Cashier Queue");
         });
 
-        it("should create a task in the second queue", async () => {
+        it("should create a task with the first task type", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[1].queueId)
-            .to.equal(targetQueue1);
+          expect(createdItem.tasks[0].type)
+            .to.equal("Take Order");
         });
 
-        it("should create a task in the third queue", async () => {
+        it("should create a task with the second queue name", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[2].queueId)
-            .to.equal(targetQueue2);
+          expect(createdItem.tasks[1].queueName)
+            .to.equal(targetQueueName1);
+        });
+
+        it("should create a task with the second task type", async () => {
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          expect(createdItem.tasks[1].type)
+            .to.equal(targetTaskType1);
+        });
+
+        it("should create a task with the third queue name", async () => {
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          expect(createdItem.tasks[2].queueName)
+            .to.equal(targetQueueName2);
+        });
+
+        it("should create a task with the third task type", async () => {
+          const createdItem = await lifecycle
+            .processEvent(destinationProcessor, occurredEvent, configuredEvent);
+          expect(createdItem.tasks[2].type)
+            .to.equal(targetTaskType2);
         });
 
         it("should raise another event for the new task", async () => {
@@ -565,52 +610,56 @@ describe("lifecycle suite", () => {
     });
 
     describe("when queue destinations are bound to task completion", () => {
-      const targetQueue1 = "3a038cfe-93a9-4724-991a-0939c798bb3c";
-      const targetQueue2 = "2008e36b-2ce2-4f1c-9c28-c84856ec1854";
+      const targetQueueName1 = "Barista Queue";
+      const targetTaskType1 = "Make Coffee";
+      const targetQueueName2 = "Barista Queue";
+      const targetTaskType2 = "Deliver Coffee";
 
       beforeEach(() => {
-        lifecycle = new Lifecycle({
-          id: lifecycleId,
-          lifecycleOf,
-          version: lifecycleVersion,
-          status: LifecycleStatus.Active,
+        const activeVersion = new LifecycleVersion({
+          number: activeLifecycleVersionNumber,
           triggersForItemCreation: [],
           queues: []
         });
-        lifecycle.createTriggerForItemCreation({
+        activeVersion.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
           destinations: [
             new UnconditionalDestination({
-              queueId: "da8057b4-8f03-4e04-aa62-867ccf4364f7"
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
             })
           ]
         });
-        lifecycle.createQueue({
-          id: "da8057b4-8f03-4e04-aa62-867ccf4364f7",
+        activeVersion.createQueue({
           name: "Cashier Queue",
           taskType: "Take Order",
           destinationsWhenTaskCreated: [
             new UnconditionalDestination({
-              queueId: targetQueue1,
+              queueName: targetQueueName1,
+              taskType: targetTaskType1,
               doesCompletePreviousTask: true
             })
           ],
           destinationsWhenTaskCompleted: [
             new UnconditionalDestination({
-              queueId: targetQueue2,
+              queueName: targetQueueName2,
+              taskType: targetTaskType2,
               doesCompletePreviousTask: false
             })
           ]
         });
-        lifecycle.createQueue({
-          id: targetQueue1,
-          name: "Barista Queue",
-          taskType: "Make Coffee"
+        activeVersion.createQueue({
+          name: targetQueueName1,
+          taskType: targetTaskType1
         });
-        lifecycle.createQueue({
-          id: targetQueue2,
-          name: "Cashier Queue",
-          taskType: "Direct Customer To Barista"
+        activeVersion.createQueue({
+          name: targetQueueName2,
+          taskType: targetTaskType2
+        });
+        lifecycle = new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf,
+          activeVersion
         });
         occurredEvent = {
           id: 123,
@@ -635,8 +684,10 @@ describe("lifecycle suite", () => {
     });
 
     describe("when trigger includes a conditional destination", () => {
-      const targetQueueWhenConditionIsMet = "3a038cfe-93a9-4724-991a-0939c798bb3c";
-      const targetQueueWhenConditionIsNotMet = "2008e36b-2ce2-4f1c-9c28-c84856ec1854";
+      const targetQueueNameWhenConditionIsMet = "Barista Queue";
+      const targetTaskTypeWhenConditionIsMet = "Make Coffee";
+      const targetQueueNameWhenConditionIsNotMet = "Barista Queue";
+      const targetTaskTypeWhenConditionIsNotMet = "Deliver Coffee";
       let destinationsWhenConditionIsMet;
       let destinationsWhenConditionIsNotMet;
       let conditionalDestination;
@@ -646,13 +697,15 @@ describe("lifecycle suite", () => {
       beforeEach(async () => {
         destinationsWhenConditionIsMet = [
           new UnconditionalDestination({
-            queueId: targetQueueWhenConditionIsMet,
+            queueName: targetQueueNameWhenConditionIsMet,
+            taskType: targetTaskTypeWhenConditionIsMet,
             doesCompletePreviousTask: true
           })
         ];
         destinationsWhenConditionIsNotMet = [
           new UnconditionalDestination({
-            queueId: targetQueueWhenConditionIsNotMet,
+            queueName: targetQueueNameWhenConditionIsNotMet,
+            taskType: targetTaskTypeWhenConditionIsNotMet,
             doesCompletePreviousTask: true
           })
         ];
@@ -671,24 +724,21 @@ describe("lifecycle suite", () => {
           onTrue: destinationsWhenConditionIsMet,
           onFalse: destinationsWhenConditionIsNotMet
         });
-        lifecycle = new Lifecycle({
-          id: lifecycleId,
-          lifecycleOf,
-          version: lifecycleVersion,
-          status: LifecycleStatus.Active,
+        const activeVersion = new LifecycleVersion({
+          number: activeLifecycleVersionNumber,
           triggersForItemCreation: [],
           queues: []
         });
-        lifecycle.createTriggerForItemCreation({
+        activeVersion.createTriggerForItemCreation({
           eventNames: ["customer-arrived"],
           destinations: [
             new UnconditionalDestination({
-              queueId: "da8057b4-8f03-4e04-aa62-867ccf4364f7"
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
             })
           ]
         });
-        lifecycle.createQueue({
-          id: "da8057b4-8f03-4e04-aa62-867ccf4364f7",
+        activeVersion.createQueue({
           name: "Cashier Queue",
           taskType: "Take Order",
           destinationsWhenEventOccurred: [
@@ -698,15 +748,18 @@ describe("lifecycle suite", () => {
             })
           ]
         });
-        lifecycle.createQueue({
-          id: targetQueueWhenConditionIsMet,
-          name: "Barista Queue",
-          taskType: "Make Hot Coffee"
+        activeVersion.createQueue({
+          name: targetQueueNameWhenConditionIsMet,
+          taskType: targetTaskTypeWhenConditionIsMet
         });
-        lifecycle.createQueue({
-          id: targetQueueWhenConditionIsNotMet,
-          name: "Barista Queue",
-          taskType: "Make Cold Coffee"
+        activeVersion.createQueue({
+          name: targetQueueNameWhenConditionIsNotMet,
+          taskType: targetTaskTypeWhenConditionIsNotMet
+        });
+        lifecycle = new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf,
+          activeVersion
         });
         occurredEvent = {
           id: 123,
@@ -757,9 +810,14 @@ describe("lifecycle suite", () => {
             .processEvent(destinationProcessor, customerOrderedOccurredEvent, customerOrderedConfiguredEvent, item);
         });
 
-        it("should create task in the queue bound to when the condition is not met", () => {
-          expect(item.tasks[1].queueId)
-            .to.equal(targetQueueWhenConditionIsNotMet);
+        it("should create task in the queue name bound to when the condition is not met", () => {
+          expect(item.tasks[1].queueName)
+            .to.equal(targetQueueNameWhenConditionIsNotMet);
+        });
+
+        it("should create task of the type bound to when the condition is not met", () => {
+          expect(item.tasks[1].type)
+            .to.equal(targetTaskTypeWhenConditionIsNotMet);
         });
 
         it("should pass the destination to the rules engine", () => {
@@ -774,7 +832,7 @@ describe("lifecycle suite", () => {
       });
 
       describe("when condition is met", () => {
-        it("should create task in the queue bound to when the condition is met", async () => {
+        it("should create task in the queue name bound to when the condition is met", async () => {
           const customerOrderedOccurredEvent = {
             id: 456,
             name: "customer-ordered",
@@ -798,8 +856,36 @@ describe("lifecycle suite", () => {
           });
           await lifecycle
             .processEvent(destinationProcessor, customerOrderedOccurredEvent, customerOrderedConfiguredEvent, item);
-          expect(item.tasks[1].queueId)
-            .to.equal(targetQueueWhenConditionIsMet);
+          expect(item.tasks[1].queueName)
+            .to.equal(targetQueueNameWhenConditionIsMet);
+        });
+
+        it("should create task of the type bound to when the condition is met", async () => {
+          const customerOrderedOccurredEvent = {
+            id: 456,
+            name: "customer-ordered",
+            version: 1,
+            occurredOn: new Date(2018, 10, 25, 6),
+            customer: {
+              id: 789
+            },
+            coffee: {
+              isHot: true
+            }
+          };
+          destinationProcessor = new DestinationProcessor({
+            getNextDestinations: () => {
+              return new Promise((resolve) => {
+                resolve(
+                  destinationsWhenConditionIsMet
+                );
+              });
+            }
+          });
+          await lifecycle
+            .processEvent(destinationProcessor, customerOrderedOccurredEvent, customerOrderedConfiguredEvent, item);
+          expect(item.tasks[1].type)
+            .to.equal(targetTaskTypeWhenConditionIsMet);
         });
       });
     });
