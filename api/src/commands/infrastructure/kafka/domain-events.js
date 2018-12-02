@@ -129,9 +129,7 @@ const DomainEvents = (kafka) => {
           });
         },
         listenToBroadcast: (eventName, handler) => {
-          // TODO: unit test
-          // TODO: this will be used to update configured events and lifecycles in application-services
-          console.debug(`listenting to the ${eventName} broadcast`);
+          console.debug(`listening to the ${eventName} broadcast`);
           addSubscription({
             eventName,
             handler,
