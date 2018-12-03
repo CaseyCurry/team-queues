@@ -15,24 +15,8 @@ describe("lifecycle repository suite", () => {
       lifecycleOf: "coffee",
       activeVersion: new LifecycleVersion({
         number: 1,
-        triggersForItemCreation: [{
-          eventNames: ["1", "2"],
-          destinations: []
-        }, {
-          eventNames: ["3"],
-          destinations: []
-        }],
-        queues: [{
-          name: "Cashier Queue",
-          taskType: "Take Order",
-          destinationsWhenEventOccurred: [{
-            eventNames: ["4", "5"],
-            destinations: []
-          }, {
-            eventNames: ["6"],
-            destinations: []
-          }]
-        }]
+        triggersForItemCreation: [],
+        queues: []
       })
     });
   });
@@ -49,25 +33,6 @@ describe("lifecycle repository suite", () => {
                 .to.equal(lifecycle.id);
               expect(options.upsert)
                 .to.equal(true);
-              return new Promise((resolve) => {
-                resolve();
-              });
-            },
-            close: () => {}
-          };
-        }
-      };
-      const repository = LifecycleRepository(store);
-      await repository.createOrUpdate(lifecycle);
-    });
-
-    it("should upsert a lifecycle with the referenced events", async () => {
-      const store = {
-        getCollection: async () => {
-          return {
-            updateOne: async (filter, lifecycleToUpdate) => {
-              expect(lifecycleToUpdate["$set"].referencedEvents)
-                .to.deep.equal(["1", "2", "3", "4", "5", "6"]);
               return new Promise((resolve) => {
                 resolve();
               });
@@ -176,14 +141,6 @@ describe("lifecycle repository suite", () => {
         .getById(lifecycle.id);
       expect(createdLifecycle)
         .to.exist;
-    });
-
-    it("get those lifecycles listening for event", async () => {
-      await lifecycleRepository.createOrUpdate(lifecycle);
-      const foundLifecycles = await lifecycleRepository
-        .getThoseListeningForEvent(eventName);
-      expect(foundLifecycles.length)
-        .to.equal(1);
     });
   });
 });

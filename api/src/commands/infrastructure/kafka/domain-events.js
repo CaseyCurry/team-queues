@@ -1,4 +1,5 @@
 import uuidv4 from "uuid/v4";
+
 // TODO: exponential backoffs
 // TODO: poison messages
 // TODO: research kafka best practices
@@ -153,17 +154,25 @@ const DomainEvents = (kafka) => {
           for (const topic of Object.keys(subscriptions)) {
             if (Object.keys(subscriptions[topic].pubsub.events)
               .length) {
-              const isBroadcast = false;
-              const events = subscriptions[topic].pubsub.events;
-              const consumer = await createConsumer(topic, isBroadcast, events);
-              subscriptions[topic].pubsub.consumer = consumer;
+              /* This condition and the one like it below in the broadcast block of code,
+                 is helpful when ConfiguredEventsHandler.reregister is called.
+                 If a topic has already been subscribed, move on. Otherwise,
+                 a new domain has been included in a new ConfiguredEvent. */
+              if (!subscriptions[topic].pubsub.consumer) {
+                const isBroadcast = false;
+                const events = subscriptions[topic].pubsub.events;
+                const consumer = await createConsumer(topic, isBroadcast, events);
+                subscriptions[topic].pubsub.consumer = consumer;
+              }
             }
             if (Object.keys(subscriptions[topic].broadcast.events)
               .length) {
-              const isBroadcast = true;
-              const events = subscriptions[topic].broadcast.events;
-              const consumer = await createConsumer(topic, isBroadcast, events);
-              subscriptions[topic].broadcast.consumer = consumer;
+              if (!subscriptions[topic].broadcast.consumer) {
+                const isBroadcast = true;
+                const events = subscriptions[topic].broadcast.events;
+                const consumer = await createConsumer(topic, isBroadcast, events);
+                subscriptions[topic].broadcast.consumer = consumer;
+              }
             }
           }
         },
@@ -181,7 +190,12 @@ const DomainEvents = (kafka) => {
         producer.disconnect();
         Object.keys(subscriptions)
           .forEach((topic) => {
-            subscriptions[topic].consumer.disconnect();
+            if (subscriptions[topic].pubsub.consumer) {
+              subscriptions[topic].pubsub.consumer.disconnect();
+            }
+            if (subscriptions[topic].broadcast.consumer) {
+              subscriptions[topic].broadcast.consumer.disconnect();
+            }
           });
         subscriptions = {};
       }

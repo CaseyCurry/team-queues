@@ -1,39 +1,12 @@
 import { Lifecycle } from "../../../domain/aggregates/lifecycle";
 
-const extendLifecycle = (lifecycle) => {
-  // TODO: maybe move to aggregate
-  let referencedEvents = [];
-  if (lifecycle.activeVersion) {
-    const eventsInTriggers = lifecycle.activeVersion.triggersForItemCreation
-      .map((trigger) => {
-        return trigger.eventNames;
-      })
-      .reduce((x, y) => x.concat(y), []);
-    const eventsInQueues = lifecycle.activeVersion.queues
-      .map((queue) => {
-        return queue.destinationsWhenEventOccurred;
-      })
-      .reduce((x, y) => x.concat(y), [])
-      .map((trigger) => {
-        return trigger.eventNames;
-      })
-      .reduce((x, y) => x.concat(y), []);
-    // get distinct events
-    referencedEvents = eventsInTriggers
-      .concat(eventsInQueues)
-      .filter((x, y, z) => z.indexOf(x) === y);
-  }
-  return Object.assign({}, lifecycle, {
-    _id: lifecycle.id,
-    referencedEvents,
-    isDeleted: false
-  });
-};
-
 const LifecycleRepository = (store) => {
   return {
     createOrUpdate: async (lifecycle) => {
-      const extendedLifecycle = extendLifecycle(lifecycle);
+      const extendedLifecycle = Object.assign({}, lifecycle, {
+        _id: lifecycle.id,
+        isDeleted: false
+      });
       const collection = await store.getCollection();
       await collection.updateOne({
         _id: extendedLifecycle.id
@@ -80,12 +53,13 @@ const LifecycleRepository = (store) => {
       collection.close();
       return lifecycles.map((lifecycle) => new Lifecycle(lifecycle));
     },
-    getThoseListeningForEvent: async (eventName) => {
+    getAllWithActiveVersion: async () => {
+      // TODO: unit test
       const collection = await store.getCollection();
       const lifecycles = await collection
         .find({
-          referencedEvents: eventName,
-          isDeleted: false
+          isDeleted: false,
+          activeVersion: { $exists: true }
         })
         .toArray();
       collection.close();

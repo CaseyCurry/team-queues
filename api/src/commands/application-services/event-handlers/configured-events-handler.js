@@ -6,17 +6,16 @@ const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destin
       // TODO: make sure this method handles multi-phase commits properly
       const context = configuredEvent.getContext(event);
 
-      const lifecycles = await lifecycleRepository
-        .getThoseListeningForEvent(event.name);
-      if (!lifecycles.length) {
-        console.debug(`there are not any lifecycles listening for the ${event.name} event`);
+      const lifecyclesListeningForEvent = getLifecyclesListeningForEvent(event.name);
+      if (!lifecyclesListeningForEvent.length) {
+        console.warning(`there are not any lifecycles listening for the ${event.name} event - consider inactivating configured event`);
         return;
       }
 
       const raisedDomainEvents = [];
 
-      for (const lifecycle of lifecycles) {
-        /* I can't imagine multiple lifecycles would listen to the same event, so lifecycles.length
+      for (const lifecycle of lifecyclesListeningForEvent) {
+        /* I can't imagine multiple lifecycles would listen to the same event, so lifecyclesListeningForEvent.length
            should generally be 1 at the most. Otherwise querying the db in a loop would be a
            performance concern. */
         /* TODO: Consider enforcing the above statement through code and lose this loop.
@@ -26,7 +25,7 @@ const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destin
            rules. */
         const item = await itemRepository.getByForeignId(lifecycle.id, context.foreignId);
         if (item && item.isComplete) {
-          console.debug(`skipping completed item ${item.id} in lifecycle of ${lifecycle.lifecycleOf} because the ${event.name} event occurred`);
+          console.warning(`skipping completed item ${item.id} in lifecycle of ${lifecycle.lifecycleOf} because the ${event.name} event occurred`);
           continue;
         }
         if (item) {
@@ -43,10 +42,10 @@ const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destin
             .processEvent(destinationProcessor, event, configuredEvent);
           if (!createdItem) {
             console.debug(`an item was not created in lifecycle of ${lifecycle.lifecycleOf} because of event ${event.name} having occurred`);
-            return;
+          } else {
+            itemRepository.createOrUpdate(createdItem);
+            raisedDomainEvents.push(...createdItem.domainEvents.raisedEvents);
           }
-          itemRepository.createOrUpdate(createdItem);
-          raisedDomainEvents.push(...createdItem.domainEvents.raisedEvents);
         }
         raisedDomainEvents.push(...lifecycle.domainEvents.raisedEvents);
         domainEvents.raise(raisedDomainEvents);
@@ -55,13 +54,19 @@ const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destin
   };
 
   let registeredEvents = [];
+  let lifecycles = [];
+
+  const getLifecyclesListeningForEvent = (eventName) => {
+    return lifecycles.filter((lifecycle) => lifecycle.referencedEvents.includes(eventName));
+  };
 
   const registerEvent = (configuredEvent) => {
     domainEvents.listenAndHandleOnce(configuredEvent.name, handler(configuredEvent));
     registeredEvents.push(configuredEvent.name);
   };
 
-  const register = (configuredEvents) => {
+  const register = ({ configuredEvents, lifecyclesWithAnActiveVersion }) => {
+    lifecycles = lifecyclesWithAnActiveVersion;
     registeredEvents = [];
     configuredEvents.forEach((configuredEvent) => {
       /* Passing the configured event here helps with performance b/c we don't
@@ -69,25 +74,35 @@ const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destin
          changes the configured event aggregate, this instance will be stale.
          We listen for team-queues.configured-event-modified to re-register the
          handlers. */
-      /* TODO: Do something similar for lifecycles listening to events
-         considering they don't change often. */
       registerEvent(configuredEvent);
     });
   };
 
+  const getEventsAndLifecycles = async () => {
+    const lifecyclesWithAnActiveVersion = await lifecycleRepository.getAllWithActiveVersion();
+    const configuredEvents = await configuredEventRepository.getAllActive();
+    return {
+      lifecyclesWithAnActiveVersion,
+      configuredEvents
+    };
+  };
+
   return {
     register: async () => {
-      const configuredEvents = await configuredEventRepository.getAllActive();
-      register(configuredEvents);
+      register(await getEventsAndLifecycles());
     },
     reregister: async () => {
-      const configuredEvents = await configuredEventRepository.getAllActive();
-      /* Ingoring and reregistering needs to be synchronous. Otherwise, events
-         could be handled while there are missing subscriptions in DomainEvents. */
+      const eventsAndLifecycles = await getEventsAndLifecycles();
+      /* Ingoring and re-registering needs to be synchronous. That's why getting data
+         from the async repos is above this comment. If removing and re-subscribing is
+         not done synchronously, events could occur while there are missing
+         subscriptions in DomainEvents. */
       registeredEvents.forEach((eventName) => {
         domainEvents.ignore(eventName);
       });
-      register(configuredEvents);
+      register(eventsAndLifecycles);
+      /* We're back to freely using async. */
+      await domainEvents.start();
     }
   };
 };

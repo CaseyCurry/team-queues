@@ -1,5 +1,6 @@
 import { ConfiguredEventsHandler } from "../event-handlers/configured-events-handler";
 import { ConfiguredEventModifiedHandler } from "../event-handlers/configured-event-modified-handler";
+import { LifecycleVersionActivatedHandler } from "../event-handlers/lifecycle-version-activated-handler";
 import { Repositories } from "./repositories";
 
 const EventHandlers = (domainEvents, domainServices) => {
@@ -13,9 +14,14 @@ const EventHandlers = (domainEvents, domainServices) => {
     domainEvents,
     configuredEventsHandler.reregister
   );
+  const lifecycleVersionActivatedHandler = LifecycleVersionActivatedHandler(
+    domainEvents,
+    configuredEventsHandler.reregister
+  );
   return {
     configuredEvents: configuredEventsHandler,
-    configuredEventModified: configuredEventModifiedHandler
+    configuredEventModified: configuredEventModifiedHandler,
+    lifecycleVersionActivated: lifecycleVersionActivatedHandler
   };
 };
 

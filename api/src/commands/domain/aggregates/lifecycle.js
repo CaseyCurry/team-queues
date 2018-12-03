@@ -42,6 +42,32 @@ const Lifecycle = class extends BaseAggregate {
   }
 
   // TODO: unit test
+  get referencedEvents() {
+    let referencedEvents = [];
+    if (this.activeVersion) {
+      const eventsInTriggers = this.activeVersion.triggersForItemCreation
+        .map((trigger) => {
+          return trigger.eventNames;
+        })
+        .reduce((x, y) => x.concat(y), []);
+      const eventsInQueues = this.activeVersion.queues
+        .map((queue) => {
+          return queue.destinationsWhenEventOccurred;
+        })
+        .reduce((x, y) => x.concat(y), [])
+        .map((trigger) => {
+          return trigger.eventNames;
+        })
+        .reduce((x, y) => x.concat(y), []);
+      // get distinct events
+      referencedEvents = eventsInTriggers
+        .concat(eventsInQueues)
+        .filter((x, y, z) => z.indexOf(x) === y);
+    }
+    return referencedEvents;
+  }
+
+  // TODO: unit test
   createNextVersion({ triggersForItemCreation, queues }) {
     const nextVersionNumber = this.activeVersion ? this.activeVersion.number + 1 : 1;
     this.nextVersion = new LifecycleVersion({
