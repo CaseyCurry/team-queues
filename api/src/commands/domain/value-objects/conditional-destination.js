@@ -2,17 +2,20 @@ import deepFreeze from "deep-freeze";
 import { DestinationFactory } from "../factories/destination-factory";
 import { ConditionGroup } from "./condition-group";
 
-// TODO: unit test
 const ConditionalDestination = class {
   constructor({ group, onTrue, onFalse }) {
+    const errorMessages = [];
     if (!group) {
-      throw new Error("The group must be a ConditionGroup");
+      errorMessages.push("The group must be a ConditionGroup");
     }
     if (!onTrue || !Array.isArray(onTrue)) {
-      throw new Error("The onTrue must be an array");
+      errorMessages.push("The onTrue must be an array");
     }
     if (!onFalse || !Array.isArray(onFalse)) {
-      throw new Error("The onFalse must be an array");
+      errorMessages.push("The onFalse must be an array");
+    }
+    if (errorMessages.length) {
+      errorMessages.push(errorMessages);
     }
     this.group = new ConditionGroup(group);
     this.onTrue = onTrue.map((destination) => DestinationFactory.create(destination));

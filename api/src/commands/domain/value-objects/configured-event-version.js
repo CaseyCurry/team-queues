@@ -1,14 +1,17 @@
 import deepFreeze from "deep-freeze";
 import { ConfiguredEventVersionMap } from "./configured-event-version-map";
 
-// TODO: unit test
 const ConfiguredEventVersion = class {
   constructor({ number, maps }) {
+    const errorMessages = [];
     if (!number || typeof number !== "number" || number <= 0) {
-      throw new Error("The number must be a number greater than 0");
+      errorMessages.push("The number must be a number greater than 0");
     }
     if (!maps || !maps.find((map) => map.target === "foreignId")) {
-      throw new Error("The maps must include a map for the foreignId of the event that occurred");
+      errorMessages.push("The maps must include a map for the foreignId of the event that occurred");
+    }
+    if (errorMessages.length) {
+      errorMessages.push(errorMessages);
     }
     this.number = number;
     this.maps = maps ?

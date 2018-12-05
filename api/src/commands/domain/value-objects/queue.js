@@ -1,6 +1,6 @@
+import deepFreeze from "deep-freeze";
 import { DestinationFactory } from "../factories/destination-factory";
 
-// TODO: unit test
 const Queue = class {
   constructor({
     name,
@@ -28,6 +28,7 @@ const Queue = class {
       destinationsWhenTaskCompleted.map((destination) => DestinationFactory.create(destination)) : [];
     this.destinationsWhenEventOccurred = destinationsWhenEventOccurred ?
       destinationsWhenEventOccurred.map((destination) => DestinationFactory.create(destination)) : [];
+    deepFreeze(this);
   }
 };
 

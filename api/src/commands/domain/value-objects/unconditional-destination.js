@@ -1,7 +1,6 @@
 import deepFreeze from "deep-freeze";
 import { Modification } from "./modification";
 
-// TODO: unit test
 const UnconditionalDestination = class {
   constructor({ queueName, taskType, modification, doesCompletePreviousTask }) {
     const errorMessages = [];
