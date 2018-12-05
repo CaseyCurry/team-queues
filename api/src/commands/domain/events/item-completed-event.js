@@ -1,7 +1,7 @@
 import deepFreeze from "deep-freeze";
-import { BaseEventMetadata } from "./base-event-metadata";
+import { Event } from "./event";
 
-const ItemCompletedEvent = class extends BaseEventMetadata {
+const ItemCompletedEvent = class extends Event {
   constructor(item) {
     super({ name: "team-queues.item-completed", version: 1 });
     this.message.item = {

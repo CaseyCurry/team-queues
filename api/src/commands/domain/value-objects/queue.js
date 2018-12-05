@@ -9,6 +9,7 @@ const Queue = class {
     destinationsWhenTaskCompleted,
     destinationsWhenEventOccurred
   }) {
+    // TODO: Add option to hide queue. If performance allows, display if it is not empty.
     const errorMessages = [];
     if (!name || typeof name !== "string") {
       errorMessages.push("The name must have a value and must be a string");

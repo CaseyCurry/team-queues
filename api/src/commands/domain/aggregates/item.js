@@ -49,19 +49,19 @@ const Item = class extends BaseAggregate {
   async assignTask(task, assignee) {
     // TODO: unit test this function
     task.assign(assignee);
-    await this.domainEvents.raise(new TaskAssignedEvent(task));
+    await this.domainEvents.raise(new TaskAssignedEvent(task, this));
   }
 
   async unassignTask(task) {
     // TODO: unit test this function
     task.unassign();
-    await this.domainEvents.raise(new TaskUnassignedEvent(task));
+    await this.domainEvents.raise(new TaskUnassignedEvent(task, this));
   }
 
   async completeTask(task) {
     task.completeTask();
     // TODO: unit test this event
-    await this.domainEvents.raise(new TaskCompletedEvent(task));
+    await this.domainEvents.raise(new TaskCompletedEvent(task, this));
   }
 
   async completeItem() {

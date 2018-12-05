@@ -1,9 +1,9 @@
 import deepFreeze from "deep-freeze";
-import { BaseEventMetadata } from "./base-event-metadata";
+import { TaggedAggregateEvent } from "./tagged-aggregate-event";
 
-const TaskCompletedEvent = class extends BaseEventMetadata {
-  constructor(task) {
-    super({ name: "team-queues.task-completed", version: 1 });
+const TaskCompletedEvent = class extends TaggedAggregateEvent {
+  constructor(task, item) {
+    super({ name: "team-queues.task-completed", version: 1, aggregate: item });
     this.message.task = {
       itemId: task.itemId,
       id: task.id

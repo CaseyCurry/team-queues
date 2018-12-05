@@ -18,9 +18,12 @@ describe("domain events suite", () => {
     // TODO: write better tests
     it("should test", (done) => {
       domainEvents.listenAndHandleOnce(eventName, (event) => {
-        expect(event.name)
-          .to.equal(eventName);
-        done();
+        return new Promise((resolve) => {
+          resolve();
+          expect(event.name)
+            .to.equal(eventName);
+          done();
+        });
       });
       domainEvents.start()
         .then(() => {

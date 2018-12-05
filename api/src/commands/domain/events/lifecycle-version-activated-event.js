@@ -1,7 +1,7 @@
 import deepFreeze from "deep-freeze";
-import { BaseEventMetadata } from "./base-event-metadata";
+import { Event } from "./event";
 
-const LifecycleVersionActivatedEvent = class extends BaseEventMetadata {
+const LifecycleVersionActivatedEvent = class extends Event {
   constructor(lifecycle) {
     super({ name: "team-queues.lifecycle-version-activated", version: 1 });
     this.message.lifecycle = {

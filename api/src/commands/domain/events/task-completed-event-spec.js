@@ -3,14 +3,17 @@ import { TaskCompletedEvent as Event } from "./task-completed-event";
 import { Task } from "../entities/task";
 
 describe("task completed event suite", () => {
+  const item = {
+    id: 456
+  };
   const task = new Task({
-    itemId: 456,
+    itemId: item.id,
     id: 123
   });
   let event;
 
   beforeEach(() => {
-    event = new Event(task);
+    event = new Event(task, item);
   });
 
   it("should include an id", () => {
@@ -36,6 +39,11 @@ describe("task completed event suite", () => {
   xit("should include the correlation id", () => {
     expect(event.correlationId)
       .to.equal(999);
+  });
+
+  it("should include an etag", () => {
+    expect(event.message.etag)
+      .to.exist;
   });
 
   it("should include the task", () => {

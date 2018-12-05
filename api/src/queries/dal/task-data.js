@@ -1,20 +1,43 @@
 const TaskData = (store) => {
   return {
-    create: async (task) => {
+    create: async (taskToCreate, existingTasks, etag) => {
+      const updates = existingTasks.map((task) => {
+        return {
+          replaceOne: {
+            filter: { id: task.id },
+            replacement: Object.assign({}, task, { etag })
+          }
+        };
+      });
       const collection = await store.getCollection();
-      await collection.insertOne(task);
-      collection.close();
+      await collection.bulkWrite(updates.concat([{
+        insertOne: {
+          document: Object.assign({}, taskToCreate, { etag })
+        }
+      }]));
     },
-    deleteById: async (itemId, taskId) => {
+    delete: async (taskToDelete, existingTasks, etag) => {
+      const updates = existingTasks.map((task) => {
+        return {
+          replaceOne: {
+            filter: { id: task.id },
+            replacement: Object.assign({}, task, { etag })
+          }
+        };
+      });
       const collection = await store.getCollection();
-      await collection.deleteOne({ id: taskId, "item.id": itemId });
-      collection.close();
+      await collection.bulkWrite(updates.concat([{
+        deleteOne: {
+          filter: { id: taskToDelete.id }
+        }
+      }]));
     },
-    getById: async (itemId, taskId) => {
+    getByItemId: async (itemId) => {
       const collection = await store.getCollection();
-      const task = await collection.findOne({ id: taskId, "item.id": itemId });
+      const tasks = await collection.find({ "item.id": itemId })
+        .toArray();
       collection.close();
-      return task;
+      return tasks;
     },
     getByQueue: async (queueName, type) => {
       const collection = await store.getCollection();

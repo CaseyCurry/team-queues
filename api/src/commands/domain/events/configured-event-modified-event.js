@@ -1,7 +1,7 @@
 import deepFreeze from "deep-freeze";
-import { BaseEventMetadata } from "./base-event-metadata";
+import { Event } from "./event";
 
-const ConfiguredEventModifiedEvent = class extends BaseEventMetadata {
+const ConfiguredEventModifiedEvent = class extends Event {
   constructor(configuredEvent) {
     super({ name: "team-queues.configured-event-modified", version: 1 });
     this.message.lifecycle = {

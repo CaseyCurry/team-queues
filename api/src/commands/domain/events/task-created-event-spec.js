@@ -49,6 +49,11 @@ describe("task created event suite", () => {
       .to.equal(999);
   });
 
+  it("should include an etag", () => {
+    expect(event.message.etag)
+      .to.exist;
+  });
+
   it("should include the task", () => {
     expect(event.message.task)
       .to.deep.equal({

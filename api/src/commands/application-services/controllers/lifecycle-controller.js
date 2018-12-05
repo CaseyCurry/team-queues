@@ -49,6 +49,7 @@ const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepos
       app.post("/api/commands/lifecycles/:id/versions/active", async (request, response, next) => {
         try {
           // TODO: What needs to be checked to handle versioning and concurrency?
+          // TODO: re-version potentially orphaned items
           const lifecycle = await lifecycleRepository.getById(request.params.id);
           if (!lifecycle) {
             response.status(404)
