@@ -42,4 +42,9 @@ describe("item completed event suite", () => {
         id: item.id
       });
   });
+
+  it("should be immutable", () => {
+    expect(Object.isFrozen(event))
+      .to.equal(true);
+  });
 });

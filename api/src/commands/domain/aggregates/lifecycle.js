@@ -1,4 +1,3 @@
-import validate from "uuid-validate";
 import { BaseAggregate } from "./base-aggregate";
 import { Item } from "./item";
 import { ItemCreatedEvent } from "../events/item-created-event";
@@ -15,17 +14,6 @@ const Lifecycle = class extends BaseAggregate {
     nextVersion
   }) {
     super();
-    // TODO: unit test validation
-    const errorMessages = [];
-    if (!id || !validate(id)) {
-      errorMessages.push("The id must have a value and must be a v4 uuid");
-    }
-    if (!lifecycleOf || typeof lifecycleOf !== "string") {
-      errorMessages.push("The lifecycleOf must have a value and must be a string");
-    }
-    if (errorMessages.length) {
-      throw new Error(errorMessages);
-    }
     this.id = id;
     this.lifecycleOf = lifecycleOf;
     if (previousVersion) {

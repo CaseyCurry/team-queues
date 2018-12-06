@@ -37,4 +37,9 @@ describe("configured event modified event suite", () => {
         name: configuredEvent.name
       });
   });
+
+  it("should be immutable", () => {
+    expect(Object.isFrozen(event))
+      .to.equal(true);
+  });
 });

@@ -24,7 +24,8 @@ const LifecycleVersion = class {
     this.number = number;
     this.triggersForItemCreation = triggersForItemCreation ?
       triggersForItemCreation.map((trigger) => DestinationFactory.create(trigger)) : [];
-    this.queues = queues ? queues.map((queue) => new Queue(queue)) : [];
+    this.queues = queues ?
+      queues.map((queue) => new Queue(queue)) : [];
   }
 
   createQueue({

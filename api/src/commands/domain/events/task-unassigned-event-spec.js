@@ -53,4 +53,9 @@ describe("task unassigned event suite", () => {
         id: task.id
       });
   });
+
+  it("should be immutable", () => {
+    expect(Object.isFrozen(event))
+      .to.equal(true);
+  });
 });

@@ -71,4 +71,20 @@ describe("task created event suite", () => {
         assignee: undefined
       });
   });
+
+  it("should be immutable", () => {
+    expect(Object.isFrozen(event))
+      .to.equal(true);
+  });
+
+  describe("when the task has an assignee", () => {
+    it("should include the assignee", () => {
+      task.assignTask({
+        name: "Jane"
+      });
+      event = new Event(task, item);
+      expect(event.message.task.assignee)
+        .to.deep.equal(task.assignee);
+    });
+  });
 });

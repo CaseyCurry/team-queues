@@ -55,4 +55,9 @@ describe("lifecycle version activated event suite", () => {
         }
       });
   });
+
+  it("should be immutable", () => {
+    expect(Object.isFrozen(event))
+      .to.equal(true);
+  });
 });

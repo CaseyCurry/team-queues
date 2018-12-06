@@ -46,4 +46,9 @@ describe("item created event suite", () => {
         lifecycleId: item.lifecycleId
       });
   });
+
+  it("should be immutable", () => {
+    expect(Object.isFrozen(event))
+      .to.equal(true);
+  });
 });

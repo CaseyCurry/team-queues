@@ -55,4 +55,9 @@ describe("task assigned event suite", () => {
         assigneeName: task.assignee.name
       });
   });
+
+  it("should be immutable", () => {
+    expect(Object.isFrozen(event))
+      .to.equal(true);
+  });
 });
