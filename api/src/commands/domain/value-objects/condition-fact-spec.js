@@ -46,6 +46,18 @@ describe("condition fact suite", () => {
     });
   });
 
+  describe("when a current task is not provided", () => {
+    it("should include the event context", () => {
+      const eventContext = {
+        foreignId: 123
+      };
+      const currentTask = null;
+      const conditionFact = new ConditionFact(eventContext, currentTask);
+      expect(conditionFact["@event"])
+        .to.equal(eventContext);
+    });
+  });
+
   describe("when an attempt is made to create a fact with invalid arguments", () => {
     it("should throw an error if the event context is null", () => {
       const eventContext = null;
@@ -55,19 +67,6 @@ describe("condition fact suite", () => {
         status: TaskStatus.Assigned,
         dueOn: new Date()
       });
-      try {
-        new ConditionFact(eventContext, currentTask);
-      } catch (error) {
-        expect(error)
-          .to.exist;
-      }
-    });
-
-    it("should throw an error if the current task is null", () => {
-      const eventContext = {
-        foreignId: 123
-      };
-      const currentTask = null;
       try {
         new ConditionFact(eventContext, currentTask);
       } catch (error) {

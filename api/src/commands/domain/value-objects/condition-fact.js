@@ -7,18 +7,17 @@ const ConditionFact = class {
     if (!eventContext) {
       errorMessages.push("The eventContext must have a value");
     }
-    if (!currentTask) {
-      errorMessages.push("The currentTask must have a value");
-    }
     if (errorMessages.length) {
       throw new Error(errorMessages);
     }
     this["@event"] = eventContext;
-    this["@currentTask"] = {
-      createdOn: currentTask.createdOn,
-      status: currentTask.status,
-      dueOn: currentTask.dueOn
-    };
+    if (currentTask) {
+      this["@currentTask"] = {
+        createdOn: currentTask.createdOn,
+        status: currentTask.status,
+        dueOn: currentTask.dueOn
+      };
+    }
     deepFreeze(this);
   }
 };
