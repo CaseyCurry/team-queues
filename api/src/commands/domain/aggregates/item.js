@@ -8,6 +8,11 @@ import { TaskUnassignedEvent } from "../events/task-unassigned-event";
 import { TaskCompletedEvent } from "../events/task-completed-event";
 import { ItemCompletedEvent } from "../events/item-completed-event";
 
+const getNextTaskId = (tasks) => {
+  const sortedTasks = tasks.sort((x, y) => x.id > y.id ? -1 : 1);
+  return sortedTasks.length ? sortedTasks[0].id + 1 : 1;
+};
+
 const Item = class extends BaseAggregate {
   constructor({ id, foreignId, tasks, lifecycleId, isComplete }) {
     super();
@@ -24,14 +29,15 @@ const Item = class extends BaseAggregate {
   }
 
   async createTask(destination, currentTask) {
-    const dueOn = new Date();
+    // TODO: unit test id
     const task = new Task({
+      id: getNextTaskId(this.tasks),
       itemId: this.id,
       queueName: destination.queueName,
       type: destination.taskType,
       createdOn: new Date(),
       status: TaskStatus.Unassigned,
-      dueOn
+      dueOn: new Date()
     });
     task.applyModification(destination.modification);
     this.tasks.push(task);
@@ -59,7 +65,7 @@ const Item = class extends BaseAggregate {
   }
 
   async completeTask(task) {
-    task.completeTask();
+    task.complete();
     // TODO: unit test this event
     await this.domainEvents.raise(new TaskCompletedEvent(task, this));
   }

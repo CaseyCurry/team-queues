@@ -31,7 +31,7 @@ describe("configured event modified event suite", () => {
       .to.equal(999);
   });
 
-  it("should include the name", () => {
+  it("should include the lifecycle name", () => {
     expect(event.message.lifecycle)
       .to.deep.equal({
         name: configuredEvent.name

@@ -23,7 +23,7 @@ const Lifecycle = class extends BaseAggregate {
       this.activeVersion = new LifecycleVersion(activeVersion);
     }
     this.nextVersion = nextVersion ?
-      new LifecycleVersion(nextVersion) : this.createNextVersion({
+      new LifecycleVersion(nextVersion) : this.updateNextVersion({
         triggersForItemCreation: [],
         queues: []
       });
@@ -56,20 +56,20 @@ const Lifecycle = class extends BaseAggregate {
   }
 
   // TODO: unit test
-  createNextVersion({ triggersForItemCreation, queues }) {
+  updateNextVersion({ triggersForItemCreation, queues }) {
     const nextVersionNumber = this.activeVersion ? this.activeVersion.number + 1 : 1;
-    this.nextVersion = new LifecycleVersion({
-      number: nextVersionNumber,
-      triggersForItemCreation,
-      queues
-    });
+    this.nextVersion = new LifecycleVersion({ number: nextVersionNumber });
+    queues
+      .forEach((queue) => this.nextVersion.addQueue(queue));
+    triggersForItemCreation
+      .forEach((trigger) => this.nextVersion.addTriggereForItemCreation(trigger));
   }
 
   // TODO: unit test
   activateNextVersion() {
     this.previousVersion = this.activeVersion;
     this.activeVersion = this.nextVersion;
-    this.createNextVersion({
+    this.updateNextVersion({
       triggersForItemCreation: [],
       queues: []
     });

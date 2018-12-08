@@ -1,33 +1,36 @@
-import { v4 as uuidv4 } from "uuid";
 import { TaskStatus } from "../value-objects/task-status";
+import { TeamMember } from "../value-objects/team-member";
 
-// TODO: unit test
 const Task = class {
   constructor({ id, itemId, queueName, type, createdOn, status, dueOn, assignee }) {
-    this.id = id ? id : uuidv4();
+    this.id = id;
     this.itemId = itemId;
     this.queueName = queueName;
     this.type = type;
     this.createdOn = createdOn;
     this.status = status;
     this.dueOn = dueOn;
-    this.assignee = assignee;
+    if (assignee) {
+      this.assignee = new TeamMember(assignee);
+    }
   }
 
   get isComplete() {
     return this.status === TaskStatus.Completed;
   }
 
-  completeTask() {
+  complete() {
     this.status = TaskStatus.Completed;
   }
 
-  assignTask(assignee) {
+  assign(assignee) {
     this.assignee = assignee;
+    this.status = TaskStatus.Assigned;
   }
 
-  unassignTask() {
+  unassign() {
     this.assignee = null;
+    this.status = TaskStatus.Unassigned;
   }
 
   applyModification(modification) {

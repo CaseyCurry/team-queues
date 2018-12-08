@@ -1,25 +1,41 @@
 import { Queue } from "../value-objects/queue";
 import { DestinationFactory } from "../factories/destination-factory";
+import { UnconditionalDestination } from "../value-objects/unconditional-destination";
 
-// TODO: unit test
+const isQueueMissing = (destination, existingQueues) => {
+  return !existingQueues
+    .find((queue) => queue.name === destination.queueName && queue.taskType === destination.taskType);
+};
+
+const findInvalidDestinations = (destination, existingQueues) => {
+  const invalidDestinations = [];
+  if (destination instanceof UnconditionalDestination) {
+    if (isQueueMissing(destination, existingQueues)) {
+      invalidDestinations.push(destination);
+    }
+  } else {
+    invalidDestinations.push(...recursivelyFindInvalidDestinations(destination.onTrue, existingQueues));
+    invalidDestinations.push(...recursivelyFindInvalidDestinations(destination.onFalse, existingQueues));
+  }
+  return invalidDestinations;
+};
+
+const recursivelyFindInvalidDestinations = (destinations, existingQueues) => {
+  const invalidDestinations = [];
+  destinations.map((destination) => {
+    invalidDestinations.push(...findInvalidDestinations(destination, existingQueues));
+  });
+  return invalidDestinations;
+};
+
 const LifecycleVersion = class {
   constructor({
     number,
     triggersForItemCreation,
     queues
   }) {
-    const errorMessages = [];
     if (!number || typeof number !== "number") {
-      errorMessages.push("The version number must be passed and must be a numeric value");
-    }
-    if (!Array.isArray(triggersForItemCreation)) {
-      errorMessages.push("The triggersForItemCreation must be an array");
-    }
-    if (!Array.isArray(queues)) {
-      errorMessages.push("The queues must be an array");
-    }
-    if (errorMessages.length) {
-      throw new Error(errorMessages);
+      throw new Error("The version number must be passed and must be a numeric value");
     }
     this.number = number;
     this.triggersForItemCreation = triggersForItemCreation ?
@@ -28,13 +44,28 @@ const LifecycleVersion = class {
       queues.map((queue) => new Queue(queue)) : [];
   }
 
-  createQueue({
+  addTriggerForItemCreation({ eventNames, destinations }) {
+    const invalidDestinations = recursivelyFindInvalidDestinations(destinations, this.queues);
+    if (invalidDestinations && invalidDestinations.length) {
+      throw new Error(invalidDestinations
+        .map((destination) => `The ${destination.queueName} queue and ${destination.taskType} task type are not configured`));
+    }
+    const trigger = DestinationFactory.create({ eventNames, destinations });
+    this.triggersForItemCreation.push(trigger);
+  }
+
+  addQueue({
     name,
     taskType,
     destinationsWhenTaskCreated,
     destinationsWhenTaskCompleted,
     destinationsWhenEventOccurred
   }) {
+    const existingQueue = this.queues
+      .find((queue) => queue.name === name && queue.taskType === taskType);
+    if (existingQueue) {
+      return;
+    }
     const queue = new Queue({
       name,
       taskType,
@@ -43,14 +74,6 @@ const LifecycleVersion = class {
       destinationsWhenEventOccurred
     });
     this.queues.push(queue);
-  }
-
-  createTriggerForItemCreation({
-    eventNames,
-    destinations
-  }) {
-    const trigger = DestinationFactory.create({ eventNames, destinations });
-    this.triggersForItemCreation.push(trigger);
   }
 };
 

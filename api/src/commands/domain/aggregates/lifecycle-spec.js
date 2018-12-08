@@ -90,21 +90,19 @@ describe("lifecycle suite", () => {
     beforeEach(() => {
       const activeVersion = new LifecycleVersion({
         number: activeLifecycleVersionNumber,
-        triggersForItemCreation: [],
-        queues: []
-      });
-      activeVersion.createQueue({
-        name: "Cashier Queue",
-        taskType: "Take Order"
-      });
-      activeVersion.createTriggerForItemCreation({
-        eventNames: ["customer-arrived"],
-        destinations: [
-          new UnconditionalDestination({
-            queueName: "Cashier Queue",
-            taskType: "Take Order"
-          })
-        ]
+        triggersForItemCreation: [{
+          eventNames: ["customer-arrived"],
+          destinations: [
+            new UnconditionalDestination({
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
+            })
+          ]
+        }],
+        queues: [{
+          name: "Cashier Queue",
+          taskType: "Take Order"
+        }]
       });
       lifecycle = new Lifecycle({
         id: lifecycleId,
@@ -235,29 +233,26 @@ describe("lifecycle suite", () => {
       beforeEach(() => {
         const activeVersion = new LifecycleVersion({
           number: activeLifecycleVersionNumber,
-          triggersForItemCreation: [],
-          queues: []
-        });
-        activeVersion.createTriggerForItemCreation({
-          eventNames: ["customer-arrived"],
-          destinations: [
-            new UnconditionalDestination({
-              queueName: "Cashier Queue",
-              taskType: "Take Order"
-            }),
-            new UnconditionalDestination({
-              queueName: "Barista Queue",
-              taskType: "Make Coffee"
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: "Cashier Queue",
-          taskType: "Take Order"
-        });
-        activeVersion.createQueue({
-          name: "Barista Queue",
-          taskType: "Make Coffee"
+          triggersForItemCreation: [{
+            eventNames: ["customer-arrived"],
+            destinations: [
+              new UnconditionalDestination({
+                queueName: "Cashier Queue",
+                taskType: "Take Order"
+              }),
+              new UnconditionalDestination({
+                queueName: "Barista Queue",
+                taskType: "Make Coffee"
+              })
+            ]
+          }],
+          queues: [{
+            name: "Cashier Queue",
+            taskType: "Take Order"
+          }, {
+            name: "Barista Queue",
+            taskType: "Make Coffee"
+          }]
         });
         lifecycle = new Lifecycle({
           id: lifecycleId,
@@ -292,37 +287,34 @@ describe("lifecycle suite", () => {
       beforeEach(() => {
         const activeVersion = new LifecycleVersion({
           number: activeLifecycleVersionNumber,
-          triggersForItemCreation: [],
-          queues: []
-        });
-        activeVersion.createTriggerForItemCreation({
-          eventNames: ["customer-arrived"],
-          destinations: [
-            new UnconditionalDestination({
-              queueName: "Cashier Queue",
-              taskType: "Take Order"
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: "Cashier Queue",
-          taskType: "Take Order",
-          destinationsWhenEventOccurred: [
-            new TriggeredDestination({
-              eventNames: ["customer-ordered"],
-              destinations: [
-                new UnconditionalDestination({
-                  queueName: targetQueueName,
-                  taskType: targetTaskType,
-                  doesCompletePreviousTask: true
-                })
-              ]
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: targetQueueName,
-          taskType: targetTaskType
+          triggersForItemCreation: [{
+            eventNames: ["customer-arrived"],
+            destinations: [
+              new UnconditionalDestination({
+                queueName: "Cashier Queue",
+                taskType: "Take Order"
+              })
+            ]
+          }],
+          queues: [{
+            name: "Cashier Queue",
+            taskType: "Take Order",
+            destinationsWhenEventOccurred: [
+              new TriggeredDestination({
+                eventNames: ["customer-ordered"],
+                destinations: [
+                  new UnconditionalDestination({
+                    queueName: targetQueueName,
+                    taskType: targetTaskType,
+                    doesCompletePreviousTask: true
+                  })
+                ]
+              })
+            ]
+          }, {
+            name: targetQueueName,
+            taskType: targetTaskType
+          }]
         });
         lifecycle = new Lifecycle({
           id: lifecycleId,
@@ -418,29 +410,27 @@ describe("lifecycle suite", () => {
             const activeVersion = new LifecycleVersion({
               number: activeLifecycleVersionNumber,
               triggersForItemCreation: [],
-              queues: []
-            });
-            activeVersion.createQueue({
-              name: "Cashier Queue",
-              taskType: "Take Order",
-              destinationsWhenEventOccurred: [
-                new TriggeredDestination({
-                  eventNames: [
-                    "customer-ordered"
-                  ],
-                  destinations: [
-                    new UnconditionalDestination({
-                      queueName: targetQueueName,
-                      taskType: targetTaskType,
-                      doesCompletePreviousTask: false
-                    })
-                  ]
-                })
-              ]
-            });
-            activeVersion.createQueue({
-              name: targetQueueName,
-              taskType: targetTaskType
+              queues: [{
+                name: "Cashier Queue",
+                taskType: "Take Order",
+                destinationsWhenEventOccurred: [
+                  new TriggeredDestination({
+                    eventNames: [
+                      "customer-ordered"
+                    ],
+                    destinations: [
+                      new UnconditionalDestination({
+                        queueName: targetQueueName,
+                        taskType: targetTaskType,
+                        doesCompletePreviousTask: false
+                      })
+                    ]
+                  })
+                ]
+              }, {
+                name: targetQueueName,
+                taskType: targetTaskType
+              }]
             });
             lifecycle = new Lifecycle({
               id: lifecycleId,
@@ -495,43 +485,39 @@ describe("lifecycle suite", () => {
       beforeEach(() => {
         const activeVersion = new LifecycleVersion({
           number: activeLifecycleVersionNumber,
-          triggersForItemCreation: [],
-          queues: []
-        });
-        activeVersion.createTriggerForItemCreation({
-          eventNames: ["customer-arrived"],
-          destinations: [
-            new UnconditionalDestination({
-              queueName: "Cashier Queue",
-              taskType: "Take Order"
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: "Cashier Queue",
-          taskType: "Take Order",
-          destinationsWhenTaskCreated: [
-            new UnconditionalDestination({
-              queueName: targetQueueName1,
-              taskType: targetTaskType1,
-              doesCompletePreviousTask: false
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: targetQueueName1,
-          taskType: targetTaskType1,
-          destinationsWhenTaskCreated: [
-            new UnconditionalDestination({
-              queueName: targetQueueName2,
-              taskType: targetTaskType2,
-              doesCompletePreviousTask: false
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: targetQueueName2,
-          taskType: targetTaskType2
+          triggersForItemCreation: [{
+            eventNames: ["customer-arrived"],
+            destinations: [
+              new UnconditionalDestination({
+                queueName: "Cashier Queue",
+                taskType: "Take Order"
+              })
+            ]
+          }],
+          queues: [{
+            name: "Cashier Queue",
+            taskType: "Take Order",
+            destinationsWhenTaskCreated: [
+              new UnconditionalDestination({
+                queueName: targetQueueName1,
+                taskType: targetTaskType1,
+                doesCompletePreviousTask: false
+              })
+            ]
+          }, {
+            name: targetQueueName1,
+            taskType: targetTaskType1,
+            destinationsWhenTaskCreated: [
+              new UnconditionalDestination({
+                queueName: targetQueueName2,
+                taskType: targetTaskType2,
+                doesCompletePreviousTask: false
+              })
+            ]
+          }, {
+            name: targetQueueName2,
+            taskType: targetTaskType2
+          }]
         });
         lifecycle = new Lifecycle({
           id: lifecycleId,
@@ -561,42 +547,48 @@ describe("lifecycle suite", () => {
         it("should create a task with the first queue name", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[0].queueName)
+          const task = createdItem.tasks.find((task) => task.id === 1);
+          expect(task.queueName)
             .to.equal("Cashier Queue");
         });
 
         it("should create a task with the first task type", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[0].type)
+          const task = createdItem.tasks.find((task) => task.id === 1);
+          expect(task.type)
             .to.equal("Take Order");
         });
 
         it("should create a task with the second queue name", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[1].queueName)
+          const task = createdItem.tasks.find((task) => task.id === 2);
+          expect(task.queueName)
             .to.equal(targetQueueName1);
         });
 
         it("should create a task with the second task type", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[1].type)
+          const task = createdItem.tasks.find((task) => task.id === 2);
+          expect(task.type)
             .to.equal(targetTaskType1);
         });
 
         it("should create a task with the third queue name", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[2].queueName)
+          const task = createdItem.tasks.find((task) => task.id === 3);
+          expect(task.queueName)
             .to.equal(targetQueueName2);
         });
 
         it("should create a task with the third task type", async () => {
           const createdItem = await lifecycle
             .processEvent(destinationProcessor, occurredEvent, configuredEvent);
-          expect(createdItem.tasks[2].type)
+          const task = createdItem.tasks.find((task) => task.id === 3);
+          expect(task.type)
             .to.equal(targetTaskType2);
         });
 
@@ -618,43 +610,39 @@ describe("lifecycle suite", () => {
       beforeEach(() => {
         const activeVersion = new LifecycleVersion({
           number: activeLifecycleVersionNumber,
-          triggersForItemCreation: [],
-          queues: []
-        });
-        activeVersion.createTriggerForItemCreation({
-          eventNames: ["customer-arrived"],
-          destinations: [
-            new UnconditionalDestination({
-              queueName: "Cashier Queue",
-              taskType: "Take Order"
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: "Cashier Queue",
-          taskType: "Take Order",
-          destinationsWhenTaskCreated: [
-            new UnconditionalDestination({
-              queueName: targetQueueName1,
-              taskType: targetTaskType1,
-              doesCompletePreviousTask: true
-            })
-          ],
-          destinationsWhenTaskCompleted: [
-            new UnconditionalDestination({
-              queueName: targetQueueName2,
-              taskType: targetTaskType2,
-              doesCompletePreviousTask: false
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: targetQueueName1,
-          taskType: targetTaskType1
-        });
-        activeVersion.createQueue({
-          name: targetQueueName2,
-          taskType: targetTaskType2
+          triggersForItemCreation: [{
+            eventNames: ["customer-arrived"],
+            destinations: [
+              new UnconditionalDestination({
+                queueName: "Cashier Queue",
+                taskType: "Take Order"
+              })
+            ]
+          }],
+          queues: [{
+            name: "Cashier Queue",
+            taskType: "Take Order",
+            destinationsWhenTaskCreated: [
+              new UnconditionalDestination({
+                queueName: targetQueueName1,
+                taskType: targetTaskType1,
+                doesCompletePreviousTask: true
+              })
+            ],
+            destinationsWhenTaskCompleted: [
+              new UnconditionalDestination({
+                queueName: targetQueueName2,
+                taskType: targetTaskType2,
+                doesCompletePreviousTask: false
+              })
+            ]
+          }, {
+            name: targetQueueName1,
+            taskType: targetTaskType1
+          }, {
+            name: targetQueueName2,
+            taskType: targetTaskType2
+          }]
         });
         lifecycle = new Lifecycle({
           id: lifecycleId,
@@ -726,35 +714,31 @@ describe("lifecycle suite", () => {
         });
         const activeVersion = new LifecycleVersion({
           number: activeLifecycleVersionNumber,
-          triggersForItemCreation: [],
-          queues: []
-        });
-        activeVersion.createTriggerForItemCreation({
-          eventNames: ["customer-arrived"],
-          destinations: [
-            new UnconditionalDestination({
-              queueName: "Cashier Queue",
-              taskType: "Take Order"
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: "Cashier Queue",
-          taskType: "Take Order",
-          destinationsWhenEventOccurred: [
-            new TriggeredDestination({
-              eventNames: ["customer-ordered"],
-              destinations: [conditionalDestination]
-            })
-          ]
-        });
-        activeVersion.createQueue({
-          name: targetQueueNameWhenConditionIsMet,
-          taskType: targetTaskTypeWhenConditionIsMet
-        });
-        activeVersion.createQueue({
-          name: targetQueueNameWhenConditionIsNotMet,
-          taskType: targetTaskTypeWhenConditionIsNotMet
+          triggersForItemCreation: [{
+            eventNames: ["customer-arrived"],
+            destinations: [
+              new UnconditionalDestination({
+                queueName: "Cashier Queue",
+                taskType: "Take Order"
+              })
+            ]
+          }],
+          queues: [{
+            name: "Cashier Queue",
+            taskType: "Take Order",
+            destinationsWhenEventOccurred: [
+              new TriggeredDestination({
+                eventNames: ["customer-ordered"],
+                destinations: [conditionalDestination]
+              })
+            ]
+          }, {
+            name: targetQueueNameWhenConditionIsMet,
+            taskType: targetTaskTypeWhenConditionIsMet
+          }, {
+            name: targetQueueNameWhenConditionIsNotMet,
+            taskType: targetTaskTypeWhenConditionIsNotMet
+          }]
         });
         lifecycle = new Lifecycle({
           id: lifecycleId,

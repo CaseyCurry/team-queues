@@ -27,7 +27,7 @@ const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepos
           // TODO: What needs to be checked to handle versioning and concurrency?
           // TODO: use 412 for concurrency issues
           // TODO: confirm all events have been configured
-          lifecycle.createNextVersion(request.body.nextVersion);
+          lifecycle.updateNextVersion(request.body.nextVersion);
           await lifecycleRepository.createOrUpdate(lifecycle);
           response.status(201)
             .send(lifecycle.nextVersion.number.toString());

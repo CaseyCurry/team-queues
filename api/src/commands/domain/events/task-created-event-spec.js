@@ -79,7 +79,7 @@ describe("task created event suite", () => {
 
   describe("when the task has an assignee", () => {
     it("should include the assignee", () => {
-      task.assignTask({
+      task.assign({
         name: "Jane"
       });
       event = new Event(task, item);
