@@ -62,7 +62,7 @@ const Lifecycle = class extends BaseAggregate {
     queues
       .forEach((queue) => this.nextVersion.addQueue(queue));
     triggersForItemCreation
-      .forEach((trigger) => this.nextVersion.addTriggereForItemCreation(trigger));
+      .forEach((trigger) => this.nextVersion.addTriggerForItemCreation(trigger));
   }
 
   // TODO: unit test

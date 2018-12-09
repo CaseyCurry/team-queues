@@ -45,12 +45,12 @@ const LifecycleVersion = class {
   }
 
   addTriggerForItemCreation({ eventNames, destinations }) {
-    const invalidDestinations = recursivelyFindInvalidDestinations(destinations, this.queues);
+    const trigger = DestinationFactory.create({ eventNames, destinations });
+    const invalidDestinations = recursivelyFindInvalidDestinations(trigger.destinations, this.queues);
     if (invalidDestinations && invalidDestinations.length) {
       throw new Error(invalidDestinations
         .map((destination) => `The ${destination.queueName} queue and ${destination.taskType} task type are not configured`));
     }
-    const trigger = DestinationFactory.create({ eventNames, destinations });
     this.triggersForItemCreation.push(trigger);
   }
 
