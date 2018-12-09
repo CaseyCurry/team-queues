@@ -19,7 +19,8 @@ module.exports = [{
     filename: "index.min.js"
   },
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
+    port: 8082
   },
   module: {
     rules: [{

@@ -6,7 +6,7 @@ import http from "http";
 import socketIO from "socket.io";
 import "./console-overrides";
 import { DomainEvents } from "./commands/infrastructure/kafka/domain-events";
-import { ClientNotifications } from "./commands/infrastructure/socketIO/client-notifications";
+import { ClientNotifications } from "./commands/infrastructure/socketio/client-notifications";
 import { DomainServices } from "./commands/application-services/registries/domain-services";
 import { Controllers as CommandControllers } from "./commands/application-services/registries/controllers";
 import { EventHandlers as CommandEventHandlers } from "./commands/application-services/registries/event-handlers";

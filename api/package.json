@@ -7,7 +7,7 @@
     "coverage": "nyc npm run test",
     "test": "mocha --opts mocha.opts",
     "lint": "eslint . --ext .js --ext .jsx --ignore-path .gitignore",
-    "start": "DEBUG=true babel-node ./src/index.js",
+    "start": "PORT=8083 DEBUG=true babel-node ./src/index.js",
     "log": "npm run start 2>&1 | tee app.log"
   },
   "keywords": [],
