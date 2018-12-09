@@ -1,0 +1,104 @@
+{
+	"variables": [],
+	"info": {
+		"name": "team-queues",
+		"_postman_id": "0d7e796c-46ff-6a14-813b-ace09f213c70",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create configured event",
+			"request": {
+				"url": "http://localhost:8083/api/commands/configured-events",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"cashier.coffee-ordered\",\n  \"isActive\": true,\n  \"versions\": [{\n    \"number\": 1,\n    \"maps\": [{\n      \"source\": \"message.id\",\n      \"target\": \"foreignId\"\n    }, {\n      \"source\": \"message.coffee.isHot\",\n      \"target\": \"coffee.isHot\"\n    }, {\n      \"source\": \"message.coffee.isFree\",\n      \"target\": \"coffee.isFree\"\n    }]\n  }]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "create configured event",
+			"request": {
+				"url": "http://localhost:8083/api/commands/configured-events",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"delivery.coffee-delivered\",\n  \"isActive\": true,\n  \"versions\": [{\n    \"number\": 1,\n    \"maps\": [{\n      \"source\": \"message.orderId\",\n      \"target\": \"foreignId\"\n    }]\n  }]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "create lifecycle",
+			"request": {
+				"url": "http://localhost:8083/api/commands/lifecycles/a865283c-76a4-4276-99d3-5a83ffc5fbac/versions/next",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": \"a865283c-76a4-4276-99d3-5a83ffc5fbac\",\n  \"lifecycleOf\": \"coffee\",\n  \"nextVersion\": {\n    \"triggersForItemCreation\": [{\n      \"eventNames\": [\"cashier.coffee-ordered\"],\n      \"destinations\": [{\n        \"group\": {\n          \"scope\": \"All\",\n          \"conditions\": [{\n            \"fact\": \"@event\",\n            \"path\": \".coffee.isFree\",\n            \"operator\": \"equal\",\n            \"value\": true\n          }]\n        },\n        \"onTrue\": [{\n          \"queueName\": \"Cashier Queue\",\n    \t  \"taskType\": \"Inform Customer Of Wait\",\n          \"doesCompletePreviousTask\": false\n        }, {\n          \"queueName\": \"Barista Queue\",\n    \t  \"taskType\": \"Make Coffee\",\n          \"doesCompletePreviousTask\": false,\n          \"modification\": {\n          \t\"text\": \"dueOn + @minute(5)\"\n          }\n        }],\n        \"onFalse\": [{\n          \"queueName\": \"Barista Queue\",\n    \t  \"taskType\": \"Make Coffee\",\n          \"doesCompletePreviousTask\": false\n        }]\n      }]\n    }],\n    \"queues\": [{\n      \"name\": \"Cashier Queue\",\n      \"taskType\": \"Inform Customer Of Wait\",\n      \"destinationsWhenTaskCreated\": [],\n      \"destinationsWhenTaskCompleted\": [],\n      \"destinationsWhenEventOccurred\": []\n     }, {\n      \"name\": \"Barista Queue\",\n      \"taskType\": \"Make Coffee\",\n      \"destinationsWhenTaskCreated\": [{\n        \"group\": {\n          \"scope\": \"Any\",\n          \"conditions\": [{\n            \"fact\": \"@event\",\n            \"path\": \".coffee.isHot\",\n            \"operator\": \"equal\",\n            \"value\": true\n          }]\n        },\n        \"onTrue\": [{\n          \"queueName\": \"Barista Queue\",\n    \t  \"taskType\": \"Make Hot Coffee\",\n          \"doesCompletePreviousTask\": true\n        }],\n        \"onFalse\": [{\n          \"queueName\": \"Barista Queue\",\n    \t  \"taskType\": \"Make Cold Coffee\",\n          \"doesCompletePreviousTask\": true\n        }]\n      }],\n      \"destinationsWhenTaskCompleted\": [],\n      \"destinationsWhenEventOccurred\": []\n    }, {\n      \"name\": \"Barista Queue\",\n      \"taskType\": \"Make Hot Coffee\",\n      \"destinationsWhenTaskCreated\": [],\n      \"destinationsWhenTaskCompleted\": [],\n      \"destinationsWhenEventOccurred\": [{\n        \"eventNames\": [\"delivery.coffee-delivered\"],\n        \"doesCompletePreviousTask\": true,\n        \"doesCompleteItem\": true\n      }]\n    }, {\n      \"name\": \"Barista Queue\",\n      \"taskType\": \"Make Cold Coffee\",\n      \"destinationsWhenTaskCreated\": [],\n      \"destinationsWhenTaskCompleted\": [],\n      \"destinationsWhenEventOccurred\": [{\n        \"eventNames\": [\"delivery.coffee-delivered\"],\n        \"doesCompletePreviousTask\": true,\n        \"doesCompleteItem\": true\n      }]\n    }]\n  }\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "activate lifecycle",
+			"request": {
+				"url": "http://localhost:8083/api/commands/lifecycles/{id}/versions/active",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "order hot coffee",
+			"request": {
+				"url": "http://localhost:8090/orders/hot",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "delivery coffee",
+			"request": {
+				"url": "http://localhost:8095/orders/{id}",
+				"method": "POST",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
