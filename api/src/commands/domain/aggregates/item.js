@@ -9,7 +9,9 @@ import { TaskCompletedEvent } from "../events/task-completed-event";
 import { ItemCompletedEvent } from "../events/item-completed-event";
 
 const getNextTaskId = (tasks) => {
-  const sortedTasks = tasks.sort((x, y) => x.id > y.id ? -1 : 1);
+  const sortedTasks = tasks
+    .slice()
+    .sort((x, y) => y.id - x.id);
   return sortedTasks.length ? sortedTasks[0].id + 1 : 1;
 };
 

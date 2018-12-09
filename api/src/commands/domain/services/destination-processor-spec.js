@@ -30,7 +30,7 @@ describe("destination processor suite", () => {
 
     beforeEach(() => {
       const rulesEngine = {};
-      processor = new DestinationProcessor(rulesEngine);
+      processor = DestinationProcessor(rulesEngine);
     });
 
     it("should create a task using the destination", (done) => {
@@ -96,7 +96,7 @@ describe("destination processor suite", () => {
           });
         }
       };
-      processor = new DestinationProcessor(rulesEngine);
+      processor = DestinationProcessor(rulesEngine);
       processor.process(destination, item, eventContext, incompleteTask);
     });
 
@@ -114,7 +114,7 @@ describe("destination processor suite", () => {
           });
         }
       };
-      processor = new DestinationProcessor(rulesEngine);
+      processor = DestinationProcessor(rulesEngine);
       processor.process(destination, item, eventContext, incompleteTask);
     });
 
@@ -133,8 +133,23 @@ describe("destination processor suite", () => {
           done();
         }
       };
-      processor = new DestinationProcessor(rulesEngine);
+      processor = DestinationProcessor(rulesEngine);
       processor.process(destination, item, eventContext, incompleteTask);
     });
+  });
+
+  it("should call the processor asynchronously", async () => {
+    const destination = new UnconditionalDestination({
+      queueName: "Barista Queue",
+      taskType: "Make Coffee"
+    });
+    const item = {
+      createTask: () => {}
+    };
+    const rulesEngine = {};
+    processor = DestinationProcessor(rulesEngine);
+    await processor.process(destination, item, eventContext, incompleteTask);
+    expect(true)
+      .to.equal(true);
   });
 });

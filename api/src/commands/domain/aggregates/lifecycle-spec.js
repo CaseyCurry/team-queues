@@ -109,7 +109,7 @@ describe("lifecycle suite", () => {
         lifecycleOf,
         activeVersion
       });
-      destinationProcessor = new DestinationProcessor();
+      destinationProcessor = DestinationProcessor();
       configuredEvent = new ConfiguredEvent({
         name: "customer-arrived",
         versions: [
@@ -779,7 +779,7 @@ describe("lifecycle suite", () => {
               isHot: false
             }
           };
-          destinationProcessor = new DestinationProcessor({
+          destinationProcessor = DestinationProcessor({
             getNextDestinations: (destination, fact) => {
               destinationArgument = destination;
               factArgument = fact;
@@ -829,7 +829,7 @@ describe("lifecycle suite", () => {
               isHot: true
             }
           };
-          destinationProcessor = new DestinationProcessor({
+          destinationProcessor = DestinationProcessor({
             getNextDestinations: () => {
               return new Promise((resolve) => {
                 resolve(
@@ -857,7 +857,7 @@ describe("lifecycle suite", () => {
               isHot: true
             }
           };
-          destinationProcessor = new DestinationProcessor({
+          destinationProcessor = DestinationProcessor({
             getNextDestinations: () => {
               return new Promise((resolve) => {
                 resolve(

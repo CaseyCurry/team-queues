@@ -48,12 +48,12 @@ const ConfiguredEvent = class {
       versions.map((version) => new ConfiguredEventVersion(version)) : [];
     /* Sort in descending order which will increase the performance of finding
        a version match when an event occurs and an exact match is not found. */
-    this.versions.sort((x, y) => y - x);
+    this.versions.sort((x, y) => y.number - x.number);
   }
 
   configureVersion({ number, maps }) {
     this.versions.push(new ConfiguredEventVersion({ number, maps }));
-    this.versions.sort((x, y) => y - x);
+    this.versions.sort((x, y) => y.number - x.number);
   }
 
   getContext(occurredEvent) {

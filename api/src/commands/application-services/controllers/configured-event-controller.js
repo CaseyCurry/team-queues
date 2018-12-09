@@ -1,7 +1,7 @@
 import { ConfiguredEventModifiedEvent } from "../../domain/events/configured-event-modified-event";
 
 // TODO: unit test
-const ConfiguredEventController = (app, domainEvents, configuredEventFactory, configuredEventRepository) => {
+const ConfiguredEventController = (app, domainEventFilter, configuredEventFactory, configuredEventRepository) => {
   return {
     register: () => {
       // TODO: consider separating post and put to increase the granularity of logs
@@ -19,7 +19,7 @@ const ConfiguredEventController = (app, domainEvents, configuredEventFactory, co
           const existingEvent = await configuredEventRepository.getByName(configuredEvent.name);
           // TODO: check etag
           await configuredEventRepository.createOrUpdate(configuredEvent);
-          domainEvents.raise(new ConfiguredEventModifiedEvent(configuredEvent));
+          domainEventFilter.raise(new ConfiguredEventModifiedEvent(configuredEvent));
           if (existingEvent) {
             response.status(200)
               .end();

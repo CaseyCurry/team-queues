@@ -4,7 +4,7 @@ const TaskData = (store) => {
       const updates = existingTasks.map((task) => {
         return {
           replaceOne: {
-            filter: { id: task.id },
+            filter: { "item.id": task.item.id, id: task.id },
             replacement: Object.assign({}, task, { etag })
           }
         };
@@ -20,7 +20,7 @@ const TaskData = (store) => {
       const updates = existingTasks.map((task) => {
         return {
           replaceOne: {
-            filter: { id: task.id },
+            filter: { "item.id": task.item.id, id: task.id },
             replacement: Object.assign({}, task, { etag })
           }
         };

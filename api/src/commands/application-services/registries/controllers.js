@@ -3,15 +3,15 @@ import { Factories } from "./factories";
 import { ConfiguredEventController } from "../controllers/configured-event-controller";
 import { LifecycleController } from "../controllers/lifecycle-controller";
 
-const Controllers = (app, domainEvents) => {
+const Controllers = (app, domainServices) => {
   const configuredEventController = ConfiguredEventController(
     app,
-    domainEvents,
+    domainServices.domainEventFilter,
     Factories.configuredEvent,
     Repositories.configuredEvent);
   const lifecycleController = LifecycleController(
     app,
-    domainEvents,
+    domainServices.domainEventFilter,
     Factories.lifecycle,
     Repositories.lifecycle);
   return {

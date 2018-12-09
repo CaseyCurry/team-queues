@@ -2,8 +2,11 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import kafka from "node-rdkafka";
+import http from "http";
+import socketIO from "socket.io";
 import "./console-overrides";
 import { DomainEvents } from "./commands/infrastructure/kafka/domain-events";
+import { ClientNotifications } from "./commands/infrastructure/socketIO/client-notifications";
 import { DomainServices } from "./commands/application-services/registries/domain-services";
 import { Controllers as CommandControllers } from "./commands/application-services/registries/controllers";
 import { EventHandlers as CommandEventHandlers } from "./commands/application-services/registries/event-handlers";
@@ -12,17 +15,28 @@ import { EventHandlers as QueryEventHandlers } from "./queries/event-handlers";
 
 DomainEvents(kafka)
   .then((domainEvents) => {
-    const domainServices = DomainServices();
+    const app = express();
+    const server = http.Server(app);
+    const clientNotifications = configureClientNotifications(server);
+    const domainServices = DomainServices(domainEvents, clientNotifications);
     configureEventHandlers(domainEvents, domainServices)
       .then(() => {
-        configureApi((app) => {
-          configureControllers(app, domainEvents);
+        configureApi(app, server, () => {
+          configureControllers(app, domainServices);
         });
       });
   })
   .catch((error) => {
     console.error(error);
   });
+
+const configureClientNotifications = (server) => {
+  const io = socketIO(server, {
+    origin: "http://localhost:8082",
+    credentials: true
+  });
+  return ClientNotifications(io);
+};
 
 const configureEventHandlers = async (domainEvents, domainServices) => {
   const configure = async (handlers) => {
@@ -39,7 +53,7 @@ const configureEventHandlers = async (domainEvents, domainServices) => {
   await domainEvents.start();
 };
 
-const configureControllers = (app, domainEvents) => {
+const configureControllers = (app, domainServices) => {
   const configure = (controllers) => {
     Object.keys(controllers)
       .forEach((controller) => {
@@ -47,24 +61,25 @@ const configureControllers = (app, domainEvents) => {
         controllers[controller].register();
       });
   };
-  const commandControllers = CommandControllers(app, domainEvents);
+  const commandControllers = CommandControllers(app, domainServices);
   configure(commandControllers);
-  const queryControllers = QueryControllers(app, domainEvents);
+  const queryControllers = QueryControllers(app);
   configure(queryControllers);
 };
 
-const configureApi = (registerRoutes) => {
-  const app = express();
+const configureApi = (app, server, registerRoutes) => {
   app.use(helmet());
   app.use(express.json());
-  app.use(cors());
+  app.use(cors({
+    origin: "http://localhost:8082"
+  }));
 
   // add a route for health checking the api
   app.get("/", (request, response) => {
     response.end();
   });
 
-  registerRoutes(app);
+  registerRoutes();
 
   // this must be the last thing added to app or errors will not go through it
   app.use((error, request, response, next) => { // eslint-disable-line no-unused-vars
@@ -74,7 +89,7 @@ const configureApi = (registerRoutes) => {
   });
 
   const port = process.env.PORT || 8080;
-  app.listen(port, () => {
+  server.listen((port), () => {
     console.log(`team queues are ready at port ${port}, captain!`);
   });
 };

@@ -6,6 +6,7 @@ import { Repositories } from "./repositories";
 const EventHandlers = (domainEvents, domainServices) => {
   const configuredEventsHandler = ConfiguredEventsHandler(
     domainEvents,
+    domainServices.domainEventFilter,
     Repositories.configuredEvent,
     domainServices.destinationProcessor,
     Repositories.lifecycle,

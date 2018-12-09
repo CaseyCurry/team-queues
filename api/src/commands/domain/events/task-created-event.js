@@ -1,9 +1,11 @@
 import deepFreeze from "deep-freeze";
 import { TaggedAggregateEvent } from "./tagged-aggregate-event";
 
+const name = "team-queues.task-created";
+
 const TaskCreatedEvent = class extends TaggedAggregateEvent {
   constructor(task, item) {
-    super({ name: "team-queues.task-created", version: 1, aggregate: item });
+    super({ name, version: 1, aggregate: item });
     this.message.task = {
       id: task.id,
       item: {
@@ -22,4 +24,4 @@ const TaskCreatedEvent = class extends TaggedAggregateEvent {
   }
 };
 
-export { TaskCreatedEvent };
+export { TaskCreatedEvent, name };

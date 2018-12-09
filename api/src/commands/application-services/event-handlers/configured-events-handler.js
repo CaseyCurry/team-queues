@@ -1,6 +1,13 @@
 // TODO: unit test
 // TODO: enforce idempotency and test by changing the group id in the kafka consumer to confirm current state is respected
-const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destinationProcessor, lifecycleRepository, itemRepository) => {
+// TODO: the number of parameters makes me question whether this is doing too much
+const ConfiguredEventsHandler = (
+  domainEvents,
+  domainEventFilter,
+  configuredEventRepository,
+  destinationProcessor,
+  lifecycleRepository,
+  itemRepository) => {
   const handler = (configuredEvent) => {
     return async (event) => {
       // TODO: make sure this method handles multi-phase commits properly
@@ -48,7 +55,7 @@ const ConfiguredEventsHandler = (domainEvents, configuredEventRepository, destin
           }
         }
         raisedDomainEvents.push(...lifecycle.domainEvents.raisedEvents);
-        domainEvents.raise(raisedDomainEvents);
+        domainEventFilter.raise(raisedDomainEvents);
       }
     };
   };

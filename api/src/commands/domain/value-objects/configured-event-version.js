@@ -1,6 +1,7 @@
 import deepFreeze from "deep-freeze";
 import { ConfiguredEventVersionMap } from "./configured-event-version-map";
 
+// TODO: I believe this is an entity.
 const ConfiguredEventVersion = class {
   constructor({ number, maps }) {
     const errorMessages = [];

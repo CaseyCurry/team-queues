@@ -1,5 +1,5 @@
 // TODO: unit test
-const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepository) => {
+const LifecycleController = (app, domainEventFilter, lifecycleFactory, lifecycleRepository) => {
   return {
     register: () => {
       // TODO: look at Bunyan's integration with restify
@@ -58,7 +58,7 @@ const LifecycleController = (app, domainEvents, lifecycleFactory, lifecycleRepos
           }
           lifecycle.activateNextVersion();
           await lifecycleRepository.createOrUpdate(lifecycle);
-          domainEvents.raise(lifecycle.domainEvents.raisedEvents);
+          domainEventFilter.raise(lifecycle.domainEvents.raisedEvents);
           response.status(201)
             .send(lifecycle.activeVersion.number.toString());
         } catch (error) {
