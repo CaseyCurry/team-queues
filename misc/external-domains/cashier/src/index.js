@@ -51,7 +51,7 @@ app.post("/orders/free", async (request, response) => {
     .send(order.id);
 });
 
-const port = process.env.PORT || 8090;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`cashier is ready at port ${port}, captain!`);
 });
