@@ -9,16 +9,21 @@ import store from "./store";
 import "./styles/main";
 
 const App = () => {
-  return <Provider store={store}>
-    <BrowserRouter>
-      <div className="fluid-container">
-        <Route path="/" component={NotificationsContainer} />
-        <Route path="/queues" component={Queues} />
-        <Route path="/configured-events" component={ConfiguredEventsContainer} />
-        <Route path="/lifecycles" component={LifecyclesContainer} />
-      </div>
-    </BrowserRouter>
-  </Provider>;
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        <div className="fluid-container">
+          <Route path="/" component={NotificationsContainer} />
+          <Route path="/queues" component={Queues} />
+          <Route
+            path="/configured-events"
+            component={ConfiguredEventsContainer}
+          />
+          <Route path="/lifecycles" component={LifecyclesContainer} />
+        </div>
+      </BrowserRouter>
+    </Provider>
+  );
 };
 
 export default App;
