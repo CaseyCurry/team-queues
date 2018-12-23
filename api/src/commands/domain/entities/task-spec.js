@@ -12,7 +12,7 @@ describe("task suite", () => {
     const createdOn = new Date();
     const status = TaskStatus.Assigned;
     const dueOn = new Date();
-    const assignee = new TeamMember({ name: "Jane" });
+    let assignee = new TeamMember({ name: "Jane" });
 
     beforeEach(() => {
       task = new Task({
@@ -50,8 +50,26 @@ describe("task suite", () => {
       expect(task.dueOn).to.equal(dueOn);
     });
 
-    it("should include the assignee", () => {
-      expect(task.assignee).to.deep.equal(assignee);
+    describe("when the assignee is already assigned", () => {
+      it("should include the assignee", () => {
+        expect(task.assignee).to.deep.equal(assignee);
+      });
+    });
+
+    describe("when the assignee is not already assigned", () => {
+      it("should not include the assignee", () => {
+        assignee = undefined;
+        task = new Task({
+          id,
+          queueName,
+          type,
+          createdOn,
+          status,
+          dueOn,
+          assignee
+        });
+        expect(task.assignee).to.not.exist;
+      });
     });
 
     describe("when the task is assigned", () => {
