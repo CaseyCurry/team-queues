@@ -10,7 +10,8 @@ const EventHandlers = (domainEvents, domainServices) => {
     Repositories.configuredEvent,
     domainServices.destinationProcessor,
     Repositories.lifecycle,
-    Repositories.item);
+    Repositories.item
+  );
   const configuredEventModifiedHandler = ConfiguredEventModifiedHandler(
     domainEvents,
     configuredEventsHandler.reregister

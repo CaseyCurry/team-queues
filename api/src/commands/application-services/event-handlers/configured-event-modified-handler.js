@@ -6,7 +6,10 @@ const ConfiguredEventModifiedHandler = (domainEvents, reregister) => {
 
   return {
     register: async () => {
-      domainEvents.listenToBroadcast("team-queues.configured-event-modified", handler);
+      domainEvents.listenToBroadcast(
+        "team-queues.configured-event-modified",
+        handler
+      );
     }
   };
 };

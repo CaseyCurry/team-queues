@@ -12,8 +12,14 @@ const dbLocation = "mongodb://localhost:27017";
 const dbName = "teamqueuescommands";
 const lifecycleStore = LifecycleStore(MongoClient, dbLocation, dbName);
 const lifecycleRepository = LifecycleRepository(lifecycleStore);
-const configuredEventStore = ConfiguredEventStore(MongoClient, dbLocation, dbName);
-const configuredEventRepository = ConfiguredEventRepository(configuredEventStore);
+const configuredEventStore = ConfiguredEventStore(
+  MongoClient,
+  dbLocation,
+  dbName
+);
+const configuredEventRepository = ConfiguredEventRepository(
+  configuredEventStore
+);
 const itemStore = ItemStore(MongoClient, dbLocation, dbName);
 const itemRepository = ItemRepository(itemStore);
 

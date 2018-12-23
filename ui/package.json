@@ -10,8 +10,7 @@
     "sass": "node-sass ./src/client/styles/main.scss",
     "build:dev": "webpack",
     "build:release": "webpack -p",
-    "dev": "webpack-dev-server --inline --hot --open",
-    "start": "npm run build:dev && http-server ./dist"
+    "start": "webpack-dev-server --inline --hot --open"
   },
   "keywords": [],
   "author": "",

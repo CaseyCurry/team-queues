@@ -20,13 +20,10 @@ describe("item repository suite", () => {
         getCollection: async () => {
           return {
             updateOne: async (filter, itemToUpdate, options) => {
-              expect(filter["_id"])
-                .to.equal(item.id);
-              expect(itemToUpdate["$set"].id)
-                .to.equal(item.id);
-              expect(options.upsert)
-                .to.equal(true);
-              return new Promise((resolve) => {
+              expect(filter["_id"]).to.equal(item.id);
+              expect(itemToUpdate["$set"].id).to.equal(item.id);
+              expect(options.upsert).to.equal(true);
+              return new Promise(resolve => {
                 resolve();
               });
             },
@@ -42,10 +39,9 @@ describe("item repository suite", () => {
       const store = {
         getCollection: async () => {
           return {
-            findOne: async (filter) => {
-              expect(filter["_id"])
-                .to.equal(item.id);
-              return new Promise((resolve) => {
+            findOne: async filter => {
+              expect(filter["_id"]).to.equal(item.id);
+              return new Promise(resolve => {
                 resolve({ id: filter["_id"] });
               });
             },
@@ -55,8 +51,7 @@ describe("item repository suite", () => {
       };
       const repository = ItemRepository(store);
       const foundItem = await repository.getById(item.id);
-      expect(foundItem)
-        .to.exist;
+      expect(foundItem).to.exist;
     });
 
     it("get items by lifecycle id and foreign id", async () => {
@@ -64,13 +59,12 @@ describe("item repository suite", () => {
       const store = {
         getCollection: async () => {
           return {
-            findOne: (filter) => {
-              expect(filter)
-                .to.deep.equal({
-                  lifecycleId: lifecycleId,
-                  foreignId: item.foreignId
-                });
-              return new Promise((resolve) => {
+            findOne: filter => {
+              expect(filter).to.deep.equal({
+                lifecycleId: lifecycleId,
+                foreignId: item.foreignId
+              });
+              return new Promise(resolve => {
                 resolve({ id: filter.lifecycleId });
               });
             },
@@ -79,9 +73,11 @@ describe("item repository suite", () => {
         }
       };
       const repository = ItemRepository(store);
-      const foundItem = await repository.getByForeignId(lifecycleId, item.foreignId);
-      expect(foundItem)
-        .to.exist;
+      const foundItem = await repository.getByForeignId(
+        lifecycleId,
+        item.foreignId
+      );
+      expect(foundItem).to.exist;
     });
   });
 
@@ -98,8 +94,7 @@ describe("item repository suite", () => {
     it("should insert an item into the data store", async () => {
       await repository.createOrUpdate(item);
       const createdItem = await repository.getById(item.id);
-      expect(createdItem)
-        .to.not.be.null;
+      expect(createdItem).to.not.be.null;
     });
   });
 });

@@ -9,7 +9,17 @@ describe("configured event repository suite", () => {
   beforeEach(async () => {
     event = {
       name: "coffee-ordered",
-      versions: []
+      versions: [
+        {
+          number: 1,
+          maps: [
+            {
+              source: "prop",
+              target: "foreignId"
+            }
+          ]
+        }
+      ]
     };
   });
 
@@ -19,13 +29,10 @@ describe("configured event repository suite", () => {
         getCollection: async () => {
           return {
             updateOne: async (filter, eventToUpdate, options) => {
-              expect(filter["_id"])
-                .to.equal(event.name);
-              expect(eventToUpdate["$set"].name)
-                .to.equal(event.name);
-              expect(options.upsert)
-                .to.equal(true);
-              return new Promise((resolve) => {
+              expect(filter["_id"]).to.equal(event.name);
+              expect(eventToUpdate["$set"].name).to.equal(event.name);
+              expect(options.upsert).to.equal(true);
+              return new Promise(resolve => {
                 resolve();
               });
             },
@@ -41,22 +48,19 @@ describe("configured event repository suite", () => {
       const store = {
         getCollection: async () => {
           return {
-            findOne: async (filter) => {
-              expect(filter)
-                .to.deep.equal({
-                  _id: event.name,
-                  isDeleted: false
-                });
-              return new Promise((resolve) => {
+            findOne: async filter => {
+              expect(filter).to.deep.equal({
+                _id: event.name,
+                isDeleted: false
+              });
+              return new Promise(resolve => {
                 resolve(event);
               });
             },
             updateOne: async (filter, object) => {
-              expect(filter["_id"])
-                .to.equal(event.name);
-              expect(object["$set"].isDeleted)
-                .to.equal(true);
-              return new Promise((resolve) => {
+              expect(filter["_id"]).to.equal(event.name);
+              expect(object["$set"].isDeleted).to.equal(true);
+              return new Promise(resolve => {
                 resolve();
               });
             },
@@ -72,13 +76,12 @@ describe("configured event repository suite", () => {
       const store = {
         getCollection: async () => {
           return {
-            find: (filter) => {
-              expect(filter)
-                .to.deep.equal({ isDeleted: false });
+            find: filter => {
+              expect(filter).to.deep.equal({ isDeleted: false });
               return {
                 toArray: () => {
-                  return new Promise((resolve) => {
-                    resolve([{ name: filter["_id"] }]);
+                  return new Promise(resolve => {
+                    resolve([event]);
                   });
                 }
               };
@@ -89,8 +92,7 @@ describe("configured event repository suite", () => {
       };
       const repository = ConfiguredEventRepository(store);
       const foundEvents = await repository.getAll();
-      expect(foundEvents.length)
-        .to.equal(1);
+      expect(foundEvents.length).to.equal(1);
     });
   });
 
@@ -111,8 +113,8 @@ describe("configured event repository suite", () => {
     it("get all events", async () => {
       await repository.createOrUpdate(event);
       const foundEvents = await repository.getAll();
-      expect(foundEvents.find((foundEvent) => foundEvent.name === event.name))
-        .to.exist;
+      expect(foundEvents.find(foundEvent => foundEvent.name === event.name)).to
+        .exist;
     });
   });
 });

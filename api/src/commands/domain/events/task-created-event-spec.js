@@ -10,8 +10,7 @@ describe("task created event suite", () => {
     lifecycleId: 987
   });
   const task = new Task({
-    id: 123,
-    itemId: item.id,
+    id: 1,
     queueName: "Barista Queue",
     type: "Make Coffee",
     createdOn: new Date(),
@@ -25,56 +24,48 @@ describe("task created event suite", () => {
   });
 
   it("should include an id", () => {
-    expect(event.id)
-      .to.exist;
+    expect(event.id).to.exist;
   });
 
   it("should include the time it occurred", () => {
-    expect(event.occurredOn)
-      .to.exist;
+    expect(event.occurredOn).to.exist;
   });
 
   it("should include the name", () => {
-    expect(event.name)
-      .to.equal("team-queues.task-created");
+    expect(event.name).to.equal("team-queues.task-created");
   });
 
   it("should include the version", () => {
-    expect(event.version)
-      .to.equal(1);
+    expect(event.version).to.equal(1);
   });
 
   xit("should include the correlation id", () => {
-    expect(event.correlationId)
-      .to.equal(999);
+    expect(event.correlationId).to.equal(999);
   });
 
   it("should include an etag", () => {
-    expect(event.message.etag)
-      .to.exist;
+    expect(event.message.etag).to.exist;
   });
 
   it("should include the task", () => {
-    expect(event.message.task)
-      .to.deep.equal({
-        id: task.id,
-        item: {
-          id: item.id,
-          foreignId: item.foreignId,
-          lifecycleId: item.lifecycleId
-        },
-        queueName: task.queueName,
-        type: task.type,
-        createdOn: task.createdOn,
-        status: task.status,
-        dueOn: task.dueOn,
-        assignee: undefined
-      });
+    expect(event.message.task).to.deep.equal({
+      id: task.id,
+      item: {
+        id: item.id,
+        foreignId: item.foreignId,
+        lifecycleId: item.lifecycleId
+      },
+      queueName: task.queueName,
+      type: task.type,
+      createdOn: task.createdOn,
+      status: task.status,
+      dueOn: task.dueOn,
+      assignee: undefined
+    });
   });
 
   it("should be immutable", () => {
-    expect(Object.isFrozen(event))
-      .to.equal(true);
+    expect(Object.isFrozen(event)).to.equal(true);
   });
 
   describe("when the task has an assignee", () => {
@@ -83,8 +74,7 @@ describe("task created event suite", () => {
         name: "Jane"
       });
       event = new Event(task, item);
-      expect(event.message.task.assignee)
-        .to.deep.equal(task.assignee);
+      expect(event.message.task.assignee).to.deep.equal(task.assignee);
     });
   });
 });

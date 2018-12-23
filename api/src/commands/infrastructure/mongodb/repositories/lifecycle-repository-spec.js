@@ -27,13 +27,10 @@ describe("lifecycle repository suite", () => {
         getCollection: async () => {
           return {
             updateOne: async (filter, lifecycleToUpdate, options) => {
-              expect(filter["_id"])
-                .to.equal(lifecycle.id);
-              expect(lifecycleToUpdate["$set"].id)
-                .to.equal(lifecycle.id);
-              expect(options.upsert)
-                .to.equal(true);
-              return new Promise((resolve) => {
+              expect(filter["_id"]).to.equal(lifecycle.id);
+              expect(lifecycleToUpdate["$set"].id).to.equal(lifecycle.id);
+              expect(options.upsert).to.equal(true);
+              return new Promise(resolve => {
                 resolve();
               });
             },
@@ -49,22 +46,19 @@ describe("lifecycle repository suite", () => {
       const store = {
         getCollection: async () => {
           return {
-            findOne: async (filter) => {
-              expect(filter)
-                .to.deep.equal({
-                  _id: lifecycle.id,
-                  isDeleted: false
-                });
-              return new Promise((resolve) => {
+            findOne: async filter => {
+              expect(filter).to.deep.equal({
+                _id: lifecycle.id,
+                isDeleted: false
+              });
+              return new Promise(resolve => {
                 resolve(lifecycle);
               });
             },
             updateOne: async (filter, object) => {
-              expect(filter["_id"])
-                .to.equal(lifecycle.id);
-              expect(object["$set"].isDeleted)
-                .to.equal(true);
-              return new Promise((resolve) => {
+              expect(filter["_id"]).to.equal(lifecycle.id);
+              expect(object["$set"].isDeleted).to.equal(true);
+              return new Promise(resolve => {
                 resolve();
               });
             },
@@ -80,10 +74,9 @@ describe("lifecycle repository suite", () => {
       const store = {
         getCollection: async () => {
           return {
-            findOne: async (filter) => {
-              expect(filter["_id"])
-                .to.equal(lifecycle.id);
-              return new Promise((resolve) => {
+            findOne: async filter => {
+              expect(filter["_id"]).to.equal(lifecycle.id);
+              return new Promise(resolve => {
                 resolve(lifecycle);
               });
             },
@@ -92,10 +85,8 @@ describe("lifecycle repository suite", () => {
         }
       };
       const repository = LifecycleRepository(store);
-      const foundLifecycle = await repository
-        .getById(lifecycle.id);
-      expect(foundLifecycle)
-        .to.not.be.null;
+      const foundLifecycle = await repository.getById(lifecycle.id);
+      expect(foundLifecycle).to.not.be.null;
     });
   });
 
@@ -122,10 +113,12 @@ describe("lifecycle repository suite", () => {
         lifecycleOf: "coffee",
         activeVersion: new LifecycleVersion({
           number: 1,
-          triggersForItemCreation: [{
-            eventNames: [eventName],
-            destinations: []
-          }],
+          triggersForItemCreation: [
+            {
+              eventNames: [eventName],
+              destinations: []
+            }
+          ],
           queues: []
         })
       };
@@ -137,10 +130,8 @@ describe("lifecycle repository suite", () => {
 
     it("should insert a lifecycle into the data store", async () => {
       await lifecycleRepository.createOrUpdate(lifecycle);
-      const createdLifecycle = await lifecycleRepository
-        .getById(lifecycle.id);
-      expect(createdLifecycle)
-        .to.exist;
+      const createdLifecycle = await lifecycleRepository.getById(lifecycle.id);
+      expect(createdLifecycle).to.exist;
     });
   });
 });

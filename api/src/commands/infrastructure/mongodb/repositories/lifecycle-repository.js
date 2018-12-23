@@ -1,23 +1,27 @@
 import { Lifecycle } from "../../../domain/aggregates/lifecycle";
 
-const LifecycleRepository = (store) => {
+const LifecycleRepository = store => {
   return {
-    createOrUpdate: async (lifecycle) => {
+    createOrUpdate: async lifecycle => {
       const extendedLifecycle = Object.assign({}, lifecycle, {
         _id: lifecycle.id,
         isDeleted: false
       });
       const collection = await store.getCollection();
-      await collection.updateOne({
-        _id: extendedLifecycle.id
-      }, {
-        $set: extendedLifecycle
-      }, {
-        upsert: true
-      });
+      await collection.updateOne(
+        {
+          _id: extendedLifecycle.id
+        },
+        {
+          $set: extendedLifecycle
+        },
+        {
+          upsert: true
+        }
+      );
       collection.close();
     },
-    deleteById: async (id) => {
+    deleteById: async id => {
       const collection = await store.getCollection();
       const lifecycle = await collection.findOne({
         _id: id,
@@ -26,14 +30,17 @@ const LifecycleRepository = (store) => {
       if (!lifecycle) {
         return;
       }
-      await collection.updateOne({
-        _id: lifecycle.id
-      }, {
-        $set: Object.assign({}, lifecycle, { isDeleted: true })
-      });
+      await collection.updateOne(
+        {
+          _id: lifecycle.id
+        },
+        {
+          $set: Object.assign({}, lifecycle, { isDeleted: true })
+        }
+      );
       collection.close();
     },
-    getById: async (id) => {
+    getById: async id => {
       const collection = await store.getCollection();
       const lifecycle = await collection.findOne({
         _id: id,
@@ -47,11 +54,9 @@ const LifecycleRepository = (store) => {
     },
     getAll: async () => {
       const collection = await store.getCollection();
-      const lifecycles = await collection
-        .find({ isDeleted: false })
-        .toArray();
+      const lifecycles = await collection.find({ isDeleted: false }).toArray();
       collection.close();
-      return lifecycles.map((lifecycle) => new Lifecycle(lifecycle));
+      return lifecycles.map(lifecycle => new Lifecycle(lifecycle));
     },
     getAllWithActiveVersion: async () => {
       // TODO: unit test
@@ -63,7 +68,7 @@ const LifecycleRepository = (store) => {
         })
         .toArray();
       collection.close();
-      return lifecycles.map((lifecycle) => new Lifecycle(lifecycle));
+      return lifecycles.map(lifecycle => new Lifecycle(lifecycle));
     }
   };
 };

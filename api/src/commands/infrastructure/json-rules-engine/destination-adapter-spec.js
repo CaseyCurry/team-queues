@@ -12,12 +12,14 @@ describe("destination adapter suite", () => {
       destination = new ConditionalDestination({
         group: new ConditionGroup({
           scope: "All",
-          conditions: [{
-            fact: "coffee",
-            path: ".isHot",
-            operator: "equal",
-            value: true
-          }]
+          conditions: [
+            {
+              fact: "coffee",
+              path: ".isHot",
+              operator: "equal",
+              value: true
+            }
+          ]
         }),
         onTrue: [],
         onFalse: []
@@ -26,25 +28,24 @@ describe("destination adapter suite", () => {
     });
 
     it("should adapt to all", () => {
-      expect(adaptation.conditions)
-        .to.deep.equal({
-          all: [{
+      expect(adaptation.conditions).to.deep.equal({
+        all: [
+          {
             fact: "coffee",
             path: ".isHot",
             operator: "equal",
             value: true
-          }]
-        });
+          }
+        ]
+      });
     });
 
     it("should include the destinations to use when conditions are met", () => {
-      expect(adaptation.onTrue)
-        .to.equal(destination.onTrue);
+      expect(adaptation.onTrue).to.equal(destination.onTrue);
     });
 
     it("should include the destinations to use when conditions are not met", () => {
-      expect(adaptation.onFalse)
-        .to.equal(destination.onFalse);
+      expect(adaptation.onFalse).to.equal(destination.onFalse);
     });
   });
 
@@ -53,19 +54,20 @@ describe("destination adapter suite", () => {
       const destination = new ConditionalDestination({
         group: new ConditionGroup({
           scope: "Any",
-          conditions: [{
-            fact: "coffee",
-            path: ".isHot",
-            operator: "equal",
-            value: true
-          }]
+          conditions: [
+            {
+              fact: "coffee",
+              path: ".isHot",
+              operator: "equal",
+              value: true
+            }
+          ]
         }),
         onTrue: [],
         onFalse: []
       });
       const adaptation = DestinationAdapter(destination);
-      expect(adaptation.conditions.any)
-        .to.exist;
+      expect(adaptation.conditions.any).to.exist;
     });
   });
 
@@ -74,36 +76,41 @@ describe("destination adapter suite", () => {
       const destination = new ConditionalDestination({
         group: new ConditionGroup({
           scope: "All",
-          conditions: [{
-            fact: "coffee",
-            path: ".isHot",
-            operator: "equal",
-            value: true
-          }, {
-            fact: "coffee",
-            path: ".isFree",
-            operator: "equal",
-            value: false
-          }]
+          conditions: [
+            {
+              fact: "coffee",
+              path: ".isHot",
+              operator: "equal",
+              value: true
+            },
+            {
+              fact: "coffee",
+              path: ".isFree",
+              operator: "equal",
+              value: false
+            }
+          ]
         }),
         onTrue: [],
         onFalse: []
       });
       const adaptation = DestinationAdapter(destination);
-      expect(adaptation.conditions)
-        .to.deep.equal({
-          all: [{
+      expect(adaptation.conditions).to.deep.equal({
+        all: [
+          {
             fact: "coffee",
             path: ".isHot",
             operator: "equal",
             value: true
-          }, {
+          },
+          {
             fact: "coffee",
             path: ".isFree",
             operator: "equal",
             value: false
-          }]
-        });
+          }
+        ]
+      });
     });
   });
 
@@ -112,51 +119,62 @@ describe("destination adapter suite", () => {
       const destination = new ConditionalDestination({
         group: new ConditionGroup({
           scope: "All",
-          conditions: [{
-            fact: "coffee",
-            path: ".isHot",
-            operator: "equal",
-            value: true
-          }, new ConditionGroup({
-            scope: "Any",
-            conditions: [{
-              fact: "customer",
-              path: ".isNextCoffeeFree",
+          conditions: [
+            {
+              fact: "coffee",
+              path: ".isHot",
               operator: "equal",
               value: true
-            }, {
-              fact: "customer",
-              path: ".isGoldMember",
-              operator: "equal",
-              value: true
-            }]
-          })]
+            },
+            new ConditionGroup({
+              scope: "Any",
+              conditions: [
+                {
+                  fact: "customer",
+                  path: ".isNextCoffeeFree",
+                  operator: "equal",
+                  value: true
+                },
+                {
+                  fact: "customer",
+                  path: ".isGoldMember",
+                  operator: "equal",
+                  value: true
+                }
+              ]
+            })
+          ]
         }),
         onTrue: [],
         onFalse: []
       });
       const adaptation = DestinationAdapter(destination);
-      expect(adaptation.conditions)
-        .to.deep.equal({
-          all: [{
+      expect(adaptation.conditions).to.deep.equal({
+        all: [
+          {
             fact: "coffee",
             path: ".isHot",
             operator: "equal",
             value: true
-          }, {
-            any: [{
-              fact: "customer",
-              path: ".isNextCoffeeFree",
-              operator: "equal",
-              value: true
-            }, {
-              fact: "customer",
-              path: ".isGoldMember",
-              operator: "equal",
-              value: true
-            }]
-          }]
-        });
+          },
+          {
+            any: [
+              {
+                fact: "customer",
+                path: ".isNextCoffeeFree",
+                operator: "equal",
+                value: true
+              },
+              {
+                fact: "customer",
+                path: ".isGoldMember",
+                operator: "equal",
+                value: true
+              }
+            ]
+          }
+        ]
+      });
     });
   });
 });

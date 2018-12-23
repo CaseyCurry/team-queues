@@ -13,30 +13,20 @@ describe("modification suite", () => {
     });
 
     it("should include the text", () => {
-      expect(modification.text)
-        .to.equal(text);
+      expect(modification.text).to.equal(text);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(modification))
-        .to.equal(true);
+      expect(Object.isFrozen(modification)).to.equal(true);
     });
 
     describe("when a task is modified to add 1 minute to the due on date", () => {
       it("should add 1 minute", () => {
-        const dueOn = new Date();
-        const task = new Task({
-          id: 123,
-          itemId: 456,
-          queueName: "Barista Queue",
-          type: "Make Free Coffee",
-          createdOn: new Date(),
-          status: TaskStatus.Unassigned,
-          dueOn
-        });
-        modification.modify(task);
-        expect(task.dueOn)
-          .to.deep.equal(new Date(dueOn.getTime() + (1 * 60000)));
+        const originalDueOn = new Date();
+        const modifiedDueOn = modification.getModifiedDueOn(originalDueOn);
+        expect(modifiedDueOn).to.deep.equal(
+          new Date(originalDueOn.getTime() + 1 * 60000)
+        );
       });
     });
 
@@ -44,19 +34,11 @@ describe("modification suite", () => {
       it("should subtract 1 minute", () => {
         text = "dueOn - @minute(1)";
         modification = new Modification({ text });
-        const dueOn = new Date();
-        const task = new Task({
-          id: 123,
-          itemId: 456,
-          queueName: "Barista Queue",
-          type: "Make Free Coffee",
-          createdOn: new Date(),
-          status: TaskStatus.Unassigned,
-          dueOn
-        });
-        modification.modify(task);
-        expect(task.dueOn)
-          .to.deep.equal(new Date(dueOn.getTime() - (1 * 60000)));
+        const originalDueOn = new Date();
+        const modifiedDueOn = modification.getModifiedDueOn(originalDueOn);
+        expect(modifiedDueOn).to.deep.equal(
+          new Date(originalDueOn.getTime() - 1 * 60000)
+        );
       });
     });
 
@@ -64,19 +46,11 @@ describe("modification suite", () => {
       it("should add 1 hour", () => {
         text = "dueOn + @hour(1)";
         modification = new Modification({ text });
-        const dueOn = new Date();
-        const task = new Task({
-          id: 123,
-          itemId: 456,
-          queueName: "Barista Queue",
-          type: "Make Free Coffee",
-          createdOn: new Date(),
-          status: TaskStatus.Unassigned,
-          dueOn
-        });
-        modification.modify(task);
-        expect(task.dueOn)
-          .to.deep.equal(new Date(dueOn.getTime() + (1 * 60000 * 60)));
+        const originalDueOn = new Date();
+        const modifiedDueOn = modification.getModifiedDueOn(originalDueOn);
+        expect(modifiedDueOn).to.deep.equal(
+          new Date(originalDueOn.getTime() + 1 * 60000 * 60)
+        );
       });
     });
 
@@ -84,19 +58,11 @@ describe("modification suite", () => {
       it("should subtract 1 hour", () => {
         text = "dueOn - @hour(1)";
         modification = new Modification({ text });
-        const dueOn = new Date();
-        const task = new Task({
-          id: 123,
-          itemId: 456,
-          queueName: "Barista Queue",
-          type: "Make Free Coffee",
-          createdOn: new Date(),
-          status: TaskStatus.Unassigned,
-          dueOn
-        });
-        modification.modify(task);
-        expect(task.dueOn)
-          .to.deep.equal(new Date(dueOn.getTime() - (1 * 60000 * 60)));
+        const originalDueOn = new Date();
+        const modifiedDueOn = modification.getModifiedDueOn(originalDueOn);
+        expect(modifiedDueOn).to.deep.equal(
+          new Date(originalDueOn.getTime() - 1 * 60000 * 60)
+        );
       });
     });
   });
@@ -107,8 +73,7 @@ describe("modification suite", () => {
       try {
         new Modification({ text });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -117,8 +82,7 @@ describe("modification suite", () => {
       try {
         new Modification({ text });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -127,8 +91,7 @@ describe("modification suite", () => {
       try {
         new Modification({ text });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -137,8 +100,7 @@ describe("modification suite", () => {
       try {
         new Modification({ text });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -147,8 +109,7 @@ describe("modification suite", () => {
       try {
         new Modification({ text });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -157,8 +118,7 @@ describe("modification suite", () => {
       try {
         new Modification({ text });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

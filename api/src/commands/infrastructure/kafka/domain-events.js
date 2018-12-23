@@ -3,7 +3,7 @@ import uuidv4 from "uuid/v4";
 // TODO: exponential backoffs
 // TODO: poison messages
 // TODO: research kafka best practices
-const DomainEvents = (kafka) => {
+const DomainEvents = kafka => {
   return new Promise((resolve, reject) => {
     let subscriptions = {};
     // TODO: pass config to client
@@ -14,7 +14,7 @@ const DomainEvents = (kafka) => {
       "max.in.flight.requests.per.connection": 1
     });
 
-    const getTopic = (eventName) => {
+    const getTopic = eventName => {
       return eventName.split(".")[0];
     };
 
@@ -61,7 +61,11 @@ const DomainEvents = (kafka) => {
         consumer.connect();
 
         consumer.on("ready", () => {
-          console.debug(`the kafka consumer is waiting for ${isBroadcast ? "broadcasts" : "events"} on topic ${topic}`);
+          console.debug(
+            `the kafka consumer is waiting for ${
+              isBroadcast ? "broadcasts" : "events"
+            } on topic ${topic}`
+          );
           consumer.subscribe([topic]);
           const poller = setInterval(() => {
             consumer.consume(1);
@@ -72,7 +76,7 @@ const DomainEvents = (kafka) => {
           });
         });
 
-        consumer.on("data", (data) => {
+        consumer.on("data", data => {
           const event = JSON.parse(data.value.toString());
           const eventSubscriptions = events[event.name];
           if (!eventSubscriptions) {
@@ -80,40 +84,64 @@ const DomainEvents = (kafka) => {
           }
           console.debug(`event ${event.name} occurred with id ${event.id}`);
           for (const handler of eventSubscriptions.handlers) {
-            handler(event)
-              .catch((error) => {
-                console.error(error);
-                // TODO: What needs to happen here to force a retry?
-              });
+            handler(event).catch(error => {
+              console.error(error);
+              // TODO: What needs to happen here to force a retry?
+            });
             console.debug(`event ${event.id} handled`);
           }
         });
 
-        consumer.on("event.error", (error) => {
+        consumer.on("event.error", error => {
           reject(error);
         });
 
-        consumer.on("error", (error) => {
+        consumer.on("error", error => {
           console.error(error);
         });
       });
     };
 
+    const end = () => {
+      if (Object.keys(subscriptions).length) {
+        producer.disconnect();
+        Object.keys(subscriptions).forEach(topic => {
+          if (subscriptions[topic].pubsub.isConsuming) {
+            subscriptions[topic].pubsub.cleanup();
+          }
+          if (subscriptions[topic].broadcast.isConsuming) {
+            subscriptions[topic].broadcast.cleanup();
+          }
+        });
+        subscriptions = {};
+      }
+    };
+
     producer.connect();
 
     producer.on("ready", () => {
-      console.debug(`the kafka producer is ready to send messages to ${brokerLocation}`);
+      console.debug(
+        `the kafka producer is ready to send messages to ${brokerLocation}`
+      );
       resolve({
-        raise: (event) => {
+        raise: event => {
           if (!event) {
             throw new Error("an event must be passed");
           }
           const topic = getTopic(event.name);
-          console.debug(`raising the ${event.name} event with id ${event.id} on topic ${topic}`);
+          console.debug(
+            `raising the ${event.name} event with id ${
+              event.id
+            } on topic ${topic}`
+          );
           // TODO: partitition by aggregate id
           const partition = null;
           try {
-            producer.produce(topic, partition, Buffer.from(JSON.stringify(event)));
+            producer.produce(
+              topic,
+              partition,
+              Buffer.from(JSON.stringify(event))
+            );
           } catch (error) {
             console.error(error);
           }
@@ -134,7 +162,7 @@ const DomainEvents = (kafka) => {
             handleOnce: false
           });
         },
-        ignore: (eventName) => {
+        ignore: eventName => {
           const topic = getTopic(eventName);
           if (subscriptions[topic]) {
             if (subscriptions[topic].pubsub.events[eventName]) {
@@ -149,8 +177,7 @@ const DomainEvents = (kafka) => {
         },
         start: async () => {
           for (const topic of Object.keys(subscriptions)) {
-            if (Object.keys(subscriptions[topic].pubsub.events)
-              .length) {
+            if (Object.keys(subscriptions[topic].pubsub.events).length) {
               /* This condition and the one like it below in the broadcast block of code,
                  is helpful when ConfiguredEventsHandler.reregister is called.
                  If a topic has already been subscribed, move on. Otherwise,
@@ -159,18 +186,23 @@ const DomainEvents = (kafka) => {
                 const isBroadcast = false;
                 const events = subscriptions[topic].pubsub.events;
                 subscriptions[topic].pubsub.isConsuming = true;
-                subscriptions[topic].pubsub.cleanup =
-                  await createConsumer(topic, isBroadcast, events);
+                subscriptions[topic].pubsub.cleanup = await createConsumer(
+                  topic,
+                  isBroadcast,
+                  events
+                );
               }
             }
-            if (Object.keys(subscriptions[topic].broadcast.events)
-              .length) {
+            if (Object.keys(subscriptions[topic].broadcast.events).length) {
               if (!subscriptions[topic].broadcast.isConsuming) {
                 const isBroadcast = true;
                 const events = subscriptions[topic].broadcast.events;
                 subscriptions[topic].broadcast.isConsuming = true;
-                subscriptions[topic].broadcast.cleanup =
-                  await createConsumer(topic, isBroadcast, events);
+                subscriptions[topic].broadcast.cleanup = await createConsumer(
+                  topic,
+                  isBroadcast,
+                  events
+                );
               }
             }
           }
@@ -179,26 +211,9 @@ const DomainEvents = (kafka) => {
       });
     });
 
-    producer.on("event.error", function(error) {
+    producer.on("event.error", error => {
       reject(error);
     });
-
-    const end = () => {
-      if (Object.keys(subscriptions)
-        .length) {
-        producer.disconnect();
-        Object.keys(subscriptions)
-          .forEach((topic) => {
-            if (subscriptions[topic].pubsub.isConsuming) {
-              subscriptions[topic].pubsub.cleanup();
-            }
-            if (subscriptions[topic].broadcast.isConsuming) {
-              subscriptions[topic].broadcast.cleanup();
-            }
-          });
-        subscriptions = {};
-      }
-    };
 
     process.once("SIGINT", end);
   });

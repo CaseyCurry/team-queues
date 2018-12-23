@@ -5,7 +5,6 @@ import { ConditionalDestination } from "../value-objects/conditional-destination
 import { ConditionGroup } from "../value-objects/condition-group";
 import { ConditionScope } from "../value-objects/condition-scope";
 import { Condition } from "../value-objects/condition";
-import { ConditionFact } from "../value-objects/condition-fact";
 import { Task } from "../entities/task";
 import { TaskStatus } from "../value-objects/task-status";
 
@@ -33,22 +32,20 @@ describe("destination processor suite", () => {
       processor = DestinationProcessor(rulesEngine);
     });
 
-    it("should create a task using the destination", (done) => {
+    it("should create a task using the destination", done => {
       const item = {
-        createTask: (destinationArg) => {
-          expect(destinationArg)
-            .to.equal(destination);
+        createTask: destinationArg => {
+          expect(destinationArg).to.equal(destination);
           done();
         }
       };
       processor.process(destination, item, eventContext, incompleteTask);
     });
 
-    it("should create a task using the incomplete task", (done) => {
+    it("should create a task using the incomplete task", done => {
       const item = {
         createTask: (destinationArg, incompleteTaskArg) => {
-          expect(incompleteTaskArg)
-            .to.equal(incompleteTask);
+          expect(incompleteTaskArg).to.equal(incompleteTask);
           done();
         }
       };
@@ -82,15 +79,14 @@ describe("destination processor suite", () => {
     ];
     const destination = new ConditionalDestination({ group, onTrue, onFalse });
 
-    it("should call the rules engine passing the destination", (done) => {
+    it("should call the rules engine passing the destination", done => {
       const item = {
         createTask: () => {}
       };
       const rulesEngine = {
-        getNextDestinations: (destinationArg) => {
-          return new Promise((resolve) => {
-            expect(destinationArg)
-              .to.equal(destination);
+        getNextDestinations: destinationArg => {
+          return new Promise(resolve => {
+            expect(destinationArg).to.equal(destination);
             done();
             resolve([]);
           });
@@ -100,15 +96,14 @@ describe("destination processor suite", () => {
       processor.process(destination, item, eventContext, incompleteTask);
     });
 
-    it("should call the rules engine passing the fact", (done) => {
+    it("should call the rules engine passing the event context", done => {
       const item = {
         createTask: () => {}
       };
       const rulesEngine = {
-        getNextDestinations: (destinationArg, factArg) => {
-          return new Promise((resolve) => {
-            expect(factArg)
-              .to.deep.equal(new ConditionFact(eventContext, incompleteTask));
+        getNextDestinations: (destinationArg, eventContextArg) => {
+          return new Promise(resolve => {
+            expect(eventContextArg).to.equal(eventContext);
             done();
             resolve([]);
           });
@@ -118,18 +113,38 @@ describe("destination processor suite", () => {
       processor.process(destination, item, eventContext, incompleteTask);
     });
 
-    it("should create a task in the destinations returned by the rules engine", (done) => {
+    it("should call the rules engine passing the incomplete task", done => {
+      const item = {
+        createTask: () => {}
+      };
+      const rulesEngine = {
+        getNextDestinations: (
+          destinationArg,
+          eventContextArg,
+          incompleteTaskArg
+        ) => {
+          return new Promise(resolve => {
+            expect(incompleteTaskArg).to.equal(incompleteTask);
+            done();
+            resolve([]);
+          });
+        }
+      };
+      processor = DestinationProcessor(rulesEngine);
+      processor.process(destination, item, eventContext, incompleteTask);
+    });
+
+    it("should create a task in the destinations returned by the rules engine", done => {
       const rulesEngine = {
         getNextDestinations: () => {
-          return new Promise((resolve) => {
+          return new Promise(resolve => {
             resolve(onTrue);
           });
         }
       };
       const item = {
-        createTask: (destinationArg) => {
-          expect(destinationArg)
-            .to.equal(onTrue[0]);
+        createTask: destinationArg => {
+          expect(destinationArg).to.equal(onTrue[0]);
           done();
         }
       };
@@ -149,7 +164,6 @@ describe("destination processor suite", () => {
     const rulesEngine = {};
     processor = DestinationProcessor(rulesEngine);
     await processor.process(destination, item, eventContext, incompleteTask);
-    expect(true)
-      .to.equal(true);
+    expect(true).to.equal(true);
   });
 });

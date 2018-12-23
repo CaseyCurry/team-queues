@@ -19,12 +19,14 @@ describe("rules engine suite", () => {
     destination = new ConditionalDestination({
       group: new ConditionGroup({
         scope: "All",
-        conditions: [{
-          fact: "@coffee",
-          path: ".isHot",
-          operator: "equal",
-          value: true
-        }]
+        conditions: [
+          {
+            fact: "@event",
+            path: ".coffee.isHot",
+            operator: "equal",
+            value: true
+          }
+        ]
       }),
       onTrue: [
         new UnconditionalDestination({
@@ -36,12 +38,14 @@ describe("rules engine suite", () => {
         new ConditionalDestination({
           group: new ConditionGroup({
             scope: "All",
-            conditions: [{
-              fact: "@coffee",
-              path: ".isFree",
-              operator: "equal",
-              value: true
-            }]
+            conditions: [
+              {
+                fact: "@event",
+                path: ".coffee.isFree",
+                operator: "equal",
+                value: true
+              }
+            ]
           }),
           onTrue: [
             new UnconditionalDestination({
@@ -61,31 +65,32 @@ describe("rules engine suite", () => {
   });
 
   describe("when conditions are met engine", () => {
-    const facts = {
-      ["@coffee"]: {
+    const eventContext = {
+      coffee: {
         isHot: true
       }
     };
     let nextDestinations;
 
     beforeEach(async () => {
-      nextDestinations = await engine.getNextDestinations(destination, facts);
+      nextDestinations = await engine.getNextDestinations(
+        destination,
+        eventContext
+      );
     });
 
     it("should report true and add a task with the queue name", () => {
-      expect(nextDestinations[0].queueName)
-        .to.equal(targetQueueName1);
+      expect(nextDestinations[0].queueName).to.equal(targetQueueName1);
     });
 
     it("should report true and add a task of the type", () => {
-      expect(nextDestinations[0].taskType)
-        .to.equal(targetTaskType1);
+      expect(nextDestinations[0].taskType).to.equal(targetTaskType1);
     });
   });
 
   describe("when nested conditions are met engine", () => {
-    const facts = {
-      ["@coffee"]: {
+    const eventContext = {
+      coffee: {
         isHot: false,
         isFree: true
       }
@@ -93,23 +98,24 @@ describe("rules engine suite", () => {
     let nextDestinations;
 
     beforeEach(async () => {
-      nextDestinations = await engine.getNextDestinations(destination, facts);
+      nextDestinations = await engine.getNextDestinations(
+        destination,
+        eventContext
+      );
     });
 
     it("should report true and add a task with the queue name", () => {
-      expect(nextDestinations[0].queueName)
-        .to.equal(targetQueueName2);
+      expect(nextDestinations[0].queueName).to.equal(targetQueueName2);
     });
 
     it("should report true and add a task of the type", () => {
-      expect(nextDestinations[0].taskType)
-        .to.equal(targetTaskType2);
+      expect(nextDestinations[0].taskType).to.equal(targetTaskType2);
     });
   });
 
   describe("when conditions are not met engine", () => {
-    const facts = {
-      ["@coffee"]: {
+    const eventContext = {
+      coffee: {
         isHot: false,
         isFree: false
       }
@@ -117,17 +123,18 @@ describe("rules engine suite", () => {
     let nextDestinations;
 
     beforeEach(async () => {
-      nextDestinations = await engine.getNextDestinations(destination, facts);
+      nextDestinations = await engine.getNextDestinations(
+        destination,
+        eventContext
+      );
     });
 
     it("should report true and add a task with the queue name", () => {
-      expect(nextDestinations[0].queueName)
-        .to.equal(targetQueueName3);
+      expect(nextDestinations[0].queueName).to.equal(targetQueueName3);
     });
 
     it("should report true and add a task of the type", () => {
-      expect(nextDestinations[0].taskType)
-        .to.equal(targetTaskType3);
+      expect(nextDestinations[0].taskType).to.equal(targetTaskType3);
     });
   });
 });

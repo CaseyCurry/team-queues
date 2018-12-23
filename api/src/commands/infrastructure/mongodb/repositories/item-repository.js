@@ -1,20 +1,24 @@
 import { Item } from "../../../domain/aggregates/item";
 
-const ItemRepository = (store) => {
+const ItemRepository = store => {
   return {
-    createOrUpdate: async (item) => {
+    createOrUpdate: async item => {
       const extendedItem = Object.assign({}, item, { _id: item.id });
       const collection = await store.getCollection();
-      await collection.updateOne({
-        _id: item.id
-      }, {
-        $set: extendedItem
-      }, {
-        upsert: true
-      });
+      await collection.updateOne(
+        {
+          _id: item.id
+        },
+        {
+          $set: extendedItem
+        },
+        {
+          upsert: true
+        }
+      );
       collection.close();
     },
-    getById: async (id) => {
+    getById: async id => {
       const collection = await store.getCollection();
       const item = await collection.findOne({ _id: id });
       collection.close();
@@ -25,11 +29,10 @@ const ItemRepository = (store) => {
     },
     getByForeignId: async (lifecycleId, foreignId) => {
       const collection = await store.getCollection();
-      const item = await collection
-        .findOne({
-          lifecycleId: lifecycleId,
-          foreignId: foreignId
-        });
+      const item = await collection.findOne({
+        lifecycleId: lifecycleId,
+        foreignId: foreignId
+      });
       collection.close();
       if (!item) {
         return;

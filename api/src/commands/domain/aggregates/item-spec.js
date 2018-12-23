@@ -19,39 +19,26 @@ describe("item suite", () => {
     });
 
     it("should create an item with the id", () => {
-      expect(item.id)
-        .to.equal(id);
+      expect(item.id).to.equal(id);
     });
 
     it("should create an item with the foreign id", () => {
-      expect(item.foreignId)
-        .to.equal(foreignId);
+      expect(item.foreignId).to.equal(foreignId);
     });
 
     it("should create an item with the tasks", () => {
-      expect(item.tasks)
-        .to.deep.equal(tasks);
+      expect(item.tasks).to.deep.equal(tasks);
     });
 
     it("should create an item with the lifecycle id", () => {
-      expect(item.lifecycleId)
-        .to.equal(lifecycleId);
-    });
-  });
-
-  describe("when an id is not passed", () => {
-    it("should create an item with the id", () => {
-      const item = new Item({});
-      expect(item.id)
-        .to.exist;
+      expect(item.lifecycleId).to.equal(lifecycleId);
     });
   });
 
   describe("when tasks are not passed", () => {
     it("should create an item with an empty array of tasks", () => {
       const item = new Item({});
-      expect(item.tasks.length)
-        .to.equal(0);
+      expect(item.tasks.length).to.equal(0);
     });
   });
 
@@ -71,48 +58,41 @@ describe("item suite", () => {
       });
 
       it("should add a task", () => {
-        expect(item.tasks.length)
-          .to.equal(1);
+        expect(item.tasks.length).to.equal(1);
       });
 
-      it("should add a task with the item id", () => {
-        expect(item.tasks[0].itemId)
-          .to.equal(item.id);
+      it("should add a task with an id of 1", () => {
+        expect(item.tasks[0].id).to.equal(1);
       });
 
       it("should add a task with the destination's queue name", () => {
-        expect(item.tasks[0].queueName)
-          .to.equal(destination.queueName);
+        expect(item.tasks[0].queueName).to.equal(destination.queueName);
       });
 
       it("should add a task of the destination's type", () => {
-        expect(item.tasks[0].type)
-          .to.equal(destination.taskType);
+        expect(item.tasks[0].type).to.equal(destination.taskType);
       });
 
       it("should add a task with the created date", () => {
-        expect(item.tasks[0].createdOn)
-          .to.exist;
+        expect(item.tasks[0].createdOn).to.exist;
       });
 
       it("should add an unassigned task", () => {
-        expect(item.tasks[0].status)
-          .to.equal(TaskStatus.Unassigned);
+        expect(item.tasks[0].status).to.equal(TaskStatus.Unassigned);
       });
 
       it("should add a task with the due date", () => {
-        expect(item.tasks[0].dueOn)
-          .to.exist;
+        expect(item.tasks[0].dueOn).to.exist;
       });
 
       it("should raise a single event", () => {
-        expect(item.domainEvents.raisedEvents.length)
-          .to.equal(1);
+        expect(item.domainEvents.raisedEvents.length).to.equal(1);
       });
 
       it("should raise a task created event", () => {
-        expect(item.domainEvents.raisedEvents[0].name)
-          .to.equal("team-queues.task-created");
+        expect(item.domainEvents.raisedEvents[0].name).to.equal(
+          "team-queues.task-created"
+        );
       });
     });
 
@@ -134,8 +114,7 @@ describe("item suite", () => {
       });
 
       it("should raise a single event", () => {
-        expect(item.domainEvents.raisedEvents.length)
-          .to.equal(1);
+        expect(item.domainEvents.raisedEvents.length).to.equal(1);
       });
     });
 
@@ -159,13 +138,13 @@ describe("item suite", () => {
         });
 
         it("should complete the current task", () => {
-          expect(currentTask.isComplete)
-            .to.equal(true);
+          expect(currentTask.isComplete).to.equal(true);
         });
 
         it("should raise an event for the completion of the current task", () => {
-          expect(item.domainEvents.raisedEvents[1].name)
-            .to.equal("team-queues.task-completed");
+          expect(item.domainEvents.raisedEvents[1].name).to.equal(
+            "team-queues.task-completed"
+          );
         });
       });
 
@@ -186,13 +165,11 @@ describe("item suite", () => {
         });
 
         it("should not complete the current task", () => {
-          expect(currentTask.isComplete)
-            .to.equal(false);
+          expect(currentTask.isComplete).to.equal(false);
         });
 
         it("should not raise an event for the completion of the current task", () => {
-          expect(item.domainEvents.raisedEvents.length)
-            .to.equal(1);
+          expect(item.domainEvents.raisedEvents.length).to.equal(1);
         });
       });
     });
@@ -218,10 +195,10 @@ describe("item suite", () => {
       it("should modify the task", () => {
         const now = new Date();
         const minutesToAdd = 5;
-        expect(item.tasks[0].dueOn)
-          .to.be.within(
-            new Date(now.getTime() + (minutesToAdd * 60 * 1000) - 1000),
-            new Date(now.getTime() + (minutesToAdd * 60 * 1000) + 1000));
+        expect(item.tasks[0].dueOn).to.be.within(
+          new Date(now.getTime() + minutesToAdd * 60 * 1000 - 1000),
+          new Date(now.getTime() + minutesToAdd * 60 * 1000 + 1000)
+        );
       });
     });
   });

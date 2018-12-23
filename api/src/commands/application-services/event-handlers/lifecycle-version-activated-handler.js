@@ -6,7 +6,10 @@ const LifecycleVersionActivatedHandler = (domainEvents, reregister) => {
 
   return {
     register: async () => {
-      domainEvents.listenToBroadcast("team-queues.lifecycle-version-activated", handler);
+      domainEvents.listenToBroadcast(
+        "team-queues.lifecycle-version-activated",
+        handler
+      );
     }
   };
 };

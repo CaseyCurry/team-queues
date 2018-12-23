@@ -5,7 +5,9 @@ const TaskCompletedEvent = class extends TaggedAggregateEvent {
   constructor(task, item) {
     super({ name: "team-queues.task-completed", version: 1, aggregate: item });
     this.message.task = {
-      itemId: task.itemId,
+      item: {
+        id: item.id
+      },
       id: task.id
     };
     deepFreeze(this);

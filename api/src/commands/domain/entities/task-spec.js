@@ -6,8 +6,7 @@ import { TeamMember } from "../value-objects/team-member";
 describe("task suite", () => {
   describe("when a task is created", () => {
     let task;
-    const id = 123;
-    const itemId = 456;
+    const id = 1;
     const queueName = "Barista Queue";
     const type = "Make Coffee";
     const createdOn = new Date();
@@ -18,7 +17,6 @@ describe("task suite", () => {
     beforeEach(() => {
       task = new Task({
         id,
-        itemId,
         queueName,
         type,
         createdOn,
@@ -29,43 +27,31 @@ describe("task suite", () => {
     });
 
     it("should include the id", () => {
-      expect(task.id)
-        .to.equal(id);
-    });
-
-    it("should include the item id", () => {
-      expect(task.itemId)
-        .to.equal(itemId);
+      expect(task.id).to.equal(id);
     });
 
     it("should include the queue name", () => {
-      expect(task.queueName)
-        .to.equal(queueName);
+      expect(task.queueName).to.equal(queueName);
     });
 
     it("should include the type", () => {
-      expect(task.type)
-        .to.equal(type);
+      expect(task.type).to.equal(type);
     });
 
     it("should include the created on date", () => {
-      expect(task.createdOn)
-        .to.equal(createdOn);
+      expect(task.createdOn).to.equal(createdOn);
     });
 
     it("should include the status", () => {
-      expect(task.status)
-        .to.equal(status);
+      expect(task.status).to.equal(status);
     });
 
     it("should include the due on date", () => {
-      expect(task.dueOn)
-        .to.equal(dueOn);
+      expect(task.dueOn).to.equal(dueOn);
     });
 
     it("should include the assignee", () => {
-      expect(task.assignee)
-        .to.deep.equal(assignee);
+      expect(task.assignee).to.deep.equal(assignee);
     });
 
     describe("when the task is assigned", () => {
@@ -77,13 +63,11 @@ describe("task suite", () => {
       });
 
       it("should update the status", () => {
-        expect(task.status)
-          .to.equal(TaskStatus.Assigned);
+        expect(task.status).to.equal(TaskStatus.Assigned);
       });
 
       it("should include the assignee", () => {
-        expect(task.assignee)
-          .to.deep.equal(newAssignee);
+        expect(task.assignee).to.deep.equal(newAssignee);
       });
     });
 
@@ -93,13 +77,11 @@ describe("task suite", () => {
       });
 
       it("should update the status", () => {
-        expect(task.status)
-          .to.equal(TaskStatus.Unassigned);
+        expect(task.status).to.equal(TaskStatus.Unassigned);
       });
 
       it("should remove the assignee", () => {
-        expect(task.assignee)
-          .to.be.null;
+        expect(task.assignee).to.be.null;
       });
     });
 
@@ -109,13 +91,11 @@ describe("task suite", () => {
       });
 
       it("should update the status", () => {
-        expect(task.status)
-          .to.equal(TaskStatus.Completed);
+        expect(task.status).to.equal(TaskStatus.Completed);
       });
 
       it("should report the task is complete", () => {
-        expect(task.isComplete)
-          .to.equal(true);
+        expect(task.isComplete).to.equal(true);
       });
     });
 
@@ -123,9 +103,8 @@ describe("task suite", () => {
       describe("when the task has a modification", () => {
         it("should call the modification passing the task", () => {
           const modification = {
-            modify: (taskArg) => {
-              expect(taskArg)
-                .to.equal(task);
+            getModifiedDueOn: originalDueOnArg => {
+              expect(originalDueOnArg).to.equal(task.dueOn);
             }
           };
           task.applyModification(modification);
@@ -136,8 +115,7 @@ describe("task suite", () => {
         it("should bypass application", () => {
           const modification = null;
           task.applyModification(modification);
-          expect(true)
-            .to.equal(true);
+          expect(true).to.equal(true);
         });
       });
     });

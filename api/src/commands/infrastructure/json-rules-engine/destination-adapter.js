@@ -1,10 +1,12 @@
 import { ConditionGroup } from "../../domain/value-objects/condition-group";
 
-const DestinationAdapter = (destination) => {
-  const recursivelyAdapt = (obj) => {
+const DestinationAdapter = destination => {
+  const recursivelyAdapt = obj => {
     if (obj instanceof ConditionGroup) {
       return {
-        [obj.scope.toLowerCase()]: obj.conditions.map((condition) => recursivelyAdapt(condition))
+        [obj.scope.toLowerCase()]: obj.conditions.map(condition =>
+          recursivelyAdapt(condition)
+        )
       };
     } else {
       return obj;

@@ -2,7 +2,11 @@ import deepFreeze from "deep-freeze";
 
 const TriggeredCompletion = class {
   constructor({ eventNames, doesCompletePreviousTask, doesCompleteItem }) {
-    if (!eventNames || !Array.isArray(eventNames) || !eventNames.every((name) => typeof name === "string")) {
+    if (
+      !eventNames ||
+      !Array.isArray(eventNames) ||
+      !eventNames.every(name => typeof name === "string")
+    ) {
       throw new Error("The eventNames must be an array");
     }
     this.eventNames = eventNames;

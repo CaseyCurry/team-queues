@@ -4,19 +4,17 @@ import { ConditionScope } from "./condition-scope";
 
 const ConditionGroup = class {
   constructor({ scope, conditions }) {
-    const errorMessages = [];
     if (!scope || !ConditionScope[scope]) {
-      errorMessages.push("The scope must be a valid ConditionScope");
+      throw new Error("The scope must be a valid ConditionScope");
     }
     if (!conditions || !Array.isArray(conditions)) {
-      errorMessages.push("The conditions must be an array");
-    }
-    if (errorMessages.length) {
-      errorMessages.push(errorMessages);
+      throw new Error("The conditions must be an array");
     }
     this.scope = scope;
-    this.conditions = conditions.map((condition) => {
-      return condition.scope ? new ConditionGroup(condition) : new Condition(condition);
+    this.conditions = conditions.map(condition => {
+      return condition.scope
+        ? new ConditionGroup(condition)
+        : new Condition(condition);
     });
     deepFreeze(this);
   }

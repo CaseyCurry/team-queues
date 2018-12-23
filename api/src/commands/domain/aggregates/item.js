@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { BaseAggregate } from "./base-aggregate";
 import { Task } from "../entities/task";
 import { TaskStatus } from "../value-objects/task-status";
@@ -8,33 +7,29 @@ import { TaskUnassignedEvent } from "../events/task-unassigned-event";
 import { TaskCompletedEvent } from "../events/task-completed-event";
 import { ItemCompletedEvent } from "../events/item-completed-event";
 
-const getNextTaskId = (tasks) => {
-  const sortedTasks = tasks
-    .slice()
-    .sort((x, y) => y.id - x.id);
+const getNextTaskId = tasks => {
+  const sortedTasks = tasks.slice().sort((x, y) => y.id - x.id);
   return sortedTasks.length ? sortedTasks[0].id + 1 : 1;
 };
 
 const Item = class extends BaseAggregate {
   constructor({ id, foreignId, tasks, lifecycleId, isComplete }) {
     super();
-    this.id = id ? id : uuidv4();
+    this.id = id;
     this.foreignId = foreignId;
-    this.tasks = tasks ? tasks.map((task) => new Task(task)) : [];
+    this.tasks = tasks ? tasks.map(task => new Task(task)) : [];
     this.lifecycleId = lifecycleId;
     this.isComplete = isComplete;
   }
 
   get incompleteTasks() {
-    return this.tasks
-      .filter((task) => !task.isComplete);
+    return this.tasks.filter(task => !task.isComplete);
   }
 
   async createTask(destination, currentTask) {
     // TODO: unit test id
     const task = new Task({
       id: getNextTaskId(this.tasks),
-      itemId: this.id,
       queueName: destination.queueName,
       type: destination.taskType,
       createdOn: new Date(),
@@ -43,13 +38,15 @@ const Item = class extends BaseAggregate {
     });
     task.applyModification(destination.modification);
     this.tasks.push(task);
-    // TODO: consider removing ItemCreatedEvent. Item info is added here to make it
-    // easier to consume new items being created. Raising when item is created without
-    // tasks has questionable value.
+    /* TODO: consider removing ItemCreatedEvent. Item info is added here to make it
+       easier to consume new items being created. Raising when item is created without
+       tasks has questionable value. */
     await this.domainEvents.raise(new TaskCreatedEvent(task, this));
-    if (destination.doesCompletePreviousTask &&
+    if (
+      destination.doesCompletePreviousTask &&
       currentTask &&
-      !currentTask.isComplete) {
+      !currentTask.isComplete
+    ) {
       await this.completeTask(currentTask);
     }
   }

@@ -1,10 +1,13 @@
 import { Queue } from "../value-objects/queue";
-import { DestinationFactory } from "../factories/destination-factory";
 import { UnconditionalDestination } from "../value-objects/unconditional-destination";
+import { TriggeredDestination } from "../value-objects/triggered-destination";
 
 const isQueueMissing = (destination, existingQueues) => {
-  return !existingQueues
-    .find((queue) => queue.name === destination.queueName && queue.taskType === destination.taskType);
+  return !existingQueues.find(
+    queue =>
+      queue.name === destination.queueName &&
+      queue.taskType === destination.taskType
+  );
 };
 
 const findInvalidDestinations = (destination, existingQueues) => {
@@ -14,42 +17,57 @@ const findInvalidDestinations = (destination, existingQueues) => {
       invalidDestinations.push(destination);
     }
   } else {
-    invalidDestinations.push(...recursivelyFindInvalidDestinations(destination.onTrue, existingQueues));
-    invalidDestinations.push(...recursivelyFindInvalidDestinations(destination.onFalse, existingQueues));
+    invalidDestinations.push(
+      ...recursivelyFindInvalidDestinations(destination.onTrue, existingQueues)
+    );
+    invalidDestinations.push(
+      ...recursivelyFindInvalidDestinations(destination.onFalse, existingQueues)
+    );
   }
   return invalidDestinations;
 };
 
 const recursivelyFindInvalidDestinations = (destinations, existingQueues) => {
   const invalidDestinations = [];
-  destinations.map((destination) => {
-    invalidDestinations.push(...findInvalidDestinations(destination, existingQueues));
+  destinations.map(destination => {
+    invalidDestinations.push(
+      ...findInvalidDestinations(destination, existingQueues)
+    );
   });
   return invalidDestinations;
 };
 
 const LifecycleVersion = class {
-  constructor({
-    number,
-    triggersForItemCreation,
-    queues
-  }) {
+  constructor({ number, triggersForItemCreation, queues }) {
     if (!number || typeof number !== "number") {
-      throw new Error("The version number must be passed and must be a numeric value");
+      throw new Error(
+        "The version number must be passed and must be a numeric value"
+      );
     }
     this.number = number;
-    this.triggersForItemCreation = triggersForItemCreation ?
-      triggersForItemCreation.map((trigger) => DestinationFactory.create(trigger)) : [];
-    this.queues = queues ?
-      queues.map((queue) => new Queue(queue)) : [];
+    this.triggersForItemCreation = triggersForItemCreation
+      ? triggersForItemCreation.map(
+        trigger => new TriggeredDestination(trigger)
+      )
+      : [];
+    this.queues = queues ? queues.map(queue => new Queue(queue)) : [];
   }
 
   addTriggerForItemCreation({ eventNames, destinations }) {
-    const trigger = DestinationFactory.create({ eventNames, destinations });
-    const invalidDestinations = recursivelyFindInvalidDestinations(trigger.destinations, this.queues);
+    const trigger = new TriggeredDestination({ eventNames, destinations });
+    const invalidDestinations = recursivelyFindInvalidDestinations(
+      trigger.destinations,
+      this.queues
+    );
     if (invalidDestinations && invalidDestinations.length) {
-      throw new Error(invalidDestinations
-        .map((destination) => `The ${destination.queueName} queue and ${destination.taskType} task type are not configured`));
+      throw new Error(
+        invalidDestinations.map(
+          destination =>
+            `The ${destination.queueName} queue and ${
+              destination.taskType
+            } task type are not configured`
+        )
+      );
     }
     this.triggersForItemCreation.push(trigger);
   }
@@ -61,8 +79,9 @@ const LifecycleVersion = class {
     destinationsWhenTaskCompleted,
     destinationsWhenEventOccurred
   }) {
-    const existingQueue = this.queues
-      .find((queue) => queue.name === name && queue.taskType === taskType);
+    const existingQueue = this.queues.find(
+      queue => queue.name === name && queue.taskType === taskType
+    );
     if (existingQueue) {
       return;
     }

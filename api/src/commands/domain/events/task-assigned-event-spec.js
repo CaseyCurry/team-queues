@@ -7,8 +7,7 @@ describe("task assigned event suite", () => {
     id: 456
   };
   const task = new Task({
-    itemId: item.id,
-    id: 123,
+    id: 1,
     assignee: { name: "Jane" }
   });
   let event;
@@ -18,46 +17,40 @@ describe("task assigned event suite", () => {
   });
 
   it("should include an id", () => {
-    expect(event.id)
-      .to.exist;
+    expect(event.id).to.exist;
   });
 
   it("should include the time it occurred", () => {
-    expect(event.occurredOn)
-      .to.exist;
+    expect(event.occurredOn).to.exist;
   });
 
   it("should include the name", () => {
-    expect(event.name)
-      .to.equal("team-queues.task-assigned");
+    expect(event.name).to.equal("team-queues.task-assigned");
   });
 
   it("should include the version", () => {
-    expect(event.version)
-      .to.equal(1);
+    expect(event.version).to.equal(1);
   });
 
   xit("should include the correlation id", () => {
-    expect(event.correlationId)
-      .to.equal(999);
+    expect(event.correlationId).to.equal(999);
   });
 
   it("should include an etag", () => {
-    expect(event.message.etag)
-      .to.exist;
+    expect(event.message.etag).to.exist;
   });
 
   it("should include the task", () => {
-    expect(event.message.task)
-      .to.deep.equal({
-        itemId: task.itemId,
-        id: task.id,
-        assigneeName: task.assignee.name
-      });
+    expect(event.message.task).to.deep.equal({
+      item: {
+        id: item.id
+      },
+      id: task.id,
+      assigneeName: task.assignee.name
+    });
   });
 
   it("should be immutable", () => {
-    expect(Object.isFrozen(event))
-      .to.equal(true);
+    expect(Object.isFrozen(event)).to.equal(true);
   });
 });

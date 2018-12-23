@@ -6,7 +6,7 @@ const highVisibilityEvents = [taskCreatedEventName];
 // TODO: unit test
 const DomainEventFilter = (domainEvents, clientNotifications) => {
   return {
-    raise: (events) => {
+    raise: events => {
       if (events && !Array.isArray(events)) {
         events = [events];
       }
@@ -23,13 +23,12 @@ const raiseEvents = (domainEvents, clientNotifications, events) => {
   const sortedEvents = events
     .slice()
     .sort((x, y) => x.occurredOn - y.occurredOn);
-  sortedEvents
-    .forEach((event) => {
-      domainEvents.raise(event);
-      if (highVisibilityEvents.includes(event.name)) {
-        clientNotifications.send(event.name, event);
-      }
-    });
+  sortedEvents.forEach(event => {
+    domainEvents.raise(event);
+    if (highVisibilityEvents.includes(event.name)) {
+      clientNotifications.send(event.name, event);
+    }
+  });
 };
 
 export { DomainEventFilter };

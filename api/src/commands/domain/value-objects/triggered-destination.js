@@ -3,18 +3,20 @@ import { DestinationFactory } from "../factories/destination-factory";
 
 const TriggeredDestination = class {
   constructor({ eventNames, destinations }) {
-    const errorMessages = [];
-    if (!eventNames || !Array.isArray(eventNames) || !eventNames.every((name) => typeof name === "string")) {
-      errorMessages.push("The eventNames must be an array");
+    if (
+      !eventNames ||
+      !Array.isArray(eventNames) ||
+      !eventNames.every(name => typeof name === "string")
+    ) {
+      throw new Error("The eventNames must be an array");
     }
     if (!destinations || !Array.isArray(destinations)) {
-      errorMessages.push("The destinations must be an array");
-    }
-    if (errorMessages.length) {
-      errorMessages.push(errorMessages);
+      throw new Error("The destinations must be an array");
     }
     this.eventNames = eventNames;
-    this.destinations = destinations.map((destination) => DestinationFactory.create(destination));
+    this.destinations = destinations.map(destination =>
+      DestinationFactory.create(destination)
+    );
     deepFreeze(this);
   }
 

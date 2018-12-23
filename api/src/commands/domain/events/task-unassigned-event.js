@@ -5,7 +5,9 @@ const TaskUnassignedEvent = class extends TaggedAggregateEvent {
   constructor(task, item) {
     super({ name: "team-queues.task-unassigned", version: 1, aggregate: item });
     this.message.task = {
-      itemId: task.itemId,
+      item: {
+        id: item.id
+      },
       id: task.id
     };
     deepFreeze(this);

@@ -3,15 +3,11 @@ import { Modification } from "./modification";
 
 const UnconditionalDestination = class {
   constructor({ queueName, taskType, modification, doesCompletePreviousTask }) {
-    const errorMessages = [];
     if (!queueName || typeof queueName !== "string") {
-      errorMessages.push("The queueName must have a value and must be a string");
+      throw new Error("The queueName must have a value and must be a string");
     }
     if (!taskType || typeof taskType !== "string") {
-      errorMessages.push("The taskType must have a value and must be a string");
-    }
-    if (errorMessages.length) {
-      throw new Error(errorMessages);
+      throw new Error("The taskType must have a value and must be a string");
     }
     this.queueName = queueName;
     this.taskType = taskType;
