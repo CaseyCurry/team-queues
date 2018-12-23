@@ -32,23 +32,19 @@ describe("condition group suite", () => {
     });
 
     it("should include the scope", () => {
-      expect(conditionGroup.scope)
-        .to.equal(scope);
+      expect(conditionGroup.scope).to.equal(scope);
     });
 
     it("should include a condition", () => {
-      expect(conditionGroup.conditions[0])
-        .to.deep.equal(conditions[0]);
+      expect(conditionGroup.conditions[0]).to.deep.equal(conditions[0]);
     });
 
     it("should include a nested condition group", () => {
-      expect(conditionGroup.conditions[1])
-        .to.deep.equal(conditions[1]);
+      expect(conditionGroup.conditions[1]).to.deep.equal(conditions[1]);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(conditionGroup))
-        .to.equal(true);
+      expect(Object.isFrozen(conditionGroup)).to.equal(true);
     });
   });
 
@@ -66,8 +62,7 @@ describe("condition group suite", () => {
       try {
         new ConditionGroup({ scope, conditions });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -77,8 +72,7 @@ describe("condition group suite", () => {
       try {
         new ConditionGroup({ scope, conditions });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

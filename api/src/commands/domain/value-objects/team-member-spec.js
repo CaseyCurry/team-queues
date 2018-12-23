@@ -11,13 +11,11 @@ describe("team member suite", () => {
     });
 
     it("should include the name", () => {
-      expect(teamMember.name)
-        .to.equal(name);
+      expect(teamMember.name).to.equal(name);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(teamMember))
-        .to.equal(true);
+      expect(Object.isFrozen(teamMember)).to.equal(true);
     });
   });
 
@@ -27,8 +25,7 @@ describe("team member suite", () => {
       try {
         new TeamMember({ name });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

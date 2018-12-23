@@ -8,22 +8,22 @@ describe("configured event version map suite", () => {
     const target = "foreignId";
 
     beforeEach(() => {
-      configuredEventVersionMap = new ConfiguredEventVersionMap({ source, target });
+      configuredEventVersionMap = new ConfiguredEventVersionMap({
+        source,
+        target
+      });
     });
 
     it("should include the source property", () => {
-      expect(configuredEventVersionMap.source)
-        .to.equal(source);
+      expect(configuredEventVersionMap.source).to.equal(source);
     });
 
     it("should include the target property", () => {
-      expect(configuredEventVersionMap.target)
-        .to.equal(target);
+      expect(configuredEventVersionMap.target).to.equal(target);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(configuredEventVersionMap))
-        .to.equal(true);
+      expect(Object.isFrozen(configuredEventVersionMap)).to.equal(true);
     });
   });
 
@@ -34,8 +34,7 @@ describe("configured event version map suite", () => {
       try {
         new ConfiguredEventVersionMap({ source, target });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -45,8 +44,7 @@ describe("configured event version map suite", () => {
       try {
         new ConfiguredEventVersionMap({ source, target });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

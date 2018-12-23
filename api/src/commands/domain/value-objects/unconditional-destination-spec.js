@@ -20,28 +20,25 @@ describe("unconditional destination suite", () => {
     });
 
     it("should include the queue name", () => {
-      expect(unconditionalDestination.queueName)
-        .to.equal(queueName);
+      expect(unconditionalDestination.queueName).to.equal(queueName);
     });
 
     it("should include the task type", () => {
-      expect(unconditionalDestination.taskType)
-        .to.equal(taskType);
+      expect(unconditionalDestination.taskType).to.equal(taskType);
     });
 
     it("should include the modification", () => {
-      expect(unconditionalDestination.modification)
-        .to.deep.equal(modification);
+      expect(unconditionalDestination.modification).to.deep.equal(modification);
     });
 
     it("should include the flag that indicates the previous task should be completed", () => {
-      expect(unconditionalDestination.doesCompletePreviousTask)
-        .to.equal(doesCompletePreviousTask);
+      expect(unconditionalDestination.doesCompletePreviousTask).to.equal(
+        doesCompletePreviousTask
+      );
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(unconditionalDestination))
-        .to.equal(true);
+      expect(Object.isFrozen(unconditionalDestination)).to.equal(true);
     });
   });
 
@@ -55,8 +52,7 @@ describe("unconditional destination suite", () => {
           taskType
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -69,8 +65,7 @@ describe("unconditional destination suite", () => {
           taskType
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

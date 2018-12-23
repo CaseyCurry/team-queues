@@ -19,28 +19,23 @@ describe("condition suite", () => {
     });
 
     it("should include the fact", () => {
-      expect(condition.fact)
-        .to.equal(fact);
+      expect(condition.fact).to.equal(fact);
     });
 
     it("should include the path", () => {
-      expect(condition.path)
-        .to.equal(path);
+      expect(condition.path).to.equal(path);
     });
 
     it("should include the operator", () => {
-      expect(condition.operator)
-        .to.equal(operator);
+      expect(condition.operator).to.equal(operator);
     });
 
     it("should include the value", () => {
-      expect(condition.value)
-        .to.equal(value);
+      expect(condition.value).to.equal(value);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(condition))
-        .to.equal(true);
+      expect(Object.isFrozen(condition)).to.equal(true);
     });
   });
 
@@ -58,8 +53,7 @@ describe("condition suite", () => {
           value
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -76,8 +70,7 @@ describe("condition suite", () => {
           value
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -94,8 +87,7 @@ describe("condition suite", () => {
           value
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -112,8 +104,7 @@ describe("condition suite", () => {
           value
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

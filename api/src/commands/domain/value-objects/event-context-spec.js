@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { EventContext } from "./event-context";
 import { ConfiguredEventVersionMap } from "./configured-event-version-map";
 
-describe.only("event context suite", () => {
+describe("event context suite", () => {
   const name = "coffee-ordered";
 
   describe("when there is a simple property mapped", () => {

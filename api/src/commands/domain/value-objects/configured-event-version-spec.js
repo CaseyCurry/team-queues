@@ -18,18 +18,15 @@ describe("configured event version suite", () => {
     });
 
     it("should include the version number", () => {
-      expect(configuredEventVersion.number)
-        .to.equal(number);
+      expect(configuredEventVersion.number).to.equal(number);
     });
 
     it("should include the maps", () => {
-      expect(configuredEventVersion.maps)
-        .to.deep.equal(maps);
+      expect(configuredEventVersion.maps).to.deep.equal(maps);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(configuredEventVersion))
-        .to.equal(true);
+      expect(Object.isFrozen(configuredEventVersion)).to.equal(true);
     });
   });
 
@@ -45,8 +42,7 @@ describe("configured event version suite", () => {
       try {
         new ConfiguredEventVersion({ number, maps });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -56,8 +52,7 @@ describe("configured event version suite", () => {
       try {
         new ConfiguredEventVersion({ number, maps });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -72,8 +67,7 @@ describe("configured event version suite", () => {
       try {
         new ConfiguredEventVersion({ number, maps });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

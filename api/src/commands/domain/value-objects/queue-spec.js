@@ -43,33 +43,33 @@ describe("queue suite", () => {
     });
 
     it("should include the queue name", () => {
-      expect(queue.name)
-        .to.equal(name);
+      expect(queue.name).to.equal(name);
     });
 
     it("should include the task type", () => {
-      expect(queue.taskType)
-        .to.equal(taskType);
+      expect(queue.taskType).to.equal(taskType);
     });
 
     it("should include the destinations when task created", () => {
-      expect(queue.destinationsWhenTaskCreated)
-        .to.deep.equal(destinationsWhenTaskCreated);
+      expect(queue.destinationsWhenTaskCreated).to.deep.equal(
+        destinationsWhenTaskCreated
+      );
     });
 
     it("should include the destinations when task completed", () => {
-      expect(queue.destinationsWhenTaskCompleted)
-        .to.deep.equal(destinationsWhenTaskCompleted);
+      expect(queue.destinationsWhenTaskCompleted).to.deep.equal(
+        destinationsWhenTaskCompleted
+      );
     });
 
     it("should include the destinations when an event occurs", () => {
-      expect(queue.destinationsWhenEventOccurred)
-        .to.deep.equal(destinationsWhenEventOccurred);
+      expect(queue.destinationsWhenEventOccurred).to.deep.equal(
+        destinationsWhenEventOccurred
+      );
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(queue))
-        .to.equal(true);
+      expect(Object.isFrozen(queue)).to.equal(true);
     });
   });
 
@@ -89,8 +89,7 @@ describe("queue suite", () => {
           destinationsWhenEventOccurred
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -109,8 +108,7 @@ describe("queue suite", () => {
           destinationsWhenEventOccurred
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

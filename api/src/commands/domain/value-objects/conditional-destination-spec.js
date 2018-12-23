@@ -41,23 +41,19 @@ describe("conditional destination suite", () => {
     });
 
     it("should include the group", () => {
-      expect(conditionalDestination.group)
-        .to.deep.equal(group);
+      expect(conditionalDestination.group).to.deep.equal(group);
     });
 
     it("should include the destination for when the condition is true", () => {
-      expect(conditionalDestination.onTrue)
-        .to.deep.equal(onTrue);
+      expect(conditionalDestination.onTrue).to.deep.equal(onTrue);
     });
 
     it("should include the destination for when the condition is false", () => {
-      expect(conditionalDestination.onFalse)
-        .to.deep.equal(onFalse);
+      expect(conditionalDestination.onFalse).to.deep.equal(onFalse);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(conditionalDestination))
-        .to.equal(true);
+      expect(Object.isFrozen(conditionalDestination)).to.equal(true);
     });
   });
 
@@ -83,8 +79,7 @@ describe("conditional destination suite", () => {
           onFalse
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -114,8 +109,7 @@ describe("conditional destination suite", () => {
           onFalse
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -145,8 +139,7 @@ describe("conditional destination suite", () => {
           onFalse
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });

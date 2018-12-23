@@ -21,29 +21,28 @@ describe("triggered destination suite", () => {
     });
 
     it("should include the event names", () => {
-      expect(triggeredDestination.eventNames)
-        .to.deep.equal(eventNames);
+      expect(triggeredDestination.eventNames).to.deep.equal(eventNames);
     });
 
     it("should include the destinations", () => {
-      expect(triggeredDestination.destinations)
-        .to.deep.equal(destinations);
+      expect(triggeredDestination.destinations).to.deep.equal(destinations);
     });
 
     it("should be immutable", () => {
-      expect(Object.isFrozen(triggeredDestination))
-        .to.equal(true);
+      expect(Object.isFrozen(triggeredDestination)).to.equal(true);
     });
 
     describe("when the triggered destination only listens for the delivery.coffee-delivered event", () => {
       it("should report the delivery.coffee-delivered event is listened for", () => {
-        expect(triggeredDestination.listensFor("delivery.coffee-delivered"))
-          .to.equal(true);
+        expect(
+          triggeredDestination.listensFor("delivery.coffee-delivered")
+        ).to.equal(true);
       });
 
       it("should not report the xdelivery.coffee-delivered event is listened for", () => {
-        expect(triggeredDestination.listensFor("xdelivery.coffee-delivered"))
-          .to.equal(false);
+        expect(
+          triggeredDestination.listensFor("xdelivery.coffee-delivered")
+        ).to.equal(false);
       });
     });
   });
@@ -63,8 +62,7 @@ describe("triggered destination suite", () => {
           destinations
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
 
@@ -77,8 +75,7 @@ describe("triggered destination suite", () => {
           destinations
         });
       } catch (error) {
-        expect(error)
-          .to.exist;
+        expect(error).to.exist;
       }
     });
   });
