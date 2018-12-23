@@ -18,23 +18,27 @@ describe("domain event filter suite", () => {
         const clientNotifications = {
           send: () => {}
         };
-        const domainEventFilter = DomainEventFilter(domainEvents, clientNotifications);
+        const domainEventFilter = DomainEventFilter(
+          domainEvents,
+          clientNotifications
+        );
         domainEventFilter.raise(event);
-        expect(counter)
-          .to.equal(1);
+        expect(counter).to.equal(1);
       });
 
       it("should raise the exact domain event", () => {
         const domainEvents = {
-          raise: (eventArg) => {
-            expect(eventArg)
-              .to.equal(event);
+          raise: eventArg => {
+            expect(eventArg).to.equal(event);
           }
         };
         const clientNotifications = {
           send: () => {}
         };
-        const domainEventFilter = DomainEventFilter(domainEvents, clientNotifications);
+        const domainEventFilter = DomainEventFilter(
+          domainEvents,
+          clientNotifications
+        );
         domainEventFilter.raise(event);
       });
 
@@ -44,11 +48,13 @@ describe("domain event filter suite", () => {
         };
         const clientNotifications = {
           send: (channel, message) => {
-            expect(message)
-              .to.equal(event);
+            expect(message).to.equal(event);
           }
         };
-        const domainEventFilter = DomainEventFilter(domainEvents, clientNotifications);
+        const domainEventFilter = DomainEventFilter(
+          domainEvents,
+          clientNotifications
+        );
         domainEventFilter.raise(event);
       });
     });
@@ -68,23 +74,27 @@ describe("domain event filter suite", () => {
             counter++;
           }
         };
-        const domainEventFilter = DomainEventFilter(domainEvents, clientNotifications);
+        const domainEventFilter = DomainEventFilter(
+          domainEvents,
+          clientNotifications
+        );
         domainEventFilter.raise(event);
-        expect(counter)
-          .to.equal(0);
+        expect(counter).to.equal(0);
       });
     });
   });
 
   describe("when two events are raised", () => {
-    const events = [{
-      name: "team-queues.second-task-created",
-      occurredOn: new Date()
-    }, {
-      name: "team-queues.first-task-created",
-      occurredOn: new Date(new Date()
-        .getTime() - (30 * 60000))
-    }];
+    const events = [
+      {
+        name: "team-queues.second-task-created",
+        occurredOn: new Date()
+      },
+      {
+        name: "team-queues.first-task-created",
+        occurredOn: new Date(new Date().getTime() - 30 * 60000)
+      }
+    ];
     const clientNotifications = {
       send: () => {}
     };
@@ -96,24 +106,28 @@ describe("domain event filter suite", () => {
           counter++;
         }
       };
-      const domainEventFilter = DomainEventFilter(domainEvents, clientNotifications);
+      const domainEventFilter = DomainEventFilter(
+        domainEvents,
+        clientNotifications
+      );
       domainEventFilter.raise(events);
-      expect(counter)
-        .to.equal(2);
+      expect(counter).to.equal(2);
     });
 
     it("should raise the events in order of occurrence", () => {
       let isFirstEvent = true;
       const domainEvents = {
-        raise: (eventArg) => {
+        raise: eventArg => {
           if (isFirstEvent) {
-            expect(eventArg.name)
-              .to.equal("team-queues.first-task-created");
+            expect(eventArg.name).to.equal("team-queues.first-task-created");
             isFirstEvent = false;
           }
         }
       };
-      const domainEventFilter = DomainEventFilter(domainEvents, clientNotifications);
+      const domainEventFilter = DomainEventFilter(
+        domainEvents,
+        clientNotifications
+      );
       domainEventFilter.raise(events);
     });
   });
@@ -130,10 +144,12 @@ describe("domain event filter suite", () => {
       const clientNotifications = {
         send: () => {}
       };
-      const domainEventFilter = DomainEventFilter(domainEvents, clientNotifications);
+      const domainEventFilter = DomainEventFilter(
+        domainEvents,
+        clientNotifications
+      );
       domainEventFilter.raise(events);
-      expect(counter)
-        .to.equal(0);
+      expect(counter).to.equal(0);
     });
   });
 });
