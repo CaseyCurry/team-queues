@@ -36,7 +36,7 @@ describe("configured event suite", () => {
     });
   });
 
-  describe("when getting the context from the event", () => {
+  xdescribe("when getting the context from the event", () => {
     describe("when there is a simple property mapped", () => {
       let context;
       let occurredEvent;

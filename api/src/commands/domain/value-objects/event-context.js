@@ -6,7 +6,7 @@ const deepGetProperty = (occurredEvent, source) => {
   let current = occurredEvent;
   for (const property of properties) {
     if (current[property] === undefined) {
-      return undefined;
+      return null;
     } else {
       current = current[property];
     }
