@@ -8,8 +8,7 @@ import { TaskCompletedEvent } from "../events/task-completed-event";
 import { ItemCompletedEvent } from "../events/item-completed-event";
 
 const getNextTaskId = tasks => {
-  const sortedTasks = tasks.slice().sort((x, y) => y.id - x.id);
-  return sortedTasks.length ? sortedTasks[0].id + 1 : 1;
+  return tasks.length ? tasks[tasks.length - 1].id + 1 : 1;
 };
 
 const Item = class extends BaseAggregate {
@@ -27,7 +26,6 @@ const Item = class extends BaseAggregate {
   }
 
   async createTask(destination, currentTask) {
-    // TODO: unit test id
     const task = new Task({
       id: getNextTaskId(this.tasks),
       queueName: destination.queueName,
@@ -52,25 +50,21 @@ const Item = class extends BaseAggregate {
   }
 
   async assignTask(task, assignee) {
-    // TODO: unit test this function
     task.assign(assignee);
     await this.domainEvents.raise(new TaskAssignedEvent(task, this));
   }
 
   async unassignTask(task) {
-    // TODO: unit test this function
     task.unassign();
     await this.domainEvents.raise(new TaskUnassignedEvent(task, this));
   }
 
   async completeTask(task) {
     task.complete();
-    // TODO: unit test this event
     await this.domainEvents.raise(new TaskCompletedEvent(task, this));
   }
 
   async completeItem() {
-    // TODO: unit test this event
     for (const task of this.tasks) {
       await this.completeTask(task);
     }
