@@ -2,9 +2,6 @@ import { ConfiguredEventVersion } from "../value-objects/configured-event-versio
 import { EventContext } from "../value-objects/event-context";
 
 const getBestVersionMatch = function(occurredEvent) {
-  if (!this.bestVersionMatches) {
-    this.bestVersionMatches = {};
-  }
   const occurredEventKey = occurredEvent.name + "." + occurredEvent.version;
   let bestMatch = this.bestVersionMatches[occurredEventKey];
   if (!bestMatch) {
@@ -32,13 +29,14 @@ const ConfiguredEvent = class {
       );
     }
     this.name = name;
-    this.isActive = isActive ? isActive : false;
-    this.versions = versions
-      ? versions.map(version => new ConfiguredEventVersion(version))
-      : [];
+    this.isActive = isActive;
+    this.versions = versions.map(
+      version => new ConfiguredEventVersion(version)
+    );
     /* Sort in descending order which will increase the performance of finding
        a version match when an event occurs and an exact match is not found. */
     this.versions.sort((x, y) => y.number - x.number);
+    this.bestVersionMatches = {};
   }
 
   getContext(occurredEvent) {

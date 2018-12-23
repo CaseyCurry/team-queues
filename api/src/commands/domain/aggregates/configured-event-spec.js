@@ -36,226 +36,67 @@ describe("configured event suite", () => {
     });
   });
 
-  xdescribe("when getting the context from the event", () => {
-    describe("when there is a simple property mapped", () => {
-      let context;
-      let occurredEvent;
+  describe("when an attempt is made to create an event with invalid arguments", () => {
+    it("should throw an error if the name is null", () => {
+      const name = null;
+      try {
+        new ConfiguredEvent({ name, isActive, versions });
+      } catch (error) {
+        expect(error).to.exist;
+      }
+    });
 
-      beforeEach(() => {
-        const maps = [
-          new ConfiguredEventVersionMap({
-            source: "coffeeId",
-            target: "foreignId"
-          })
-        ];
-        configuredEvent = new ConfiguredEvent({
-          name,
-          isActive,
-          versions: [
-            {
-              number: 1,
-              maps: maps
-            }
-          ]
-        });
-        occurredEvent = {
-          name,
-          version: 1,
-          coffeeId: 123
-        };
-        context = configuredEvent.getContext(occurredEvent);
+    it("should throw an error if the versions are null", () => {
+      const versions = null;
+      try {
+        new ConfiguredEvent({ name, isActive, versions });
+      } catch (error) {
+        expect(error).to.exist;
+      }
+    });
+  });
+
+  describe("when getting the context from the event", () => {
+    describe("when there is an exact version match", () => {
+      const maps = [
+        new ConfiguredEventVersionMap({
+          source: "coffeeId",
+          target: "foreignId"
+        })
+      ];
+      const configuredEvent = new ConfiguredEvent({
+        name,
+        isActive,
+        versions: [
+          {
+            number: 1,
+            maps: maps
+          }
+        ]
       });
+      const occurredEvent = {
+        name,
+        version: 1,
+        coffeeId: 456
+      };
 
       it("should map the context", () => {
+        const context = configuredEvent.getContext(occurredEvent);
         expect(context.foreignId).to.equal(occurredEvent.coffeeId);
       });
 
-      describe("when there is an exact version match", () => {
-        it("should map the context", () => {
-          expect(context.foreignId).to.equal(occurredEvent.coffeeId);
-        });
-      });
-    });
-
-    describe("when there is a complex property in the source", () => {
-      it("should map the context", () => {
-        const maps = [
-          new ConfiguredEventVersionMap({
-            source: "coffee.id",
-            target: "foreignId"
-          })
-        ];
-        configuredEvent = new ConfiguredEvent({
-          name,
-          isActive,
-          versions: [
-            {
-              number: 1,
-              maps: maps
-            }
-          ]
-        });
-        const occurredEvent = {
-          name,
-          version: 1,
-          coffee: { id: 123 }
-        };
-        const context = configuredEvent.getContext(occurredEvent);
-        expect(context.foreignId).to.equal(occurredEvent.coffee.id);
-      });
-    });
-
-    describe("when there is a complex property in the target", () => {
-      it("should map the context", () => {
-        const maps = [
-          new ConfiguredEventVersionMap({
-            source: "coffee.id",
-            target: "foreignId"
-          }),
-          new ConfiguredEventVersionMap({
-            source: "coffee.isHot",
-            target: "coffee.isHot"
-          })
-        ];
-        configuredEvent = new ConfiguredEvent({
-          name,
-          isActive,
-          versions: [
-            {
-              number: 1,
-              maps: maps
-            }
-          ]
-        });
-        const occurredEvent = {
-          name,
-          version: 1,
-          coffee: {
-            id: 123,
-            isHot: true
-          }
-        };
-        const context = configuredEvent.getContext(occurredEvent);
-        expect(context).to.deep.equal({
-          foreignId: occurredEvent.coffee.id,
-          coffee: { isHot: occurredEvent.coffee.isHot }
-        });
-      });
-    });
-
-    describe("when there are nested properties in the source", () => {
-      it("should map the context", () => {
-        const maps = [
-          new ConfiguredEventVersionMap({
-            source: "coffee.nest.id",
-            target: "foreignId"
-          })
-        ];
-        configuredEvent = new ConfiguredEvent({
-          name,
-          isActive,
-          versions: [
-            {
-              number: 1,
-              maps: maps
-            }
-          ]
-        });
-        const occurredEvent = {
-          name,
-          version: 1,
-          coffee: {
-            nest: {
-              id: 123,
-              isHot: true,
-              additions: ["milk", "sugar"]
-            }
-          }
-        };
-        const context = configuredEvent.getContext(occurredEvent);
-        expect(context).to.deep.equal({
-          foreignId: occurredEvent.coffee.nest.id
-        });
-      });
-    });
-
-    describe("when there are nested properties in the target", () => {
-      it("should map the context", () => {
-        const maps = [
-          new ConfiguredEventVersionMap({
-            source: "coffee.id",
-            target: "foreignId"
-          }),
-          new ConfiguredEventVersionMap({
-            source: "coffee.isHot",
-            target: "coffee.nest.isHot"
-          })
-        ];
-        configuredEvent = new ConfiguredEvent({
-          name,
-          isActive,
-          versions: [
-            {
-              number: 1,
-              maps: maps
-            }
-          ]
-        });
-        const occurredEvent = {
-          name,
-          version: 1,
-          coffee: {
-            id: 123,
-            isHot: true,
-            additions: ["milk", "sugar"]
-          }
-        };
-        const context = configuredEvent.getContext(occurredEvent);
-        expect(context).to.deep.equal({
-          foreignId: occurredEvent.coffee.id,
-          coffee: {
-            nest: {
-              isHot: occurredEvent.coffee.isHot
-            }
-          }
-        });
-      });
-    });
-
-    describe("when there is an array in the source", () => {
-      it("should map the context", () => {
-        const maps = [
-          new ConfiguredEventVersionMap({
-            source: "coffee.id",
-            target: "foreignId"
-          }),
-          new ConfiguredEventVersionMap({
-            source: "coffee.additions",
-            target: "additions"
-          })
-        ];
-        configuredEvent = new ConfiguredEvent({
-          name,
-          isActive,
-          versions: [
-            {
-              number: 1,
-              maps: maps
-            }
-          ]
-        });
-        const occurredEvent = {
-          name,
-          version: 1,
-          coffee: {
-            id: 123,
-            additions: ["milk", "sugar"]
-          }
-        };
-        const context = configuredEvent.getContext(occurredEvent);
-        expect(context).to.deep.equal({
-          foreignId: occurredEvent.coffee.id,
-          additions: occurredEvent.coffee.additions
+      describe("when an event is processed for the second time", () => {
+        it("should use the version previously determined to be the best version", () => {
+          const firstContext = configuredEvent.getContext(occurredEvent);
+          const secondOccurredEvent = {
+            name,
+            version: 1,
+            coffeeId: 456
+          };
+          const secondContext = configuredEvent.getContext(secondOccurredEvent);
+          expect(secondContext.foreignId).to.equal(
+            secondOccurredEvent.coffeeId
+          );
         });
       });
     });
@@ -268,7 +109,7 @@ describe("configured event suite", () => {
             target: "foreignId"
           })
         ];
-        configuredEvent = new ConfiguredEvent({
+        const configuredEvent = new ConfiguredEvent({
           name,
           isActive,
           versions: [
@@ -294,7 +135,7 @@ describe("configured event suite", () => {
 
     describe("when there isn't an exact version match but there is an older one and a newer one", () => {
       it("should not use the older version", () => {
-        configuredEvent = new ConfiguredEvent({
+        const configuredEvent = new ConfiguredEvent({
           name,
           isActive,
           versions: [
@@ -344,7 +185,7 @@ describe("configured event suite", () => {
 
     describe("when there is nothing except a newer version than the event that just occurred", () => {
       it("should throw an error", () => {
-        configuredEvent = new ConfiguredEvent({
+        const configuredEvent = new ConfiguredEvent({
           name,
           isActive,
           versions: [
@@ -361,6 +202,38 @@ describe("configured event suite", () => {
         });
         const occurredEvent = {
           name,
+          version: 1,
+          coffee: {
+            id: 123
+          }
+        };
+        try {
+          configuredEvent.getContext(occurredEvent);
+        } catch (error) {
+          expect(error).to.exist;
+        }
+      });
+    });
+
+    describe("when the occurred event name is not the configured event name", () => {
+      it("should throw an error", () => {
+        const configuredEvent = new ConfiguredEvent({
+          name,
+          isActive,
+          versions: [
+            {
+              number: 1,
+              maps: [
+                new ConfiguredEventVersionMap({
+                  source: "coffee.id",
+                  target: "foreignId"
+                })
+              ]
+            }
+          ]
+        });
+        const occurredEvent = {
+          name: name + "x",
           version: 1,
           coffee: {
             id: 123
