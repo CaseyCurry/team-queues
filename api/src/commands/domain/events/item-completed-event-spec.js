@@ -12,39 +12,32 @@ describe("item completed event suite", () => {
   });
 
   it("should include an id", () => {
-    expect(event.id)
-      .to.exist;
+    expect(event.id).to.exist;
   });
 
   it("should include the time it occurred", () => {
-    expect(event.occurredOn)
-      .to.exist;
+    expect(event.occurredOn).to.exist;
   });
 
   it("should include the name", () => {
-    expect(event.name)
-      .to.equal("team-queues.item-completed");
+    expect(event.name).to.equal("team-queues.item-completed");
   });
 
   it("should include the version", () => {
-    expect(event.version)
-      .to.equal(1);
+    expect(event.version).to.equal(1);
   });
 
   xit("should include the correlation id", () => {
-    expect(event.correlationId)
-      .to.equal(999);
+    expect(event.correlationId).to.equal(999);
   });
 
   it("should include the item", () => {
-    expect(event.message.item)
-      .to.deep.equal({
-        id: item.id
-      });
+    expect(event.message.item).to.deep.equal({
+      id: item.id
+    });
   });
 
   it("should be immutable", () => {
-    expect(Object.isFrozen(event))
-      .to.equal(true);
+    expect(Object.isFrozen(event)).to.equal(true);
   });
 });

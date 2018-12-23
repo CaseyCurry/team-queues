@@ -29,28 +29,25 @@ describe("destination factory suite", () => {
     });
 
     it("should create an unconditional destination", () => {
-      expect(destination instanceof UnconditionalDestination)
-        .to.equal(true);
+      expect(destination instanceof UnconditionalDestination).to.equal(true);
     });
 
     it("should create an unconditional destination with the queue name", () => {
-      expect(destination.queueName)
-        .to.equal(queueName);
+      expect(destination.queueName).to.equal(queueName);
     });
 
     it("should create an unconditional destination with the task type", () => {
-      expect(destination.taskType)
-        .to.equal(taskType);
+      expect(destination.taskType).to.equal(taskType);
     });
 
     it("should create an unconditional destination with the modification", () => {
-      expect(destination.modification)
-        .to.deep.equal(modification);
+      expect(destination.modification).to.deep.equal(modification);
     });
 
     it("should create an unconditional destination with the flag that indicates the previous task should be completed", () => {
-      expect(destination.doesCompletePreviousTask)
-        .to.equal(doesCompletePreviousTask);
+      expect(destination.doesCompletePreviousTask).to.equal(
+        doesCompletePreviousTask
+      );
     });
   });
 
@@ -89,23 +86,19 @@ describe("destination factory suite", () => {
     });
 
     it("should create a conditional destination", () => {
-      expect(destination instanceof ConditionalDestination)
-        .to.equal(true);
+      expect(destination instanceof ConditionalDestination).to.equal(true);
     });
 
     it("should create a conditional destination with the group", () => {
-      expect(destination.group)
-        .to.deep.equal(group);
+      expect(destination.group).to.deep.equal(group);
     });
 
     it("should create a conditional destination with the destination for when the condition is true", () => {
-      expect(destination.onTrue)
-        .to.deep.equal(onTrue);
+      expect(destination.onTrue).to.deep.equal(onTrue);
     });
 
     it("should create a conditional destination with the destination for when the condition is false", () => {
-      expect(destination.onFalse)
-        .to.deep.equal(onFalse);
+      expect(destination.onFalse).to.deep.equal(onFalse);
     });
   });
 
@@ -124,23 +117,21 @@ describe("destination factory suite", () => {
     });
 
     it("should create a triggered completion", () => {
-      expect(destination instanceof TriggeredCompletion)
-        .to.equal(true);
+      expect(destination instanceof TriggeredCompletion).to.equal(true);
     });
 
     it("should create a triggered completion with the event names", () => {
-      expect(destination.eventNames)
-        .to.equal(eventNames);
+      expect(destination.eventNames).to.equal(eventNames);
     });
 
     it("should create a triggered completion with a flag that indicates the previous task should be completed", () => {
-      expect(destination.doesCompletePreviousTask)
-        .to.equal(doesCompletePreviousTask);
+      expect(destination.doesCompletePreviousTask).to.equal(
+        doesCompletePreviousTask
+      );
     });
 
     it("should create a triggered completion with a flag that indicates the item should be completed", () => {
-      expect(destination.doesCompleteItem)
-        .to.equal(doesCompleteItem);
+      expect(destination.doesCompleteItem).to.equal(doesCompleteItem);
     });
   });
 
@@ -162,18 +153,15 @@ describe("destination factory suite", () => {
     });
 
     it("should create a triggered destination", () => {
-      expect(destination instanceof TriggeredDestination)
-        .to.equal(true);
+      expect(destination instanceof TriggeredDestination).to.equal(true);
     });
 
     it("should create a triggered destination with the event names", () => {
-      expect(destination.eventNames)
-        .to.equal(eventNames);
+      expect(destination.eventNames).to.equal(eventNames);
     });
 
     it("should create a triggered destination with destinations", () => {
-      expect(destination.destinations)
-        .to.deep.equal(destinations);
+      expect(destination.destinations).to.deep.equal(destinations);
     });
   });
 });
