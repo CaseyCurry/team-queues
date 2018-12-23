@@ -15,6 +15,7 @@ import { UnconditionalDestination } from "../value-objects/unconditional-destina
 import { TriggeredDestination } from "../value-objects/triggered-destination";
 import { DestinationProcessor } from "../services/destination-processor";
 import { EventContext } from "../value-objects/event-context";
+import { LifecycleVersionActivatedEvent } from "../events/lifecycle-version-activated-event";
 
 describe("lifecycle suite", () => {
   const lifecycleId = uuidv4();
@@ -22,22 +23,47 @@ describe("lifecycle suite", () => {
   const activeLifecycleVersionNumber = 2;
 
   describe("when lifecycle is created", () => {
-    const triggersForItemCreation = [];
-    const queues = [];
     const previousVersion = new LifecycleVersion({
       number: activeLifecycleVersionNumber - 1,
-      triggersForItemCreation,
-      queues
+      triggersForItemCreation: [],
+      queues: []
     });
     const activeVersion = new LifecycleVersion({
       number: activeLifecycleVersionNumber,
-      triggersForItemCreation,
-      queues
+      triggersForItemCreation: [
+        {
+          eventNames: ["customer-arrived"],
+          destinations: [
+            new UnconditionalDestination({
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
+            })
+          ]
+        }
+      ],
+      queues: [
+        {
+          name: "Cashier Queue",
+          taskType: "Take Order",
+          destinationsWhenEventOccurred: [
+            new TriggeredDestination({
+              eventNames: ["customer-ordered"],
+              destinations: [
+                new UnconditionalDestination({
+                  queueName: "Barista Queue",
+                  taskType: "Make Coffee",
+                  doesCompletePreviousTask: true
+                })
+              ]
+            })
+          ]
+        }
+      ]
     });
     const nextVersion = new LifecycleVersion({
       number: activeLifecycleVersionNumber + 1,
-      triggersForItemCreation,
-      queues
+      triggersForItemCreation: [],
+      queues: []
     });
     let lifecycle;
 
@@ -74,9 +100,207 @@ describe("lifecycle suite", () => {
     it("should create a lifecycle with domain events", () => {
       expect(lifecycle.domainEvents).to.exist;
     });
+
+    it("should list all of the referenced events", () => {
+      expect(lifecycle.referencedEvents).to.deep.equal([
+        "customer-arrived",
+        "customer-ordered"
+      ]);
+    });
+
+    describe("when there is not an active version", () => {
+      it("should not include any referenced events", () => {
+        lifecycle = new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf,
+          previousVersion: new LifecycleVersion({
+            number: activeLifecycleVersionNumber,
+            triggersForItemCreation: [
+              {
+                eventNames: ["customer-arrived"],
+                destinations: [
+                  new UnconditionalDestination({
+                    queueName: "Cashier Queue",
+                    taskType: "Take Order"
+                  })
+                ]
+              }
+            ],
+            queues: [
+              {
+                name: "Cashier Queue",
+                taskType: "Take Order",
+                destinationsWhenEventOccurred: [
+                  new TriggeredDestination({
+                    eventNames: ["customer-ordered"],
+                    destinations: [
+                      new UnconditionalDestination({
+                        queueName: "Barista Queue",
+                        taskType: "Make Coffee",
+                        doesCompletePreviousTask: true
+                      })
+                    ]
+                  })
+                ]
+              }
+            ]
+          }),
+          activeVersion: null,
+          nextVersion: null
+        });
+        expect(lifecycle.referencedEvents.length).to.equal(0);
+      });
+    });
+
+    describe("when the next version is updated", () => {
+      const triggersForItemCreation = [
+        {
+          eventNames: ["customer-arrived"],
+          destinations: [
+            new UnconditionalDestination({
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
+            })
+          ]
+        }
+      ];
+      const queues = [
+        {
+          name: "Cashier Queue",
+          taskType: "Take Order",
+          destinationsWhenTaskCompleted: [],
+          destinationsWhenTaskCreated: [],
+          destinationsWhenEventOccurred: [
+            new TriggeredDestination({
+              eventNames: ["customer-ordered"],
+              destinations: [
+                new UnconditionalDestination({
+                  queueName: "Barista Queue",
+                  taskType: "Make Coffee",
+                  doesCompletePreviousTask: true
+                })
+              ]
+            })
+          ]
+        }
+      ];
+
+      beforeEach(() => {
+        lifecycle.updateNextVersion({ triggersForItemCreation, queues });
+      });
+
+      it("should incremement the version number to one greater than the current active version", () => {
+        expect(lifecycle.nextVersion.number).to.equal(
+          activeLifecycleVersionNumber + 1
+        );
+      });
+
+      it("should set the triggers", () => {
+        expect(lifecycle.nextVersion.triggersForItemCreation).to.deep.equal(
+          triggersForItemCreation
+        );
+      });
+
+      it("should set the queues", () => {
+        expect(lifecycle.nextVersion.queues).to.deep.equal(queues);
+      });
+    });
+
+    describe("when the next version is activated", () => {
+      const triggersForItemCreation = [
+        {
+          eventNames: ["customer-arrived"],
+          destinations: [
+            new UnconditionalDestination({
+              queueName: "Cashier Queue",
+              taskType: "Take Order"
+            })
+          ]
+        }
+      ];
+      const queues = [
+        {
+          name: "Cashier Queue",
+          taskType: "Take Order",
+          destinationsWhenTaskCompleted: [],
+          destinationsWhenTaskCreated: [],
+          destinationsWhenEventOccurred: [
+            new TriggeredDestination({
+              eventNames: ["customer-ordered"],
+              destinations: [
+                new UnconditionalDestination({
+                  queueName: "Barista Queue",
+                  taskType: "Make Coffee",
+                  doesCompletePreviousTask: true
+                })
+              ]
+            })
+          ]
+        }
+      ];
+
+      beforeEach(() => {
+        lifecycle.updateNextVersion({ triggersForItemCreation, queues });
+      });
+
+      it("should move the currently active version to the previous version of the lifecycle", () => {
+        const active = JSON.stringify(lifecycle.activeVersion);
+        lifecycle.activateNextVersion();
+        expect(JSON.stringify(lifecycle.previousVersion)).to.equal(active);
+      });
+
+      it("should move the currently next version to the active version of the lifecycle", () => {
+        const next = JSON.stringify(lifecycle.nextVersion);
+        lifecycle.activateNextVersion();
+        expect(JSON.stringify(lifecycle.activeVersion)).to.equal(next);
+      });
+
+      it("should set the next version to a default version", () => {
+        lifecycle.activateNextVersion();
+        const count =
+          lifecycle.nextVersion.queues.length +
+          lifecycle.nextVersion.triggersForItemCreation.length;
+        expect(count).to.equal(0);
+      });
+
+      it("should raise an event", () => {
+        lifecycle.activateNextVersion();
+        expect(
+          lifecycle.domainEvents.raisedEvents[
+            lifecycle.domainEvents.raisedEvents.length - 1
+          ] instanceof LifecycleVersionActivatedEvent
+        ).to.be.true;
+      });
+    });
   });
 
-  describe("when event occurs", () => {
+  describe("when an attempt is made to create a lifecycle with invalid arguments", () => {
+    it("should throw an error if the id is null", () => {
+      const lifecycleId = null;
+      try {
+        new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf
+        });
+      } catch (error) {
+        expect(error).to.exist;
+      }
+    });
+
+    it("should throw an error if the lifecycle of is null", () => {
+      const lifecycleOf = null;
+      try {
+        new Lifecycle({
+          id: lifecycleId,
+          lifecycleOf
+        });
+      } catch (error) {
+        expect(error).to.exist;
+      }
+    });
+  });
+
+  describe("when an event occurs", () => {
     let lifecycle;
     let occurredEvent;
     let configuredEvent;

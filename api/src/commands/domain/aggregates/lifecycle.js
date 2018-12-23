@@ -38,7 +38,6 @@ const Lifecycle = class extends BaseAggregate {
       });
   }
 
-  // TODO: unit test
   get referencedEvents() {
     let referencedEvents = [];
     if (this.activeVersion) {
@@ -64,7 +63,6 @@ const Lifecycle = class extends BaseAggregate {
     return referencedEvents;
   }
 
-  // TODO: unit test
   updateNextVersion({ triggersForItemCreation, queues }) {
     const nextVersionNumber = this.activeVersion
       ? this.activeVersion.number + 1
@@ -76,7 +74,6 @@ const Lifecycle = class extends BaseAggregate {
     );
   }
 
-  // TODO: unit test
   activateNextVersion() {
     this.previousVersion = this.activeVersion;
     this.activeVersion = this.nextVersion;

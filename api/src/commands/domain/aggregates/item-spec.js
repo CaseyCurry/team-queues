@@ -10,7 +10,7 @@ import { TaskUnassignedEvent } from "../events/task-unassigned-event";
 import { TaskCompletedEvent } from "../events/task-completed-event";
 import { ItemCompletedEvent } from "../events/item-completed-event";
 
-describe.only("item suite", () => {
+describe("item suite", () => {
   const id = 123;
   const foreignId = 456;
   const lifecycleId = 789;
