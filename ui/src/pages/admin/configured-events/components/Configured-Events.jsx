@@ -12,29 +12,34 @@ class ConfiguredEvents extends React.Component {
   render() {
     // TODO: check for unsaved data
     if (this.props.areEventsLoading) {
-      return <div className="page">
-        <Loader />
-      </div>;
+      return (
+        <div className="page">
+          <Loader />
+        </div>
+      );
     } else {
-      return <div className="row page configured-events">
-        <ListContainer
-          className="col-sm-12 col-md-4 col-lg-3"
-          events={this.props.events}
-          isEventBeingAdded={this.props.isEventBeingAdded}
-          searchString={this.props.searchString}
-          isSaving={this.props.isSaving}
-          onSelected={this.props.onSelected}
-          onNameChanged={this.props.onNameChanged}
-          onSaved={this.props.onSaved} />
-        {
-          this.props.selectedEvent &&
-          <EventContainer
-            className="d-none d-md-block col-md-8 col-lg-9"
-            event={this.props.selectedEvent}
+      return (
+        <div className="row page configured-events">
+          <ListContainer
+            className="col-sm-12 col-md-4 col-lg-3"
+            events={this.props.events}
+            isEventBeingAdded={this.props.isEventBeingAdded}
+            searchString={this.props.searchString}
+            isSaving={this.props.isSaving}
+            onSelected={this.props.onSelected}
+            onNameChanged={this.props.onNameChanged}
             onSaved={this.props.onSaved}
-            isSaving={this.props.isSaving} />
-        }
-      </div>;
+          />
+          {this.props.selectedEvent && (
+            <EventContainer
+              className="d-none d-md-block col-md-8 col-lg-9"
+              event={this.props.selectedEvent}
+              onSaved={this.props.onSaved}
+              isSaving={this.props.isSaving}
+            />
+          )}
+        </div>
+      );
     }
   }
 }

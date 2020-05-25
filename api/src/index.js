@@ -39,11 +39,12 @@ const configureClientNotifications = server => {
 
 const configureEventHandlers = async (domainEvents, domainServices) => {
   const configure = async handlers => {
-    for (const handler of Object.keys(handlers)) {
+    const promises = Object.keys(handlers).map(handler => {
       // TODO: convert some of the debug logs to info
       console.debug(`registering the ${handler} event handler`);
-      await handlers[handler].register();
-    }
+      return handlers[handler].register();
+    });
+    return Promise.all(promises);
   };
   const commandHandlers = CommandEventHandlers(domainEvents, domainServices);
   await configure(commandHandlers);

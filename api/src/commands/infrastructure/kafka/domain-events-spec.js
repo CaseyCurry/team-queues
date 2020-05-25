@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import kafka from "node-rdkafka";
 import { DomainEvents } from "./domain-events";
-import { doesNotReject } from "assert";
 
 describe("domain events suite", () => {
   describe("integration tests", () => {
